@@ -102,13 +102,13 @@ example %>%
   kableExtra::kable(caption = "Representation of a play consisting of 5 actions in a match between Arsenal and Leicester City",
                     col.names = c("Match ID", "Team Name", "Event Name", "Timestamp", "$(x,y)_{start}$", "$(x,y)_{end}$")) 
 
-# example %>% 
-#   ggplot()  +
-#   fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
-#   #fc_annotate_arrow(x = 52.5, y = -10) +
-#   fc_theme_bw() + 
-#   geom_segment(aes(x = start_x, y = start_y, xend = end_x,  yend = end_y),
-#                arrow = arrow(length = unit(0.03, "npc")))
+example %>%
+  ggplot()  +
+  fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
+  fc_annotate_arrow(x = 52.5, y = -10, palette = "bw") +
+  fc_theme_bw() +
+  geom_segment(aes(x = start_x, y = start_y, xend = end_x,  yend = end_y),
+               arrow = arrow(length = unit(0.03, "npc")))
 ```
 
 Table XXXX shows an example of four consecutive events in our data. This play consists of two consecutive passes, a duel on the ball, and ends with a shot taken by Arsenal. 
@@ -123,7 +123,8 @@ The *events* and *teams* datasets are originally provided in JSON format. We uti
 
 Before conducting our analysis, we made substantial changes to the merged dataset’s coordinates and coordinate system. Although soccer pitch measurements are not standardized, the preferred size for most professional clubs is 105 by 68 meters; we opted to make our pitch dimensions 105 by 70 meters for ease of calculations. Thus, the rescaled x-coordinates are now always in the range [0, 105] and the y-coordinates are now always in the range [0, 70]. From this point onward, references to the coordinates will be in terms of the rescaled pitch size. Transformation of the coordinates can be easily executed with the **fc_locations_transform()** function. 
 
-```{r fig.align="center", fig.width=9, fig.height=6}
+```{r fig.align="center"}
+#, fig.width=9, fig.height=6
 ggplot() + 
   fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
   theme_void() + theme(plot.background = element_rect(fill = "#629A52", # replacement for fc_theme_classic
@@ -168,12 +169,6 @@ There were also inconsistencies with some of the coordinates, particularly with 
 The ending coordinates for shots are either (0,70) for the home team or (105,0) for the away team. Since the ending coordinates of the shot should match the starting coordinates of the following event, we assigned all starting y-coordinates of the following event that are not 0 or 70 as the ending y-coordinate of the shot, and changed the ending x-coordinate of the shot to the starting x-coordinate of the following event. This readjustment accounts for shots that are off-target or blocked by another player, but the ball remains in play. 
 The ending x-coordinates for remaining all shots were changed to 105, since these shots are either saved y the goalkeeper or deflected out of bounds. For these shots, the starting y-coordinate of the following event is either 0 or 70. If the shot is saved by the goalkeeper, we assume that the shot was on-target. Thus, the ending y-coordinates for saved shots were sampled uniformly from the interval (31.35, 38.65), the y-coordinates of the goal. If the shot went out of bounds, we assume that the shot was off-target. Thus, the ending y-coordinate was sampled uniformly from outside the y-coordinates of the goal but within the penalty box, or uniformly from the interval (14.85, 31.35) $\cup$ (38.65, 55.15).
 
-
-```{r}
-knitr::opts_chunk$set(eval = FALSE, 
-                      message=FALSE, 
-                      warning=FALSE)
-```
 
 
 
