@@ -1,0 +1,51 @@
+--- 
+title: "Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data"
+author: "Ethan Shen"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+bibliography: [book.bib, packages.bib]
+biblio-style: apalike
+link-citations: yes
+description: "insert description."
+knit: "bookdown::render_book"
+sspace_between_paragraphs: true
+
+header-includes:
+  - \usepackage{floatrow}
+
+---
+
+
+
+```{r include=FALSE}
+# automatically create a bib database for R packages
+knitr::write_bib(c(
+  .packages(), 'bookdown', 'knitr', 'rmarkdown'
+), 'packages.bib')
+```
+
+```{r include_packages, include = FALSE}
+# This chunk ensures that the thesisdowndss package is
+# installed and loaded. This thesisdowndss package includes
+# the template files for the thesis.
+if(!require(devtools))
+  install.packages("devtools", repos = "http://cran.rstudio.com")
+if(!require(thesisdowndss))
+  devtools::install_github("mine-cetinkaya-rundel/thesisdowndss")
+library(thesisdowndss)
+library(knitr)
+```
+
+
+
+# Abstract {-}
+
+Insert Abstract
+
+
+## Acknowledgements {-}
+
+insert this if necessary lol
+
+

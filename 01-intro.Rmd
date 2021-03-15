@@ -1,0 +1,17 @@
+# Introduction {#intro}
+
+Pace-of-play is an important characteristic in possession-based sports that can heavily influence the style and outcome of a match. In basketball, pace is defined as the number of possessions per 48 minutes [[1]][References]. However, there is no standardized definition of pace in soccer. Pace has been defined as the number of shots taken [[2]][References][[3]][References] or the number of successful passes per game [[4]][References]. Both of these metrics can provide an idea of how fast the ball and players are moving, as more passes generally lead to more scoring chances. The main limitation of event-based pace metrics is their failure to appropriately account for the outcome or the circumstances under which they are performed. For example, evaluating pace as the number of shots taken does not account for the percentage of shots on target *(need better reason)*, while the total number of successful passes does not differentiate between a pass made between two defenders in their own half of the pitch and a pass from a winger trying to create a goal-scoring opportunity. Pace-of-play has also been measured as the distance covered over time within a team’s possessions [[5]][References]. However, short possessions do not provide an accurate measurement of pace. For example, a possession consisting of a goal kick and a pass may travel at a fast speed, but is not necessarily representative of a team’s overall pace.  
+
+A main aim of this work is to explore possessions via pass velocities. This new perspective of pace-of-play analyzes possessions that consist of three or more pass or free kick events, as these types of events are more definitive of a team’s pace. The use of spatio-temporal event data allows for more granular measurements of pace-of-play, such as measures of speed between consecutive events and between different regions on the pitch, which is partitioned into eight zones.
+
+In addition, we seek to build a model using these metrics (add more when we get to modeling).
+
+Our research goals are three-fold:
+
+1. Examine how pace-of-play varies across the pitch, between different teams and across different professional leagues.  
+
+2. Quantify variations in pace at the team and league level and provide metrics to assess how well players and teams attack/defend pace. 
+
+3. Evaluate effectiveness of pace metrics by incorporating them into models that predict the outcome of a match. 
+
+The remainder of this paper is organized as follows. Section 2 describes the datasets. Section 3 introduces the pace-of-play metrics and the modeling methods. Section 4 presents the results of the methodology. Sections 5 and 6 provide a discussion of our findings and a conclusion, respectively.

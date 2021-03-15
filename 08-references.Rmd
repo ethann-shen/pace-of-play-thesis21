@@ -1,0 +1,12 @@
+`r if (knitr::is_html_output()) '
+# References {-}
+'`
+1). Ferrero, V. (2013). The Effectiveness of Using Pace, eFG%, TOV ... - CAE Users. Retrieved from http://homepages.cae.wisc.edu/~ece539/fall13/project/Ferrero_rpt.pdf
+
+2). Knutson, T. (2013, January 24). A Look at Pace in Football. Retrieved from https://bitterandblue.sbnation.com/2013/1/24/3908816/football-soccer-analytics-pace
+
+3). Knutson, T. (2015, January 05). Pace and Margin for Error. Retrieved from https://statsbomb.com/2013/11/pace-and-margin-for-error/
+
+4). Minkus, K. (2017, March 09). Examining Pace in MLS. Retrieved from http://www.americansocceranalysis.com/home/2017/3/9/examining-pace-in-mls
+
+5). Lawrence, T. (2015, November 6). Europe’s Most Direct Teams – Deep xG. Retrieved from https://deepxg.com/2015/11/06/europes-most-direct-teams/
