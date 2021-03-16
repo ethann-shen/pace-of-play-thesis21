@@ -5,6 +5,7 @@ library(tidyverse)
 library(sf)
 library(kableExtra)
 library(scoutr)
+library(gridExtra)
 
 knitr::opts_chunk$set(echo = FALSE, 
                       message=FALSE, 
@@ -12,6 +13,7 @@ knitr::opts_chunk$set(echo = FALSE,
 ```
 
 ```{r}
+source("source/source.R")
 load("source/data/grids5x5.Rda")
 load("source/data/zones.Rda")
 load("source/data/first_game.Rda")
@@ -119,9 +121,9 @@ The *teams* data set describes the clubs that play in the five leagues during th
  
 Data processing was facilitated by the [**scoutr**](https://github.com/shawnsanto/scoutr) R package, a complete and consistent set of functions for reading, manipulating, and visualization Wyscout soccer data. 
 
-The *events* and *teams* datasets are originally provided in JSON format. We utilize the **fc_read_events()** and **fc_read_teams()** functions, respectively, to transform the JSON files into data frames. We then merge the datasets by team ID so we also have the name of the club corresponding to each event. 
+The *events* and *teams* datasets, which are originally provided in JSON format, were transformed into data frames. We then merge the datasets by team ID so we also have the name of the club corresponding to each event. 
 
-Before conducting our analysis, we made substantial changes to the merged dataset’s coordinates and coordinate system. Although soccer pitch measurements are not standardized, the preferred size for most professional clubs is 105 by 68 meters; we opted to make our pitch dimensions 105 by 70 meters for ease of calculations. Thus, the rescaled x-coordinates are now always in the range [0, 105] and the y-coordinates are now always in the range [0, 70]. From this point onward, references to the coordinates will be in terms of the rescaled pitch size. Transformation of the coordinates can be easily executed with the **fc_locations_transform()** function. 
+Before conducting our analysis, we made substantial changes to the merged dataset’s coordinates and coordinate system. Although soccer pitch measurements are not standardized, the preferred size for most professional clubs is 105 by 68 meters; we opted to make our pitch dimensions 105 by 70 meters for ease of calculations. Thus, the rescaled x-coordinates are now always in the range [0, 105] and the y-coordinates are now always in the range [0, 70]. From this point onward, references to the coordinates will be in terms of the rescaled pitch size. 
 
 ```{r fig.align="center"}
 #, fig.width=9, fig.height=6
@@ -169,6 +171,6 @@ There were also inconsistencies with some of the coordinates, particularly with 
 The ending coordinates for shots are either (0,70) for the home team or (105,0) for the away team. Since the ending coordinates of the shot should match the starting coordinates of the following event, we assigned all starting y-coordinates of the following event that are not 0 or 70 as the ending y-coordinate of the shot, and changed the ending x-coordinate of the shot to the starting x-coordinate of the following event. This readjustment accounts for shots that are off-target or blocked by another player, but the ball remains in play. 
 The ending x-coordinates for remaining all shots were changed to 105, since these shots are either saved y the goalkeeper or deflected out of bounds. For these shots, the starting y-coordinate of the following event is either 0 or 70. If the shot is saved by the goalkeeper, we assume that the shot was on-target. Thus, the ending y-coordinates for saved shots were sampled uniformly from the interval (31.35, 38.65), the y-coordinates of the goal. If the shot went out of bounds, we assume that the shot was off-target. Thus, the ending y-coordinate was sampled uniformly from outside the y-coordinates of the goal but within the penalty box, or uniformly from the interval (14.85, 31.35) $\cup$ (38.65, 55.15).
 
-
+Processing the JSON files and transforming the coordinates can be implemented with functions in the scoutr package. 
 
 

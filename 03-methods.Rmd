@@ -27,26 +27,27 @@ all_events %>%
 p1 <- grids5x5 %>% 
   mutate(rowid = 1:294) %>% 
   ggplot() + 
-  geom_sf(fill = NA) + 
-  geom_sf_text(aes(label = rowid)) + 
   fc_annotate_pitch(fill = NA,color = "#F8FAF7") +
   theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
-        color = NA), aspect.ratio = 70/105) 
+        color = NA), aspect.ratio = 70/105) + 
+  geom_sf(fill = NA) + 
+  geom_sf_text(aes(label = rowid)) 
   
 p2 <- zones %>%  
   mutate(rowid = 1:8) %>% 
-  ggplot() + 
-  fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
+  ggplot() +
+  fc_annotate_pitch(fill = "NA",color = "#F8FAF7") +
   theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
-        color = NA), aspect.ratio = 70/105) +
-  geom_sf(aes(fill = as.factor(rowid)), color = NA, alpha = 0.8) + 
-  geom_sf_label(aes(label = rowid)) + 
+        color = NA), aspect.ratio = 70/105, legend.position = "none")  + 
+  geom_sf(fill = NA) + 
+  #geom_sf(aes(fill = as.factor(rowid)), color = NA, alpha = 0.8) + 
+  geom_sf_label(aes(label = rowid)) 
   # geom_sf_label(aes(label = rowid),
   #               nudge_x = c(-0.6,-2.75,-2,-2.75,2.75,2,2.75,0.6),
   #               nudge_y = c(2.5,0,2.5,0,0,2.5,0,2.5)) + 
   #geom_sf(data = grids5x5, aes(geometry = geometry), fill=NA, color = "#2E2E2E50") + 
   #fc_annotate_arrow(x = 52.5, y = -10, palette = "bw") + 
-  theme(legend.position = "none")
+  
 #gridExtra::grid.arrange(p1,p2, nrow=1)
 ```
 
@@ -64,7 +65,7 @@ We used the distance travelled and duration between successive passes and free k
 
 When analyzing pace, we only included passes and free kicks (except for free kick shots and penalty kicks) since these events are reliable indicators of the pace of the game. In addition, we only kept possessions that consist of three or more pass or free kick events, as these types of possessions are more definitive of a team’s pace. (MOVE THIS EARLIER???) For the following results and discussion of pace, events will only refer to these passes and free kicks. Following the exclusion of certain possessions, the remaining possessions contained an average of 5.5 events per possession. 
 
-All of the previously mentioned procedures can be implemented with functions in the scoutr package. 
+All of the previously mentioned procedures can be implemented with functions in the [**scoutr**](https://github.com/shawnsanto/scoutr) package. 
 
 ## Spatial Grids Analysis 
 
@@ -73,7 +74,7 @@ p1
 ```
 
 
-We divided the pitch into 294 equal, non-overlapping 5x5 meter square grids. The total, EW, NS, and E-only velocity values for a given event was assigned to all polygons in which the event’s path intersects with the polygons. Each polygon contains $n$ velocity values for the $n$ event paths that intersected with it. For each of the 5x5 grids, we then take the median for each of the four different pace metrics. There are grids, particularly ones in the corners or along the attacking team's goal line, that have very few velocity values recorded. Thus, the median was used over the mean to account for the presence of potential outliers.
+We divided the pitch into 294 equal, non-overlapping 5x5 meter square grids. This is why we decided to rescale the pitch to 105 by 70 meters instead of 105 by 68 meters. The total, EW, NS, and E-only velocity values for a given event was assigned to all polygons in which the event’s path intersects with the polygons. Each polygon contains $n$ velocity values for the $n$ event paths that intersected with it. For each of the 5x5 grids, we then take the median for each of the four different pace metrics. There are grids, particularly ones in the corners or along the attacking team's goal line, that have very few velocity values recorded. Thus, the median was used over the mean to account for the presence of potential outliers.
 
 ## Zonal Analysis 
 
@@ -81,18 +82,32 @@ We divided the pitch into 294 equal, non-overlapping 5x5 meter square grids. The
 p2
 ```
 
-We divided the pitch into 8 regions. For each zone, we determined which of the 294 5x5 grids intersect the zone. As seen in Figure XXXX, there are some polygons that fall into multiple zones, such as grids 1, 23, etc. We then take the mean, median, and standard deviation of the median velocities of those 5x5 grids to determine the aggregate speeds for the zone. 
+We divided the pitch into 8 regions. For each zone, we determined which of the 294 5x5 grids intersect the zone. As seen in Figure XXXX (should these plots be overlapped or separate plots  like here), there are some polygons that fall into multiple zones, such as grids 1, 23, etc. We then take the mean, median, and standard deviation of the median velocities of those 5x5 grids to determine the aggregate speeds for the zone. 
 
-This method was conducted in favor of another one that assigns an event’s speeds to all zones that intersect the path of the event. Our approach automatically factors in the event’s distance within the zone and is more resistant to outliers. For example, for a pass that intersects N different 5x5 grids in a zone, the zone’s aggregate speed will be affected by that pass’ speed N times instead of just once. This approach is thus more resistant to outliers. 
-
-
-
+This method was conducted in favor of another one that assigns an event’s speeds to all zones that intersect the path of the event. Our approach automatically factors in the event’s distance within the zone and is more resistant to outliers. For example, for a pass that intersects $n$ different 5x5 grids in a zone, the zone’s aggregate speed will be affected by that pass’ speed $n$ times instead of just once. This approach is thus more resistant to outliers. 
 
 ```{r}
-knitr::opts_chunk$set(eval = FALSE, 
-                      message=FALSE, 
-                      warning=FALSE)
+zones %>%  
+  mutate(rowid = 1:8) %>% 
+  ggplot() +
+  fc_annotate_pitch(fill = "NA",color = "#F8FAF7") +
+  theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
+        color = NA), aspect.ratio = 70/105, legend.position = "none")  + 
+  
+  geom_sf(aes(fill = as.factor(rowid)), color = NA, alpha = 0.8) + 
+  #geom_sf_label(aes(label = rowid)) 
+  geom_sf_label(aes(label = rowid),
+                nudge_x = c(-0.6,-2.75,-2,-2.75,2.75,2,2.75,0.6),
+                nudge_y = c(2.5,0,2.5,0,0,2.5,0,2.5)) +
+  geom_sf(data = grids5x5, aes(geometry = geometry), fill=NA, color = "#2E2E2E50")
 ```
+
+
+
+## Modeling
+
+stuff 
+
 
 
 

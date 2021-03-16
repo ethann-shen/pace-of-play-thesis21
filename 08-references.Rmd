@@ -12,3 +12,13 @@
 5). Lawrence, T. (2015, November 6). Europe’s Most Direct Teams – Deep xG. Retrieved from https://deepxg.com/2015/11/06/europes-most-direct-teams/
 
 6). Batorski, E. (2020, April 07). Ball possession in football - how it's calculated and how it matters: STATSCORE - News Center. Retrieved from https://blog.statscore.com/ball-possession-in-football-how-its-calculated-and-how-it-matters/
+
+7). Yu, D., Boucher, C., Bornn, L., & Javan, M. (2019, February). Playing Fast Not Loose: Evaluating team-level pace of play in ice hockey using spatio-temporal possession data. Retrieved from https://arxiv.org/pdf/1902.02020.pdf
+
+8). Gibney, A. (2017, October 02). Ranking Ligue 1 Sides on Their Defensive Strength. Retrieved from https://bleacherreport.com/articles/2321750-ranking-the-ligue-1-sides-on-their-defensive-strength
+
+9). Yi, Q., Groom, R., Dai, C., Liu, H., & Gómez Ruano, M. Á. (2019, November 19). Differences in Technical Performance of Players From 'The Big Five' European Football Leagues in the UEFA Champions League. Retrieved from https://www.frontiersin.org/articles/10.3389/fpsyg.2019.02738
+
+10). Nalton, J. (2019, September 13). Play Up Or Play Out: The Myths And Legends Of Playing Out From The Back. Retrieved from https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/
+
+11). Spencer, J. (2017, November 22). Stats Reveal Just How Suited New #1 Ederson Is to Pep Guardiola's Man City System. Retrieved from https://www.90min.com/posts/5833855-stats-reveal-just-how-suited-new-1-ederson-is-to-pep-guardiola-s-man-city-system
