@@ -179,16 +179,38 @@ create_facet_heatmap <- function(aggregate_data, legend_scale = "sequential",
   p <- aggregate_data %>% 
     bind_cols(
       purrr::map_dfr(seq_len(num_clubs), ~grids5x5)
-    )
-  p %>% 
+    ) %>% 
     ggplot() + 
     geom_sf(aes(geometry = geometry, fill = value), color=NA) + 
     scoutr::fc_annotate_pitch(fill = NA, color ="black") + 
+    #scoutr::fc_theme_bw() + 
     facet_wrap(.~club, nrow = nrow, ncol = ncol) + 
-    scale_fill_gradient2(low  = "red", mid = "white", high = "blue", na.value = "#cdff9c") +
+    #scale_fill_gradient2(low  = "red", mid = "white", high = "blue", na.value = "#cdff9c") +
     theme_bw() +
     labs(x = "", y = "") +
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-          panel.background = element_rect(fill = "#cdff9c"), 
-          axis.line = element_line(colour = color))
+          panel.background = element_rect(fill = "white"),
+          axis.line = element_line(colour = color),
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank()) 
+  
+  if (legend_scale == "sequential") {
+    p <- p + 
+      scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c", 
+                          
+                         
+      ) 
+  } else if (legend_scale == "diverging") {
+    p <- p + scale_fill_gradient2(low  = "blue", mid = "white", high = "red", na.value = "#cdff9c",
+                                  breaks = c(-4,-2,0,2,4), 
+                                  
+    ) 
+  }
+  
+  p
 }
+

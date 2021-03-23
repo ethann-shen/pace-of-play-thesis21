@@ -8,7 +8,46 @@ load("source/data/league_tables.Rda")
 load("source/data/england_defense_total_speed_dfs.Rda")
 load("source/data/top_team_averages.Rda")
 load("source/data/all_league_grids.Rda")
+load("source/data/england_all_speeds.Rda")
+load("source/data/abbreviation_df.Rda")
 ```
+
+## Pace of Play by Polygon 
+
+We first examined how pace differs among the 294 polygons in the EPL. 
+
+```{r}
+yup = tibble(
+  grid = 1:294,
+  england_all_median_E_speed = england_all_median_E_speed,
+  england_all_median_EW_speed = england_all_median_EW_speed,
+  england_all_median_NS_speed = england_all_median_NS_speed,
+  england_all_median_total_speed = england_all_median_total_speed
+) %>% 
+  tidyr::gather(direction, value, england_all_median_E_speed:england_all_median_total_speed) %>% 
+  mutate(direction = str_remove_all(direction, "england_all_median_|_speed"),
+         direction = ifelse(direction == "total",  "Total", direction) %>% 
+           factor(levels = c("Total", "EW", "NS", "E"))) 
+
+create_facet_heatmap(yup %>% rename(club = direction), nrow = 2, ncol = 2, legend_scale = "sequential") + labs(fill = "Speed (m/s)")
+epl1 <- create_heatmap(grids5x5, england_all_median_total_speed) + labs(subtitle = "Total", fill="") + theme_void() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+epl2 <- create_heatmap(grids5x5, england_all_median_EW_speed) + labs(subtitle = "EW", fill="") + theme_void() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+epl3 <- create_heatmap(grids5x5, england_all_median_NS_speed) + labs(subtitle = "NS", fill="") + theme_void() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+epl4 <- create_heatmap(grids5x5, england_all_median_E_speed) + labs(subtitle = "E", fill="") + theme_void() +
+  theme(plot.subtitle = element_text(hjust = 0.5))
+
+gridExtra::grid.arrange(epl1,  epl2, epl3, epl4, ncol = 2)
+```
+
+Total speed is the fastest in the polygons within the opposing team’s penalty box and along the opposing team’s goal line. This is primarily due to higher NS velocities in those areas, as EW speed is relatively slow. Passes completed within the penalty box will usually be taken faster, as players will often be looking for goal-scoring opportunities but will also be under more pressure from defenders. In addition, corner kicks often have a higher velocity than most passes. Most corners are taken into the 6-yard box, so their trajectories will intersect with the polygons along the goal line. 
+
+It is interesting to note that in the offensive half of the pitch, total speed is slower along the left and right flanks and faster in the middle. This is primarily driven by the patterns in the EW and NS speeds, as EW speed is generally faster along the flanks while NS speed is faster in the middle. However, the NS speeds in the middle are faster than the EW speeds along the flanks, which is why total speed is also faster in the middle. 
+
+From the E-only speeds, it seems like the teams in the EPL prefer to advance the ball past the center line along the flanks, rather than down the middle. At the end of the 2017/18 season, 8 out of the 10 players with the most assists were most often deployed as either left or right wingers or midfielders. Another interesting result is that E-only speed is relatively similar in the offensive and defensive thirds. A prior study suggests that a decline in E-only speed in the offensive third should be expected since there are diminishing returns for advancing the ball forward [[7]][Reference]. However, this decline in speed is only apparent in the polygons around the 6-yard box. In most cases, players who receive the ball in this position would shoot, as these positions provide players with the optimal shooting angles. However, E-only speed does not decline in other polygons in the offensive third. Central midfielders stationed around the outskirts penalty box could pass the ball to wingers on the left or right flanks. Even though the shooting angle worsens for the wingers, they can easily advance toward the goal line and cross the ball to the penalty box or cut back [https://www.washingtonpost.com/news/fancy-stats/wp/2014/10/16/two-of-soccers-most-dangerous-passes/] to an onrushing player, both of which could lead to goal-scoring opportunities. 
+
 
 
 ## Pace of Play by Zone 
@@ -16,6 +55,8 @@ load("source/data/all_league_grids.Rda")
 We first examined how pace differs among the 8 zones in the EPL. 
 
 ```{r EPL-avg-velocities, fig.align="center", fig.cap="Velocity by Zone in the EPL for the 2017-18 regular season"}
+col.pal <- c("#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d","#666666")
+
 league_average_speeds %>% 
   select(zone, direction, mean_england_zones) %>% 
   tidyr::gather(league, value, mean_england_zones) %>% 
@@ -25,18 +66,26 @@ league_average_speeds %>%
   ggplot() + 
   geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
   facet_grid(.~direction, scales = "free_y") +
-  labs(x = "Zone", y = "Speed (m/s)", title = "EPL Average Speeds") + 
-  theme_bw() + 
-  theme(legend.position = "none")
+  labs(fill = "Zone", y = "Speed (m/s)") + 
+  scale_fill_manual(values=col.pal) + 
+  theme_bw() +   
+  guides(fill = guide_legend(nrow = 1)) + 
+  theme(axis.title.x =element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position = "bottom")
+
+
 ```
 
 We noticed that total speed is the highest in zone 8 and approximately 28-37% slower in the other seven regions. This is primarily due to the disparity among the NS speeds, particularly in zone 8, as EW speed is roughly equal in all zones. Zone 8 contains the highest NS speed because the velocities of corner kicks are all recorded in this zone. In addition, we also expect zones 2, 4, 5 and 7 to have the highest EW speeds and lowest NS speeds - in these zones, players can pass forwards and backwards, but only up or down, depending on their position on the pitch. 
 
-[[7]][Reference] notes that a decline in E-only speed in the offensive half of the pitch should be expected since there are diminishing returns for advancing the ball forward / A prior study suggests that a decline in E-only speed in the offensive half of the pitch should be expected since there are diminishing returns for advancing the ball forward [[7]][Reference]. However, our analysis displays a contrasting result, as the E-only speeds in the offensive half of the pitch are similar to those in the defensive half and the highest in zones 7 and 8. Even though advancing the ball forward along the sides of the pitch will result in worse shooting angles, it opens that player to cross the ball to the penalty box or cut back to an onrushing player, both of which could lead to goal-scoring opportunities. 
+[[7]][References] notes that a decline in E-only speed in the offensive half of the pitch should be expected since there are diminishing returns for advancing the ball forward / A prior study suggests that a decline in E-only speed in the offensive half of the pitch should be expected since there are diminishing returns for advancing the ball forward [[7]][References]. However, our analysis displays a contrasting result, as the E-only speeds in the offensive half of the pitch are similar to those in the defensive half and the highest in zones 7 and 8. Even though advancing the ball forward along the sides of the pitch will result in worse shooting angles, it opens that player to cross the ball to the penalty box or cut back to an onrushing player, both of which could lead to goal-scoring opportunities. 
 
 ## Pace of Play Across Leagues 
 
-Next, we analyzed how pace varies between the EPL and the four other first-division European leagues. The figure above shows the percent difference (league - EPL / EPL) between the EPL and the four other European leagues. 
+Next, we analyzed how pace varies between the EPL and the four other first-division European leagues  (Ligue 1, Bundesliga, Serie A and La Liga). The figure above/below shows the percent difference (league - EPL / EPL) between the average velocities from the EPL and those of the four other European leagues. 
 
 ```{r other-leagues-avg-velocities, fig.align="center", fig.cap="Velocity by Zone relative to the EPL for the 2017-18 regular season"}
 league_average_speeds %>% 
@@ -55,30 +104,60 @@ league_average_speeds %>%
   facet_grid(direction~league, scales = "free_y") +
   theme_bw()  + 
   geom_hline(yintercept = 0, colour = "black") +
-  theme(#panel.border = element_blank(), 
-    panel.grid.major = element_blank(), legend.position = "none"
-    #panel.grid.minor = element_blank(), 
-  ) + 
-  labs(#title = "League speed relative to the EPL for the 2017-18 regular season", 
-       x = "Zone", fill = "Zone", y = expression(paste(Delta, " Speed (%)")))
+  theme(panel.grid.major = element_blank(), 
+        legend.position = "none") + 
+  labs(x = "Zone", fill = "Zone", y = expression(paste(Delta, " Speed (%)"))) + 
+  scale_fill_manual(values=col.pal)
+
+league_average_speeds %>% 
+  mutate(`Ligue 1` = map2(mean_england_zones, mean_france_zones, perc_change) %>% unlist(),
+         Bundesliga = map2(mean_england_zones, mean_germany_zones, perc_change) %>% unlist(),
+         `Serie A` = map2(mean_england_zones, mean_italy_zones, perc_change) %>% unlist(),
+         `La Liga` = map2(mean_england_zones, mean_spain_zones, perc_change) %>% unlist()) %>% 
+  select(-(mean_england_zones:mean_spain_zones)) %>% 
+  tidyr::gather(league, value, `Ligue 1`:`La Liga`) %>% 
+  mutate(league = factor(league,  levels = c("Ligue 1", "Bundesliga", "Serie A", "La Liga")),
+         direction = ifelse(direction == "total",  "Total", direction) %>% 
+           factor(levels = c("Total", "EW", "NS", "E")),
+         value = value * 100) %>% 
+  bind_cols(
+    purrr::map_dfr(seq_len(16), ~zones)
+  ) %>% 
+  ggplot() + 
+  geom_sf(aes(fill=value, geometry = geometry)) + 
+  facet_grid(direction~league) +
+  theme_bw()  + 
+  geom_hline(yintercept = 0, colour = "black") +
+  theme(panel.grid.major = element_blank()) + 
+  labs(x = "", y = "", fill = expression(paste(Delta, " Speed (%)"))) + 
+  scale_fill_gradient2(low  = "blue", mid = "white", high = "red", na.value = "#cdff9c")
 ```
 
-Pace in Ligue 1 is slower in the defensive half of the pitch but mostly faster in the offensive pitch. Total speed is approximately 1% faster in zones 5, 6, 7, and is primarily driven by changes in the EW speed, as NS speed is relatively similar to the EPL. This could be due to the fact that the average number of goals scored per game is slightly higher in Ligue 1 than in the EPL (2.72 vs. 2.68). Faster pace in the offensive half could yield more goal-scoring opportunities. The 2017-2018 season saw the transfer of Neymar from Barcelona to PSG and the emergence of Kylian Mbappe. While Ligue 1 is often described as a poor attacking league, the advent/presence of this formidable attacking duo may have reinvigorated the league [[8]][Reference]. 
+Pace in Ligue 1 is slower in the defensive half of the pitch but mostly faster in the offensive pitch. Total speed is approximately 1% faster in zones 5, 6, 7, and is primarily driven by changes in the EW speed, as NS speed is relatively similar to that of the EPL. This could be due to the fact that the average number of goals scored per game is slightly higher in Ligue 1 than in the EPL (2.72 vs. 2.68). Faster pace in the offensive half can yield more goal-scoring opportunities. In addition, the 2017-2018 season saw the transfer of Neymar from Barcelona to PSG and the emergence of Kylian Mbappe. While Ligue 1 is often described as a poor attacking league, the advent/presence of this formidable attacking duo may have reinvigorated the league [[8]][References]. 
 
-Differences in the offensive half of the pitch are most notable in the Bundesliga. Total speed in the Bundesliga is 2-4% faster in zones 5, 6, 7 and is driven by an increase in both the EW and NS speeds. This increase could have been due to a higher average number of goals scored per game (2.79 vs. 2.68) and a shot conversion rate of 11.05%, the highest out of the five leagues. (11.05% from https://www.whoscored.com/Regions/81/Tournaments/3/Seasons/6902/Stages/15243/TeamStatistics/Germany-Bundesliga-2017-2018). 
-Additionally, Bundesliga players are more likely to create scoring chances and take more shots than those in the other four leagues [[9]][Reference], which is corroborated by the fact that the E-only speeds are approximately 3-5% faster than the EPL.
+Differences in the offensive half are most notable in the Bundesliga. Total speed in the Bundesliga is 2-4% faster in zones 5, 6, 7 and is driven by an increase in both the EW and NS speeds. The increase in total could have been due to a higher average number of goals scored per game compared to the EPL (2.79 vs. 2.68). Additionally, Bundesliga players are more likely to create scoring chances and take more shots than those in the other four leagues [[9]][References], which is corroborated by the fact that the E-only speeds are approximately 3-5% faster than the EPL.
 
-Pace in Serie A is generally slower and primarily driven by a decline in EW speed across seven zones, with the most noteworthy occurring in zone 1. Even though Italian teams possess a “rigid tactical defensive formation” (Foot, 2006), this cannot fully explain their slower EW speed in zone 1. (this sentence makes no sense) We performed a bootstrap sample to determine if this difference is significant. (it is)
+Pace in Serie A is generally slower and primarily driven by a decline in EW speed across seven zones, with the most noteworthy occurring in zone 1. We performed a simulation based hypothesis test and determined there is no significant difference in the zone 1 speeds of the EPL and Serie A. Nothing in the data or the available literature provides any further insight on this phenomenon. 
 
-La Liga displays the smallest difference in pace, with slightly slower speeds in zones 1 and 2. La Liga teams are well-known for playing out from the back since their goalkeepers feel more comfortable doing so, while EPL goalkeepers have lacked this ability [[10]][Reference]. In general, players from La Liga and the EPL display the most similar performance-related match actions [[9]][Reference], suggesting that only slight differences in pace should be expected between these two leagues. 
+La Liga displays the smallest difference in pace, with slightly slower speeds in zones 1 and 2. We expected La Liga teams to have the slowest velocities in the defensive half, as they are known for playing out from the back, a common tactic in which teams begin passing in their defensive third. This type of build-up play can help increase the quality of passes into teams’ midfielders and forwards. Goalkeepers such as Keylor Navas, Jan Oblak, Marc-Andre Ter Stegen, and Kepa all possess excellent ball control and distribution, which thus allows their teams to start plays from the back [“common” knowledge, as per experts & critics, 6]. 
 
-Serie A and La Liga also scored a similar average number of goals per game (2.68 and 2.69 respectively), which could corroborate the fact that their pace in the offensive is more similar to that of the EPL.  
+In recent years, more EPL teams have been adopting this tactic. Manchester City, with goalkeeper Ederson, is one of the best teams at playing from out from the back. When Pep Guardiola took over in 2016, he seeked to implement a system that plays out from the back, which requires a goalkeeper who is comfortable with the ball on their feet and is capable of building plays from the back [1,2,3]. Replacing long-term goalkeeper Joe Hart with Ederson, someone who fulfills Guardiola’s needs, has contributed to their recent success. Although this style of play has a myriad of benefits, not all teams are capable of executing this tactic. Playing out from the back requires precise passes, as one wayward pass could fall into the feet of an opposing player. Some goalkeepers, such as Tottenham’s Hugo Lloris, arguably one of the world’s best goalkeepers in terms of anticipation and one-on-one situations, lack the ability to pick out the right passes and prevent their teams from adopting this tactic [1, 5]. The mixed success of playing from the back in the EPL may have contributed to the slight difference in pace in the defensive half in comparison to La Liga. 
+
+sources: 
+https://www.espn.com/soccer/english-premier-league/story/3945761/why-playing-out-from-the-back-has-brought-mixed-results-for-premier-league-clubs
+https://www.mirror.co.uk/sport/football/news/pep-guardiola-explains-axing-joe-13445300
+https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/
+https://themastermindsite.com/2019/08/20/playing-out-from-the-back-full-session-plan-and-key-coaching-points/
+https://bleacherreport.com/articles/2716942-ranking-the-best-goalkeepers-in-world-football
+https://bleacherreport.com/articles/2790722-why-kepa-arrizabalaga-is-the-most-expensive-keeper-in-the-world
+
+In general, players from La Liga and the EPL display the most similar performance-related match actions [[9]][Reference] and recorded a similar average number of goals per game (2.69 vs. 2.68), suggesting that only slight differences in pace should be expected between these two leagues. 
 
 Ultimately, differences between these leagues are likely due to stylistic differences between leagues and individual teams, rather than differences in player ability. (not sure if this sentence is necessary)
 
 ## EPL Team-level Pace (Zonal)
 
-```{r epl-team-attacking-zonal, fig.align = "center", fig.cap="Zonal Analysis of Total Speed by Team vs. EPL Average while Attacking", fig.width=10.5}
+```{r epl-team-attacking-zonal, fig.align = "center", fig.cap="Zonal analysis of total speed by team vs. EPL average while attacking. Teams are ordered by final standings. All units are in m/s.", fig.width=17, fig.height=12}
 all_total_avg_speeds %>% slice(1:20) %>% 
   rownames_to_column() %>% 
   gather(zone, value, -club) %>% 
@@ -95,10 +174,23 @@ all_total_avg_speeds %>% slice(1:20) %>%
   gather(club, value,  `AFC Bournemouth`:`West Ham United`, -zone) %>% 
   left_join(league_tables %>% slice(1:20) %>% select(Pos, Team),
             by = c("club" = "Team")) %>% 
-  mutate(club = reorder(club, Pos)) %>% 
-  ggplot() + 
+  mutate(club = paste0(club, " (", Pos, ")"),
+         club = reorder(club, Pos)) %>%
+  # left_join(abbreviation_df, by = "club") %>% 
+  # mutate(abb = case_when(
+  #   club == "AFC Bournemouth" ~ "BOU",
+  #   club == "Brighton & Hove Albion" ~ "BHA",
+  #   club == "Huddersfield Town" ~ "HUD",
+  #   club == "Stoke City" ~ "STO",
+  #   club == "Swansea City" ~ "SWA",
+  #   club == "Watford" ~ "WAT",
+  #   TRUE ~ as.character(abb)
+  # )) %>% 
+  # mutate(club = paste0(abb, " (", Pos, ")"),
+#        club = reorder(club, Pos))  %>% 
+ggplot() + 
   geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
-  facet_wrap(.~club,nrow = 2, ) +
+  facet_wrap(.~club,nrow = 2, labeller = label_wrap_gen(width=14.5)) +
   theme_bw()  + 
   geom_hline(yintercept = 0, colour = "black") +
   labs( fill = "Zone", y = expression(paste(Delta, " Speed (m/s)"))) + 
@@ -106,8 +198,14 @@ all_total_avg_speeds %>% slice(1:20) %>%
         axis.title.x =element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
+        axis.title.y = element_text(size = 18),
+        axis.text.y.left = element_text(size = 16),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 16),
+        strip.text.x = element_text(size = 14.5), # text for facet_wrap labels
         legend.position = "bottom") + 
-  guides(fill = guide_legend(nrow = 1))
+  guides(fill = guide_legend(nrow = 1)) + 
+  scale_fill_manual(values=col.pal) 
 ```
 
 We examined team-level pace using both the zonal and grid methods, and compared each team’s total speeds to the league average.
@@ -116,9 +214,10 @@ The zonal analysis highlights how pace differs across these 20 teams. While atta
 
 The top six teams were consistently slower than the league averages in all but 3 zones/instances. As we move down the table, the zonal speeds display more variation, but these teams are generally faster than the league average. It might seem odd that the top tier teams have a slower pace, but this is primarily due to the way we define pace. We expect these teams to maintain possession for a greater portion of the game, and therefore complete more passes.  It is more likely for teams to maintain possession when making shorter, more controlled passes. Thus, we expect that the average distance and speed per pass to increase as we move down the league table. 
 
-In addition, the total speed in the 4 defensive zones for the 7th-20th place teams are mostly  higher than the league average, with a few exceptions. Since these teams may not have possession for a long period of time, they may feel pressure to take longer goal kicks or passes down the pitch, with the hope that one could create a goal-scoring opportunity. For example, Manchester City’s goalkeeper Ederson took 71% of his Premier League passes short, while Huddersfield Town’s goalkeeper Jonas Lossl took 71% of his passes long [[11]][Reference].
+In addition, the total speed in the 4 defensive zones for the 7th-20th place teams are mostly  higher than the league average, with a few exceptions. Since these teams may not have possession for a long period of time, they may feel pressure to take longer goal kicks or passes down the pitch, with the hope that one could create a goal-scoring opportunity. For example, Manchester City’s goalkeeper Ederson took 71% of his Premier League passes short, while Huddersfield Town’s goalkeeper Jonas Lossl took 71% of his passes long [[11]][References].
 
-```{r epl-team-defending-zonal, fig.align = "center", fig.cap="Zonal Analysis of Total Speed by Team vs. EPL Average while Defending", fig.width=12}
+```{r epl-team-defending-zonal, fig.align = "center", fig.cap="Zonal analysis of total speed by team vs. EPL average while defending. Teams are ordered by final standings. All units are in m/s.", fig.width=17, fig.height=10}
+theme_update(text = element_text(size=16))
 all_england_defense_speed %>% 
   mutate(club = case_when(
     club == "Afc Bournemouth" ~ "AFC Bournemouth",
@@ -136,19 +235,38 @@ all_england_defense_speed %>%
   gather(club, value,  `AFC Bournemouth`:`West Ham United`, -zone) %>% 
   left_join(league_tables %>% slice(1:20) %>% select(Pos, Team),
             by = c("club" = "Team")) %>% 
-  mutate(club = reorder(club, Pos)) %>% 
+  # mutate(club = paste0(club, " (", Pos, ")"),
+  #        club = reorder(club, Pos)) %>% 
+  left_join(abbreviation_df, by = "club") %>% 
+  mutate(abb = case_when(
+    club == "AFC Bournemouth" ~ "BOU",
+    club == "Brighton & Hove Albion" ~ "BHA",
+    club == "Huddersfield Town" ~ "HUD",
+    club == "Stoke City" ~ "STO",
+    club == "Swansea City" ~ "SWA",
+    club == "Watford" ~ "WAT",
+    TRUE ~ as.character(abb)
+  )) %>%
+  mutate(club = paste0(abb, " (", Pos, ")"),
+         club = reorder(club, Pos)) %>% 
   ggplot() + 
   geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
   facet_wrap(.~club,nrow = 2, ) +
   theme_bw()  + 
   geom_hline(yintercept = 0, colour = "black") +
-  labs( fill = "Zone", y = expression(paste(Delta, " Speed (m/s)"))) + 
+  labs(fill = "Zone", y = expression(paste(Delta, " Speed (m/s)"))) + 
   theme(panel.grid.major = element_blank(),
         axis.title.x =element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
+        axis.title.y = element_text(size = 16),
+        axis.text.y.left = element_text(size = 16),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 14),
+        strip.text.x = element_text(size = 16), # text for facet_wrap labels
         legend.position = "bottom") + 
-  guides(fill = guide_legend(nrow = 1))
+  guides(fill = guide_legend(nrow = 1)) + 
+  scale_fill_manual(values=col.pal)
 ```
 
 While defending, only Manchester City consistently gave up more pace, while the other 19 teams displayed variability between different zones. The top 6 teams generally gave up more pace in the offensive zones, with the exception of Manchester United. One reason for this discrepancy could be due to Jose Mourinho’s leadership. Under Mourinho, Manchester United line up in a 4-3-3 formation that shifts to a 4-1-4-1 defensively. He is known for playing cautiously in big games; rather than imposing his style, he often looks to counter the opponents. For example, he has played 4-5-1 and 6-3-1 formations into draws against Liverpool, two defensive line ups that heavily negate Liverpool’s dynamic front three. In addition, Manchester United’s goal-keeper, David de Gea, was the best goalkeeper with 18 clean sheets. 
@@ -164,7 +282,7 @@ https://www.coachbetter.com/new-posts/soccer-tactic-why-is-the-4-1-4-1-the-best-
 
 We also examined team-level pace using the grid method, which allows us to get a more granular understanding of how pace varies across different clubs in the EPL. 
 
-```{r}
+```{r fig.align = "center", fig.cap="Grid analysis of total speed by team vs. EPL average while attacking. Select teams are ordered by final standings. All units are in m/s.", fig.width=14, fig.height=10}
 epl_10 <- epl_grids %>% 
   mutate(median_liverpool_total_speed = ifelse(median_liverpool_total_speed >= 72, NA,  median_liverpool_total_speed)) %>%
   mutate_at(vars(-matches("median_england_total_speed")), list( ~ . - median_england_total_speed)) %>% 
@@ -185,13 +303,20 @@ epl_10 <- epl_grids %>%
               slice(1:20) %>% 
               select(Pos, Team),
             by = c("club" = "Team")) %>% 
-  mutate(club = paste0(club, " (", Pos, ")"),
-         club = reorder(club, Pos)) 
+  mutate(club = paste0(club, " (", Pos, ")"), 
+         club = reorder(club, Pos)) #%>% 
+# left_join(abbreviation_df, by = "club") %>% 
+# mutate(club = paste0(abb, " (", Pos, ")"),
+#        club = reorder(club, Pos))
 
 create_facet_heatmap(epl_10 %>% 
-                       mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995),quantile(value, na.rm=TRUE, 0.995), value)) %>% 
-                       mutate(value = ifelse(value <= quantile(value, na.rm=TRUE, 0.005),quantile(value, na.rm=TRUE, 0.005), value))
-)
+                       mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995),
+                                             quantile(value, na.rm=TRUE, 0.995), value)) %>% 
+                       mutate(value = ifelse(value <= quantile(value, na.rm=TRUE, 0.0025),
+                                             quantile(value, na.rm=TRUE, 0.0025), value)), legend_scale = "diverging") +
+  labs( fill = expression(paste(Delta, " Speed (m/s)"))) #+ guides(fill = guide_legend(label.position = "left", label.hjust = 1))
+
+
 ```
 The overall results verify those found in the zonal analysis, but we are also able to detect patterns that would otherwise be overlooked. For example, even though we noticed that Manchester United’s speed in zone 8 is slightly higher than the league average, this figure shows that their pace on the right side of zone 8 is faster than that of the left side. For Liverpool, we see that their speed in zone 7 is slightly faster than the league average; this is primarily due to faster speeds in the area closer to the opposing team’s penalty box. 
 
@@ -222,7 +347,13 @@ epl_10_defense <- all_grid_england_defense_speed %>%
   mutate(club = paste0(club, " (", Pos, ")"),
          club = reorder(club, Pos)) 
 
-create_facet_heatmap(epl_10_defense %>% mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995), quantile(value, na.rm=TRUE, 0.995), ifelse(value <= quantile(value, na.rm=TRUE, 0.005),quantile(value, na.rm=TRUE, 0.005), value))))
+create_facet_heatmap(epl_10_defense %>% 
+                       mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995), 
+                                             quantile(value, na.rm=TRUE, 0.995), 
+                                             ifelse(value <= quantile(value, na.rm=TRUE, 0.0025),
+                                                    quantile(value, na.rm=TRUE, 0.0025), value))),
+                     legend_scale = "diverging") +
+  labs( fill = expression(paste(Delta, " Speed (m/s)")))
 
 # %>% mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995), quantile(value, na.rm=TRUE, 0.995), ifelse(value <= quantile(value, na.rm=TRUE, 0.005),quantile(value, na.rm=TRUE, 0.005), value)))
 ```
@@ -493,4 +624,78 @@ bind_rows(
 ```
 
 
+```{r}
+# col pals 
+col.pal1 <- c("#7fc97f","#beaed4","#fdc086","#ffff99","#386cb0","#f0027f","#bf5b17","#666666")
+col.pal2 <- c("#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d","#666666") # this is good!
+col.pal3 <- c("#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00")
+col.pal4 <- c("#b3e2cd","#fdcdac","#cbd5e8","#f4cae4","#e6f5c9","#fff2ae","#f1e2cc","#cccccc")
+col.pal5 <- c("#e41a1c","#377eb8","#4daf4a","#984ea3","#ff7f00","#ffff33","#a65628","#f781bf")
+col.pal6 <- c("#66c2a5", "#fc8d62","#8da0cb","#e78ac3","#a6d854","#ffd92f","#e5c494","#b3b3b3")
+col.pal7 <- c("#8dd3c7","#ffffb3","#bebada","#fb8072","#80b1d3","#fdb462","#b3de69","#fccde5")
+
+p  + scale_fill_manual(values=col.pal1)
+p  + scale_fill_manual(values=col.pal2)
+p  + scale_fill_manual(values=col.pal3)
+#p  + scale_fill_manual(values=col.pal4)
+p  + scale_fill_manual(values=col.pal5)
+p  + scale_fill_manual(values=col.pal6)
+p + scale_fill_manual(values=col.pal7)
+```
+
+
+```{r}
+library(rvest)
+abb = read_html("https://www.sporcle.com/games/easterbunny/football-club--by-abbreviations-/results") %>% html_nodes(".name")  %>% html_text()
+
+
+read_html("https://www.sporcle.com/games/easterbunny/football-club--by-abbreviations-/results") %>% html_nodes(".name+ td")  %>% html_text() %>%str_trim()
+
+abb_df <- tibble(
+  abb = read_html("https://www.sporcle.com/games/easterbunny/football-club--by-abbreviations-/results") %>% html_nodes(".name")  %>% html_text(),
+  name= read_html("https://www.sporcle.com/games/easterbunny/football-club--by-abbreviations-/results") %>% html_nodes(".name+ td")  %>% html_text() %>%str_trim()
+  
+)
+```
+
+
+```{r}
+all_total_avg_speeds %>% slice(1:20) %>% 
+  rownames_to_column() %>% 
+  gather(zone, value, -club) %>% 
+  spread(club, value) %>% 
+  filter(zone != "rowname") %>% 
+  bind_cols(
+    league_average_speeds %>% filter(direction == "total") %>% select(mean_england_zones)
+  ) %>%
+  select(-zone) %>% 
+  mutate_if(is.character, as.double) %>% 
+  mutate_at(vars(-matches("mean_england_zones"), -matches("zone")), list( ~ . - mean_england_zones)) %>% 
+  select(-mean_england_zones) %>% 
+  mutate(zone = 1:8) %>% 
+  gather(club, value,  `AFC Bournemouth`:`West Ham United`, -zone)  %>% 
+  select(club) %>% distinct() %>% 
+  left_join(
+    abbreviation_df, by = "club"
+  ) %>% 
+  mutate(abb = case_when(
+    club == "AFC Bournemouth" ~ "BOU",
+    club == "Brighton & Hove Albion" ~ "BHA",
+    club == "Huddersfield Town" ~ "HUD",
+    club == "Stoke City" ~ "STO",
+    club == "Swansea City" ~ "SWA",
+    club == "Watford" ~ "WAT",
+    TRUE ~ as.character(abb)
+  ))
+```
+
+```{r}
+abbreviation_df <- tibble(
+  club = read_html("https://fcmasks.co.uk/football-team-3-letter-short-codes-abbreviations-2021/") %>% 
+    html_nodes("tr+ tr td:nth-child(1)") %>% html_text() 
+  ,
+  abb = read_html("https://fcmasks.co.uk/football-team-3-letter-short-codes-abbreviations-2021/") %>% html_nodes("tr+ tr td:nth-child(2)") %>% html_text()%>% str_remove_all("#")
+)
+save(abbreviation_df, file = "source/data/abbreviation_df.Rda")
+```
 
