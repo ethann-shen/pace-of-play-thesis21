@@ -135,7 +135,7 @@ Ultimately, differences between these leagues are likely due to stylistic differ
 
 We examined team-level pace for the 20 teams in the EPL using both the grid and zonal methods and compared each team’s total speeds to the EPL league average.
 
-```{r fig.align = "center", fig.cap="Grid analysis of total speed by team vs. EPL average while attacking. Select teams are ordered by final standings. All units are in m/s.", fig.width=14, fig.height=10}
+```{r epl-attacking-grids, fig.align = "center", fig.cap="Grid analysis of total speed by team vs. EPL average while attacking. Select teams are ordered by final standings from the 2017-18 season. All units are in m/s.", fig.width=14}
 epl_10 <- epl_grids %>% 
   mutate(median_liverpool_total_speed = ifelse(median_liverpool_total_speed >= 72, NA,  median_liverpool_total_speed)) %>%
   mutate_at(vars(-matches("median_england_total_speed")), list( ~ . - median_england_total_speed)) %>% 
@@ -167,14 +167,18 @@ create_facet_heatmap(epl_10 %>%
                                              quantile(value, na.rm=TRUE, 0.995), value)) %>% 
                        mutate(value = ifelse(value <= quantile(value, na.rm=TRUE, 0.0025),
                                              quantile(value, na.rm=TRUE, 0.0025), value)), legend_scale = "diverging") +
-  labs( fill = expression(paste(Delta, " Speed (m/s)"))) #+ guides(fill = guide_legend(label.position = "left", label.hjust = 1))
+  labs(fill = "")+ #expression(paste(Delta, " Speed (m/s)"))) + 
+  theme(strip.text.x = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        legend.key.height= unit(1.2, 'cm'))
+#+ guides(fill = guide_legend(label.position = "left", label.hjust = 1))
 ```
 
 Figure XXXX displays the difference between the median total velocity in each 5x5m grid for 8 teams and that of the EPL average, with the rest displayed in the Appendix. None of these teams are faster or slower in all 294 grids, but the pace of the top six teams (Manchester City, Manchester United, Tottenham Hotspur, Liverpool, Chelsea and Arsenaal) is generally slower than the league average. As we move down the league table, the grid velocities display more variation, but the four bottom-tier teams in Figure XXXX are generally faster. It might seem odd that the top tier teams have a slower pace, but this is primarily due to the way we define pace. We expect these teams to maintain possession for a greater portion of the game and complete more passes. It is more likely for teams to maintain possession when making shorter, more controlled passes. Thus, we expect that the average distance and velocity per pass to increase as we move down the league table. 
 
 In addition, goal kicks from the top four teams are relatively slower than the league average, with Manchester City's having the slowest velocities. Although there is some variation, goal kicks from the bottom tier teams are generally faster than the league average. Since lower tier teams may not have possession for long periods of time, their goalkeepers may feel pressured to take longer goal kicks down the pitch, with the hope that one could create a goal-scoring opportunity. This is corroborated by the fact that Manchester City’s goalkeeper Ederson took 71% of his Premier League passes short, while every other goalkeeper, except for Liverpool's Simon Mignolet, took less than 50% of their passes short [[11]][References].
 
-```{r}
+```{r epl-defense-grids, fig.align = "center", fig.cap="Grid analysis of total speed by team vs. EPL average while defending. Select teams are ordered by final standings from the 2017-18 season. All units are in m/s.", fig.width=14}
 epl_10_defense <- all_grid_england_defense_speed %>% 
   mutate(club = case_when(
     club == "Afc Bournemouth" ~ "AFC Bournemouth",
@@ -203,7 +207,10 @@ create_facet_heatmap(epl_10_defense %>%
                                              ifelse(value <= quantile(value, na.rm=TRUE, 0.0025),
                                                     quantile(value, na.rm=TRUE, 0.0025), value))),
                      legend_scale = "diverging") +
-  labs( fill = expression(paste(Delta, " Speed (m/s)")))
+  labs(fill = "")+ #expression(paste(Delta, " Speed (m/s)"))) + 
+  theme(strip.text.x = element_text(size = 14),
+        legend.text = element_text(size = 12),
+        legend.key.height= unit(1.2, 'cm'))
 
 # %>% mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995), quantile(value, na.rm=TRUE, 0.995), ifelse(value <= quantile(value, na.rm=TRUE, 0.005),quantile(value, na.rm=TRUE, 0.005), value)))
 ```
@@ -330,6 +337,7 @@ all_england_defense_speed %>%
 While defending, only Manchester City consistently gave up more pace, while the other 19 teams displayed variability between different zones. The top 6 teams generally gave up more pace in the offensive zones, with the exception of Manchester United (2). 
 
 
+## Modeling
 
 
 

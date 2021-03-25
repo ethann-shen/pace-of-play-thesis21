@@ -118,13 +118,13 @@ We did not include any performance-based features, such as number of shots taken
 
 ```{r}
 # https://stackoverflow.com/questions/53394214/r-kableextra-trouble-inserting-linebreak-in-html-format-in-a-cell-containing/53394439
-vars <- c("FTR", "$\\Delta_{ij}$Points1617", "HomeWinStreak", "HomeUnbeatenStreak", "HomeTeam", "DerbyGame",  "League")
-var_descriptions <- linebreak(c("Outcome of a game", "Difference in match points from 2016-17 season (home - away)", "Longest home win streak from 2016-17 season", "Longest home unbeaten streak from 2016-17 season", "Name of the home team", "Indicates if match is a derby",  "League that match takes place in"))
+vars <- c("FTR", "HomeWinStreak", "HomeUnbeatenStreak", "HomeTeam", "DerbyGame",  "League", "$\\Delta_{ij}$Points1617")
+var_descriptions <- linebreak(c("Difference in match points from 2016-17 season (home - away)", "Outcome of a game", "Longest home win streak from 2016-17 season", "Longest home unbeaten streak from 2016-17 season", "Name of the home team", "Indicates if match is a derby",  "League that match takes place in"))
 var_values <- c(
+  "-69 to 69",
   "Win, Draw, Loss",
-  "-95 to 95",
-  "0 to 17",
-  "0 to 19",
+  "1 to 17",
+  "2 to 19",
   "Manchester City, Barcelona, etc. ",
   "0 (No), 1 (Yes)",
   "EPL, Ligue 1, Bundesliga, Serie A, La Liga"
@@ -145,7 +145,9 @@ tibble(
   
 ```
 
-$\Delta_{ij} Points1617$ is the number of points that a team accumulated in the 2016-17 season. For the 14 teams that were promoted to the First Division, we assigned their point total as 0, since they did not play in the First Division in the previous season (this is what it is now, i will see if there is a better value). *home_win_streak* and *home_unbeaten_streak* are a team's longest home win and unbeaten streak from the previous season. These two variables provide information about the home team and if there is a home advantage for that team. The maximum value for either of these variables is 19 (17 for teams in the Bundesliga), as this value is the number of home games a team will play during the season. *home_team* is the name of the home team.  *derby_game* is an indicator variable, where 1 indicates whether or not a game is a derby game. A match is marked as a derby game if the two teams are located in the same city (Manchester City vs. Manchester United) or if there is a historical rivalry (El Clásico). *league* specifies which of the five leagues the match takes place in. 
+For each match, $\Delta_{ij} Points1617$ is the difference in points that a team accumulated in the 2016-17 season between the home and away teams. For the 14 newly promoted teams, we do not have their point totals from the 2016-17 season since they were playing in a different division. To estimate these teams' point totals from the 2016-17 season, we first extracted the point totals for the 3 relegated teams (2 in the Bundesliga) in each league from the 2010-11 to the 2015-16 season. Then, based on the teams' final standing, we averaged the point total across the 6 seasons to determine the average point totals for the 18th, 19th and 20th place teams (17th and 18th in the Bundesliga). We assigned the average point totals for the 14 newly promoted teams based on their final ranking in the 2017-18 season. For example, Newcastle United placed 10th in the 2017-18 EPL (the highest of the three promoted teams), so its estimated point total from the 2016-17 seasoon was assigned the average point total for the 18th place team in the EPL. 
+
+*home_win_streak* and *home_unbeaten_streak* are a team's longest home win and unbeaten streak from the previous season. These two variables provide information about the home team and if there is a home advantage for that team. The maximum value for either of these variables is 19 (17 for teams in the Bundesliga), as this value is the number of home games a team will play during the season. The process used to estimate $\Delta_{ij} Points1617$ is also used to estimate the *home_win_streak* and *home_unbeaten_streak* for the 14 newly promoted teams. *home_team* is the name of the home team.  *derby_game* is an indicator variable, where 1 indicates whether or not a game is a derby game. A match is marked as a derby game if the two teams are located in the same city (Manchester City vs. Manchester United) or if there is a historical rivalry (El Clásico). *league* specifies which of the five leagues the match takes place in. 
 
 ```{r}
 # https://stackoverflow.com/questions/53394214/r-kableextra-trouble-inserting-linebreak-in-html-format-in-a-cell-containing/53394439
