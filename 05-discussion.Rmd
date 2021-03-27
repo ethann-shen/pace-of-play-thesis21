@@ -1,3 +1,5 @@
 # Discussion 
 
-blah blah blah blah 
+limitations of modeleling 
+future analysis (network analysis) 
+develop better pace metrics if we had player tracking data 

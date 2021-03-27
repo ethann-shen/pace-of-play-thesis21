@@ -23,26 +23,26 @@ all_events %>%
   kable_styling(full_width = FALSE, position = "left", fixed_thead = T) 
 ```
 
-```{r making-grids-zones-plot}
-p1 <- grids5x5 %>% 
-  mutate(rowid = 1:294) %>% 
-  ggplot() + 
-  fc_annotate_pitch(fill = NA,color = "#F8FAF7") +
-  theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
-        color = NA), aspect.ratio = 70/105) + 
-  geom_sf(fill = NA) + 
-  geom_sf_text(aes(label = rowid)) 
-  
-p2 <- zones %>%  
-  mutate(rowid = 1:8) %>% 
-  ggplot() +
-  fc_annotate_pitch(fill = "NA",color = "#F8FAF7") +
-  theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
-        color = NA), aspect.ratio = 70/105, legend.position = "none")  + 
-  geom_sf(fill = NA) + 
-  #geom_sf(aes(fill = as.factor(rowid)), color = NA, alpha = 0.8) + 
-  geom_sf_label(aes(label = rowid)) 
-  # geom_sf_label(aes(label = rowid),
+```{r making-polygrids-zones-plot}
+# p1 <- grids5x5 %>% 
+#   mutate(rowid = 1:294) %>% 
+#   ggplot() + 
+#   fc_annotate_pitch(fill = NA,color = "#F8FAF7") +
+#   theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
+#         color = NA), aspect.ratio = 70/105) + 
+#   geom_sf(fill = NA) + 
+#   geom_sf_text(aes(label = rowid)) 
+#   
+# p2 <- zones %>%  
+#   mutate(rowid = 1:8) %>% 
+#   ggplot() +
+#   fc_annotate_pitch(fill = "NA",color = "#F8FAF7") +
+#   theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
+#         color = NA), aspect.ratio = 70/105, legend.position = "none")  + 
+#   geom_sf(fill = NA) + 
+#   #geom_sf(aes(fill = as.factor(rowid)), color = NA, alpha = 0.8) + 
+#   geom_sf_label(aes(label = rowid)) 
+#   # geom_sf_label(aes(label = rowid),
   #               nudge_x = c(-0.6,-2.75,-2,-2.75,2.75,2,2.75,0.6),
   #               nudge_y = c(2.5,0,2.5,0,0,2.5,0,2.5)) + 
   #geom_sf(data = grids5x5, aes(geometry = geometry), fill=NA, color = "#2E2E2E50") + 
@@ -51,42 +51,33 @@ p2 <- zones %>%
 #gridExtra::grid.arrange(p1,p2, nrow=1)
 ```
 
-## Possession ID
+## Possession ID 
 
-Ball possession is the amount of time that a team possesses the ball during a match, but there is no standardized benchmark/definition of what event or events concludes a possession and triggers a new one [[6]][References]. Thus, we created a possession identifier that indicates the current unique possession in a match. In our definition, new possessions begin after a team demonstrates that it has established control of the ball. This occurs in the following situations: at the start of a half, when the team intercepts or successfully tackles the ball, and after the opposing team last touches the ball before it goes out, commits a foul followed by a freekick, or after a shot is taken. A new possession can also begin even if the same team has possession of the ball. For example, if the ball goes out for a throw in for the attacking team, this indicates a new possession for the same attacking team. In addition, if the attacking team makes a pass after a sequence of duels, events in which opposing players contest the ball, this constitutes the same possession. According to our definition above, there were an average of 306 possessions per game. 
+Ball possession is the amount of time that a team possesses the ball during a game, but there is no standardized benchmark/definition of what event or events concludes a possession and triggers a new one [[6]][References]. Thus, we created a possession identifier that indicates the current unique possession in a game. In our definition, new possessions begin after a team demonstrates that it has established control of the ball. This occurs in the following situations: at the start of a half, when the team intercepts or successfully tackles the ball, and after the opposing team last touches the ball before it goes out, commits a foul followed by a freekick, or after a shot is taken. A new possession can also begin even if the same team has possession of the ball. For example, if the ball goes out for a throw in for the attacking team, this indicates a new possession for the same attacking team. In addition, if the attacking team makes a pass after a sequence of duels, events in which opposing players contest the ball, this constitutes the same possession. According to our definition above, there were an average of 306 possessions per game. 
 
 ## Metrics of Pace 
 
-After creating a possession identifier, we calculated the total ($\Phi_{T}$ or $V_{T}$), east-west ($\Phi_{EW}$ or $V_{EW}$), north-south ($\Phi_{NS}$ or $V_{NS}$), and east-only ($\Phi_{E}$ or $V_{E}$) velocities of each event. The east-west distances ($s_{EW}$ from https://physics.info/symbols/) are determined by the difference of the starting and ending x-coordinates while the north-south distances ($s_{NS}$) are determined by the difference of the starting and ending y-coordinates. The total distances ($s_{T}$) are calculated with the formula $\sqrt{(s_{EW}^2 + s_{NS}^2)}$. Events are assigned an E-only distance ($s_{E}$) only if the pass travels toward the opposing goal. Although the ball rarely travels in a straight line, the dataset does not provide information about its trajectory, so we assume that the ball travels in a straight line from its starting to ending coordinates. (mention DRIBBLING????? - Shawn: Should we mention something here about dribbling as well? It could be put in the above paragraph with regards to possession id insteads)
+After creating a possession identifier, we calculated the total ($V_{T}$), east-west ($V_{EW}$), north-south ($V_{NS}$), and east-only ($V_{E}$) velocities of each event. The east-west distances ($\delta_{EW}$) are determined by the difference of the starting and ending x-coordinates while the north-south distances ($\delta_{NS}$) are determined by the difference of the starting and ending y-coordinates. The total distances ($\delta_{T}$) are calculated with the formula $\sqrt{(\delta_{EW}^2 + \delta_{NS}^2)}$. Events are assigned an E-only distance ($\delta_{E}$) only if the pass travels toward the opposing goal. Although the ball rarely travels in a straight line, the dataset does not provide information about its trajectory, so we assume that the ball travels in a straight line from its starting to ending coordinates. There is also no indication if a player dribbles the ball before making a pass. 
 
-Next, we determined the duration between events. For each event, the dataset only provides a timestamp in seconds since the beginning of the current half of the match. Thus, within each possession, the duration for an event was calculated as the difference of the timestamp of the following event and that of the current event.  With this definition of duration, the last event in the possession sequence is not included in the calculation of pace. Finally, the speeds of each event are calculated by dividing the corresponding distance by its duration. 
+Next, we determined the duration between events. For each event, the dataset only provides a timestamp in seconds since the beginning of the current half of the game. Thus, within each possession, the duration for an event was calculated as the difference of the timestamp of the following event and that of the current event.  With this definition of duration, the last event in the possession sequence is not included in the calculation of pace. Finally, the speeds of each event are calculated by dividing the corresponding distance by its duration. 
 
-We used the distance travelled and duration between successive passes and free kicks (except for free kick shots and penalty kicks) during the same possession to calculate four different measures of pace, which include total speed and the east-west, north-south, and east-only velocities. E-only velocity differs from EW velocity in that only forward progress is measured, and any backward progress is excluded from the analysis. These metrics are the average velocities of the event rather than the instantaneous velocities, since we did not have access to tracking data. 
+We used the distance travelled and duration between successive passes and free kicks (except for free kick shots and penalty kicks) during the same possession to calculate four different measures of pace, which include $V_{T}$, $V_{EW}$, $V_{NS}$, and $V_{E}$. $V_{E}$ differs from $V_{EW}$ in that only forward progress is measured, and any backward progress is excluded from the analysis. These metrics are the average velocities of the event rather than the instantaneous velocities, since we did not have access to tracking data. 
 
 When analyzing pace, we only included passes and free kicks (except for free kick shots and penalty kicks) since these events are reliable indicators of the pace of the game. In addition, we only kept possessions that consist of three or more pass or free kick events, as these types of possessions are more definitive of a team’s pace. (MOVE THIS EARLIER???) For the following results and discussion of pace, events will only refer to these passes and free kicks. Following the exclusion of certain possessions, the remaining possessions contained an average of 5.5 events per possession. 
 
 All of the previously mentioned procedures can be implemented with functions in the [**scoutr**](https://github.com/shawnsanto/scoutr) package. 
 
-## Spatial Grids Analysis 
+## Spatial Polygrid Analysis 
 
-```{r grids-plot, fig.align="center", fig.cap="Plot of the 294 grids on the pitch"}
-p1
-```
-
-
-We divided the pitch into 294 equal, non-overlapping 5x5 meter square grids. This is why we decided to rescale the pitch to 105 by 70 meters instead of 105 by 68 meters. The total, EW, NS, and E-only velocity values for a given event was assigned to all polygons in which the event’s path intersects with the polygons. Each polygon contains $n$ velocity values for the $n$ event paths that intersect it. For each of the 5x5 grids, we then take the median for each of the four different pace metrics. There are grids, particularly ones in the corners or along the attacking team's goal line, that have very few recorded velocity values because only a few events intersect those polygons. These grids often contain passes with extremely high velocities, most of which are due to tagging errors. Thus, the median was taken, instead of the mean, to account for the presence of outliers.
+We divided the pitch into 294 equal, non-overlapping 5x5 meter square polygrids [[7]][References]. This is why we decided to rescale the pitch to 105 by 70 meters instead of 105 by 68 meters. $V_{T}$, $V_{EW}$, $V_{NS}$, and $V_{E}$ for a given event was assigned to all polygrids that the event's path intersects. Each polygrid contains $n$ velocity values for the $n$ event paths that intersect it. For each of the 5x5 polygrids, we then take the median for each of the four different pace metrics. There are polygrids, particularly ones in the corners or along the attacking team's goal line, that have very few recorded velocity values because only a few events intersect those polygrids. These polygrids often contain passes with extremely high velocities, most of which are due to tagging errors. Thus, the median was taken, instead of the mean, to account for the presence of outliers.
 
 ## Zonal Analysis 
 
-```{r zones-plot, fig.align="center", fig.cap="Plot of the 8 zones on the pitch"}
-p2
-```
+We divided the pitch into 8 regions. For each zone, we determined which of the 294 5x5 polygrids intersect the zone. As seen in Figure 3.1, there are some polygrids that fall into multiple zones. We then take the mean of the median $V_{T}$, $V_{EW}$, $V_{NS}$, and $V_{E}$ of those 5x5 polygrids to determine the aggregate speeds for the zone. (**should i say there is not a big difference between taking mean of the medians vs median of the median**)
 
-We divided the pitch into 8 regions. For each zone, we determined which of the 294 5x5 grids intersect the zone. As seen in Figure XXXX (????should these plots be overlapped or separate plots  like here????), there are some polygons that fall into multiple zones, such as grids 1, 23, etc. We then take the mean of the median total, EW, NS, and E-only velocities of those 5x5 grids to determine the aggregate speeds for the zone. (??? should i say there is not a big difference between taking mean of the medians vs median of the median ???)
+This method was conducted in favor of another one that assigns an event’s speeds to all zones that intersect the path of the event. Our approach automatically factors in the event’s distance within the zone and is more resistant to outliers. For example, for a pass that intersects $n$ different 5x5 polygrids in a zone, the zone’s aggregate speed will be affected by that pass’ speed $n$ times instead of just once. This approach is thus more resistant to outliers. 
 
-This method was conducted in favor of another one that assigns an event’s speeds to all zones that intersect the path of the event. Our approach automatically factors in the event’s distance within the zone and is more resistant to outliers. For example, for a pass that intersects $n$ different 5x5 grids in a zone, the zone’s aggregate speed will be affected by that pass’ speed $n$ times instead of just once. This approach is thus more resistant to outliers. 
-
-```{r}
+```{r fig.align = "center", fig.cap="Plot of the 294 polygrids and 8 zones overlaid on the pitch. The grey lines represent the polygrids and black borders represent the boundaries of the 8 zones."}
 zones %>%  
   mutate(rowid = 1:8) %>% 
   ggplot() +
@@ -94,40 +85,42 @@ zones %>%
   theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
         color = NA), aspect.ratio = 70/105, legend.position = "none")  + 
   
-  geom_sf(aes(fill = as.factor(rowid)), color = NA, alpha = 0.8) + 
+  geom_sf(color = "black", alpha = 0.8, size = 0.7) + # border around region, lighter color for polygrids 
   #geom_sf_label(aes(label = rowid)) 
   geom_sf_label(aes(label = rowid),
                 nudge_x = c(-0.6,-2.75,-2,-2.75,2.75,2,2.75,0.6),
-                nudge_y = c(2.5,0,2.5,0,0,2.5,0,2.5)) +
-  geom_sf(data = grids5x5, aes(geometry = geometry), fill=NA, color = "#2E2E2E50")
+                nudge_y = c(2.5,0,2.5,0,0,2.5,0,2.5),size = 5) +
+  geom_sf(data = grids5x5, aes(geometry = geometry), fill=NA, color = "#2E2E2E35")
 ```
-
-
 
 ## Modeling
 
-After creating the pace-of-play metrics, we wanted to determine their effectiveness when used in models that predict the outcome of a match. In the modeling dataset, each row refers to a match (and the columns provide statistics about the home team or the difference between the home and away teams. ??this sounds weird??). We implemented models with and without the pace metrics to determine if the models with the pace metrics perform better / achieve a higher accuracy. 
-
-### Feature Selection 
-
-- we only included features that provided statistics about a team before the match (where to mention this)
-
-We did not include any performance-based features, such as number of shots taken, since those are only available after a game concludes. Thus, we only considered variables that could be determined before the start of a match. 
+After creating the pace-of-play metrics, we wanted to evaluate their effectiveness when used as variables in models that predict the outcome of a game. We implemented models with and without the pace metrics to determine if the models with the pace metrics achieve a higher accuracy. When selecting variables, we did not include any traditional performance-based features, such as number of shots or corners taken. **I can't think of a good reason why we don't include peformance based stats** We only considered pre-game variables, ones with information that can be gathered before a game is played. 
 
 - Pace is something that can be modeled, but this is future work. --> tie this into writeup
 
 ```{r}
 # https://stackoverflow.com/questions/53394214/r-kableextra-trouble-inserting-linebreak-in-html-format-in-a-cell-containing/53394439
-vars <- c("FTR", "HomeWinStreak", "HomeUnbeatenStreak", "HomeTeam", "DerbyGame",  "League", "$\\Delta_{ij}$Points1617")
-var_descriptions <- linebreak(c("Difference in match points from 2016-17 season (home - away)", "Outcome of a game", "Longest home win streak from 2016-17 season", "Longest home unbeaten streak from 2016-17 season", "Name of the home team", "Indicates if match is a derby",  "League that match takes place in"))
+# vars <- c("FTR", "HomeWinStreak", "HomeUnbeatenStreak", "HomeTeam", "DerbyGame",  "League", "$\\Delta_{ij}$Points1617")
+# var_descriptions <- linebreak(c("Difference in game points from 2016-17 season (home - away)", "Outcome of a game", "Longest home win streak from 2016-17 season", "Longest home unbeaten streak from 2016-17 season", "Name of the home team", "Indicates if game is a derby",  "League that game takes place in"))
+# var_values <- c(
+#   "-69 to 69",
+#   "Win, Draw, Loss",
+#   "1 to 17",
+#   "2 to 19",
+#   "Manchester City, Barcelona, etc. ",
+#   "0 (No), 1 (Yes)",
+#   "EPL, Ligue 1, Bundesliga, Serie A, La Liga"
+# )
+
+vars <- c("FTR", "CurrentUnbeatenStreak", "DerbyGame",  "League", "HomeTeam")
+var_descriptions <- linebreak(c("Outcome of a game with respect to home team", "Current home unbeaten streak (win/draw)", "Indicates if game is a derby",  "League that game takes place in", "Name of the home team"))
 var_values <- c(
-  "-69 to 69",
-  "Win, Draw, Loss",
-  "1 to 17",
-  "2 to 19",
-  "Manchester City, Barcelona, etc. ",
+  "1 (Win), 0 (Draw), -1 (Loss)",
+  "0 to 19",
   "0 (No), 1 (Yes)",
-  "EPL, Ligue 1, Bundesliga, Serie A, La Liga"
+  "EPL, Ligue 1, Bundesliga, Serie A, La Liga",
+  "Manchester City, Barcelona, etc."
 )
 
 tibble(
@@ -141,17 +134,15 @@ tibble(
   kableExtra::kable_styling()  %>%
   kableExtra::collapse_rows(columns = c(1,3))  %>%
   kableExtra::pack_rows("Response", 1, 1) %>%
-  kableExtra::pack_rows("Predictors", 2,7)
+  kableExtra::pack_rows("Predictors", 2,5)
   
 ```
 
-For each match, $\Delta_{ij} Points1617$ is the difference in points that a team accumulated in the 2016-17 season between the home and away teams. For the 14 newly promoted teams, we do not have their point totals from the 2016-17 season since they were playing in a different division. To estimate these teams' point totals from the 2016-17 season, we first extracted the point totals for the 3 relegated teams (2 in the Bundesliga) in each league from the 2010-11 to the 2015-16 season. Then, based on the teams' final standing, we averaged the point total across the 6 seasons to determine the average point totals for the 18th, 19th and 20th place teams (17th and 18th in the Bundesliga). We assigned the average point totals for the 14 newly promoted teams based on their final ranking in the 2017-18 season. For example, Newcastle United placed 10th in the 2017-18 EPL (the highest of the three promoted teams), so its estimated point total from the 2016-17 seasoon was assigned the average point total for the 18th place team in the EPL. 
-
-*home_win_streak* and *home_unbeaten_streak* are a team's longest home win and unbeaten streak from the previous season. These two variables provide information about the home team and if there is a home advantage for that team. The maximum value for either of these variables is 19 (17 for teams in the Bundesliga), as this value is the number of home games a team will play during the season. The process used to estimate $\Delta_{ij} Points1617$ is also used to estimate the *home_win_streak* and *home_unbeaten_streak* for the 14 newly promoted teams. *home_team* is the name of the home team.  *derby_game* is an indicator variable, where 1 indicates whether or not a game is a derby game. A match is marked as a derby game if the two teams are located in the same city (Manchester City vs. Manchester United) or if there is a historical rivalry (El Clásico). *league* specifies which of the five leagues the match takes place in. 
+For each of the 1826 games, the response variable, *FTR*, describes the outcome with respect to the home team. A *FTR* of 1 indicates that the home team won while -1 indicates the away team won. *CurrentUnbeatenStreak* is the home team's current unbeaten streak leading up to a game. The streak resets to 0 when a team loses at home. For the first home game of the season, a team's unbeaten streak from the 2016-17 season is used. For example, Manchester City went unbeaten in their last 12 home games in the 2016-17 season, so their *CurrentUnbeatenStreak* for their first home game is 12. *DerbyGame* is an indicator variable, where 1 indicates whether or not a game is a derby game. A game is marked as a derby game if the two teams are located in the same city (Manchester City vs. Manchester United) or if there is a historical rivalry (El Clásico). *League* specifies which of the five leagues the game takes place in and *HomeTeam* is the name of the home team. **does league even need to be in the table if i'm not using it in the models? **
 
 ```{r}
 # https://stackoverflow.com/questions/53394214/r-kableextra-trouble-inserting-linebreak-in-html-format-in-a-cell-containing/53394439
-pace_vars <- c("$\\Delta_{ij}$all_zones", "$\\Delta_{ij}$off_zones", "$\\Delta_{ij}$off_flank_zones")
+pace_vars <- c("$\\Delta_{ij}$AllZones", "$\\Delta_{ij}$OffZones", "$\\Delta_{ij}$FlankZones")
 pace_var_descriptions <- linebreak(c("Sum of the differences in total velocity for all zones (1-8) for home team $i$ and away team $j$",
                                      "Sum of the differences in total velocity for all zones in offensive half (5-8) for home team $i$ and away team $j$",
                                      "Sum of the differences in total velocity for zones 5,7,8 for home team $i$ and away team $j$"))
@@ -176,44 +167,54 @@ tibble(
   kableExtra::column_spec(2, width = "27.5em")
 ```
 
-For each match, we conducted a zonal analysis (hyperlink to previous section or something?) of the total velocities for the home and away teams. However, we took the median of the median velocities of the 5x5 grids to determine the aggregate speeds for each zone instead of the mean of the medians. Bottom-tier teams have a smaller number of recorded events per game and are more susceptible to outliers in both the grid and zonal analyses. Thus, using the median of the median velocities makes these zonal speeds more resistant to outliers. Then we calculated the difference (home - away) in velocity for each of the 8 zones. For home team $i$ and away team $j$, $\Delta_{ij} all\_zones$ is the sum of the differences for all 8 zones, $\Delta_{ij} off\_zones$ is the sum of the differences for the four zones in the offensive half (zones 5-8) and $\Delta_{ij} off\_flank\_zones$ is the sum of the differences for zones 5, 7, 8. 
+For each game, we conducted a zonal analysis (hyperlink to previous section or something?) of the total velocities for the home and away teams. However, we took the median of the median velocities of the 5x5 polygrids to determine the aggregate speeds for each zone instead of the mean of the medians. Bottom-tier teams have a smaller number of recorded events per game and are more susceptible to outliers in both the polygrid and zonal analyses. Thus, using the median of the median velocities makes these zonal speeds more resistant to outliers. Then we calculated the difference (home - away) in velocity for each of the 8 zones. For home team $i$ and away team $j$, $\Delta_{ij} AllZones$ is the sum of the differences for all 8 zones, $\Delta_{ij} OffZones$ is the sum of the differences for the four zones in the offensive half (zones 5-8) and $\Delta_{ij} FlankZones$ is the sum of the differences for zones 5, 7, 8. 
 
-### Methodology 
+### Model Selection 
 
-We built two sets of classification models - the first is a hierarchical logistic regression model that only incorporates the 1379 games that ended in a win or loss and the second is a multinomial logistic regression model that predicts on all 1826 games. For both sets of models, the baseline model contained all five predictors mentioned in Table 3.1. We then added one of the pace variables from Table 3.2 to determine if the addition of a pace metric improves the model's accuracy.
+To evaluate the models, we first split the data into a train and test set. The test data includes 2 home and 2 away games for each of the 98 teams, for a total of 392 games. We perform 4-fold cross validation on the training data and lastly assess model performance by predicting on the testing data. We propose two different types of models - the first is a hierarchical logistic regression model that predicts between wins and non-wins (draws or losses) while second is a multinomial logistic regression model that predicts on all three potential outcomes. These models were preferred over other classification algorithms since we are concerned with both predictive power and interpretability. For both sets of models, the baseline model used predictors mentioned in Table 3.1. We then added one of the pace variables from Table 3.2 to determine if the addition of a pace metric improves the model's accuracy. Only one pace metric can be added to the model since they are all highly correlated. Interaction effects between the baseline predictors were also considered, but they did not improve the predictive power of any model. We used accuracy and AUC (**do i need to define auc/TPR?**) as evaluation metrics for the hierarchical logistic regression and accuracy and True Positive Rate (TPR) for the multinomial logistic regression. The final baseline and pace models are displayed below. **how to select "final" pace model - highest train accuracy or test accuracy?** 
 
-Shawn, Michael - thoughts on the notation? 
+**Shawn, Michael - thoughts on the notation?**
 
 $$ 
 \begin{aligned}
-Y_{ij} \sim Bernoulli(P_{ij}) \\
-log(\frac{P_{ij}}{1-P_{ij}}) =  \alpha_{0} + \alpha_{j} + \alpha_{k} + \alpha_{3} * \Delta_{ij} Points1617 \ + & \ \alpha_{4} * HomeWinStreak_i\  + \\
-\alpha_{5} * HomeUnbeatenStreak_i + \alpha_{6} * I(De&rbyGame_{ij}=Yes ) & (1.1)\\ \\ 
-\alpha_j \sim N(0,\tau_0^2), \ \alpha_k \sim N(0&,\tau_1^2) 
+Y_{ij} \sim Bernoulli(P_{ij}&) \\
+log(\frac{P_{ij}}{1-P_{ij}}) = \alpha_{k} + \beta_{0} + \beta_{1} * Current&UnbeatenStreak_i \ + \\
+\beta_{2} *  I(DerbyGame_{ij}=&Yes)  & (1.1)\\ \\ 
+\alpha_k \sim N(0,\tau_0^2) 
 \end{aligned}
 $$
 
 
 $$ 
 \begin{aligned}
-Y_{ij} \sim Bernoulli(P_{ij}) \\
-log(\frac{P_{ij}}{1-P_{ij}}) =  \alpha_{0} + \alpha_{i} + \alpha_{k} + \alpha_{3} * \Delta_{ij} Points1617 \ + & \ \alpha_{4} * HomeWinStreak_i\  + \\
-\alpha_{5} * HomeUnbeatenStreak_i + \alpha_{6} * I(DerbyGame_{ij}=&Yes) + \alpha_7 * \Delta_{ij}OffZones & (1.2)\\ \\ 
-\alpha_i \sim N(0,\tau_0^2), \ \alpha_k \sim N(0&,\tau_1^2) 
+\\\\
+Y_{ij} \sim Bernoulli(P_{ij}&) \\
+log(\frac{P_{ij}}{1-P_{ij}}) = \alpha_{k} + \beta_{0} + \beta_{1} * Current&UnbeatenStreak_i \ + \\
+\beta_{2} *  I(DerbyGame_{ij}=Yes) + \beta_3& * \Delta_{ij}FlankZones & (1.2)\\ \\ 
+\alpha_k \sim N(0,\tau_0^2) 
 \end{aligned}
 $$
 
-The final logistic hierarchical models are shown in 1.1 and 1.2. $Y_{ij}$ is the outcome (win or loss) of a game in league $k$ (is $k$ necessary to add to model/variables?) when home team $i$ plays away team $j$ and $P_{ij}$ is the probability that home team $i$ defeats away team $j$. $\alpha_i$ represents the random intercept term for home team $i$ and $\alpha_k$ represents the random intercept term for league $k$. The only difference between models 1.1 and 1.2 is the addition of the variable $\Delta_{ij}OffZones$ in 1.2. 
+The final logistic hierarchical models are shown in 1.1 and 1.2. $Y_{ij}$ is the outcome (win or loss) of a game in league $k$ (is $k$ necessary to add to model/variables?) when home team $i$ plays away team $j$ and $P_{ij}$ is the probability that home team $i$ defeats away team $j$. $\alpha_k$ represents the random intercept term for *HomeTeam* $k$. The only difference between models 1.1 and 1.2 is the addition of the variable $\Delta_{ij}OffZones$ in 1.2. 
 
-or $P_{ij\_outcome}$
+$P_{ij\_k}$or $P_{ij\_outcome}$? **Not formating latex until notation looks good**
 
 $$
 \begin{aligned}
-log(\frac{P_{ij\_k}}{1-P_{ij\_win}}) = \beta_{0k} + \beta_{1k} * \Delta_{ij} Points1617 + \beta_{2k}*HomeWinStreak_i + \beta_{3k}*HomeUnbeatenStreak_i + \beta_{4k}*I(DerbyGame_{ij}=&Yes) + \\
-\sum_{T = 2}^{98}\beta_{6kT}*I(HomeTeam_{i}=T) + \sum_{L = 2}^{5}\beta_{7kL}*I(League_{i}=L), \\
+log(\frac{P_{ij\_k}}{1-P_{ij\_win}}) = \beta_{0k} + \beta_{1k} * CurrentUnbeatenStreak_i + \ \\
+\beta_{2k}* I(DerbyGame_{ij}=Yes)  + \sum_{T = 2}^{98}\beta_{3kT}*I(HomeTeam_{i}=T) &&(2.1)\\ 
 k \in  (draw, loss)
 \end{aligned}
 $$
 
-In the multinomial regression, we set the baseline of the response variable $FTR$ as a win. $P_{ijk}$ is the probability that the match ends in a draw when $k = draw$ and a loss when $k = loss$. For the term $HomeTeam$, $T=1$ is the baseline, which is Manchester City. $L=1$ represents the baseline for the term *League*, which is the EPL. The only difference between models 2.1 and 2.2 is the addition of the variable $\Delta_{ij}OffZones$ in 1.2. 
+$$
+\begin{aligned}
+\\\\
+log(\frac{P_{ij\_k}}{1-P_{ij\_win}}) = \beta_{0k} + \beta_{1k} * CurrentUnbeatenStreak_i + \ \\
+\beta_{2k}* I(DerbyGame_{ij}=Yes)  + \sum_{T = 2}^{98}\beta_{3kT}*I(HomeTeam_{i}=T) + \beta_{4k} * \Delta_{ij}FlankZones &&(2.2)\\ 
+k \in  (draw, loss)
+\end{aligned}
+$$
+
+In the multinomial regression, we set the baseline of the response variable $FTR$ as a win. $P_{ijk}$ is the probability that the game ends in a draw when $k = draw$ and a loss when $k = loss$. For the term $HomeTeam$, $T=1$ is the baseline, which is Manchester City.  The only difference between models 2.1 and 2.2 is the addition of the variable $\Delta_{ij}OffZones$ in 1.2. 
 

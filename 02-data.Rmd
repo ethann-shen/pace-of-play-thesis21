@@ -6,6 +6,11 @@ library(sf)
 library(kableExtra)
 library(scoutr)
 library(gridExtra)
+library(lme4)
+library(nnet)
+library(broom)
+library(cvms)
+library(sjPlot)
 
 knitr::opts_chunk$set(echo = FALSE, 
                       message=FALSE, 
@@ -104,16 +109,16 @@ example %>%
   kableExtra::kable(caption = "Representation of a play consisting of 5 actions in a match between Arsenal and Leicester City",
                     col.names = c("Match ID", "Team Name", "Event Name", "Timestamp", "$(x,y)_{start}$", "$(x,y)_{end}$")) 
 
-example %>%
-  ggplot()  +
-  fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
-  fc_annotate_arrow(x = 52.5, y = -10, palette = "bw") +
-  fc_theme_bw() +
-  geom_segment(aes(x = start_x, y = start_y, xend = end_x,  yend = end_y),
-               arrow = arrow(length = unit(0.03, "npc")))
+# example %>%
+#   ggplot()  +
+#   fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
+#   fc_annotate_arrow(x = 52.5, y = -10, palette = "bw") +
+#   fc_theme_bw() +
+#   geom_segment(aes(x = start_x, y = start_y, xend = end_x,  yend = end_y),
+#                arrow = arrow(length = unit(0.03, "npc")))
 ```
 
-Table XXXX shows an example of four consecutive events in our data. This play consists of two consecutive passes, a duel on the ball, and ends with a shot taken by Arsenal. 
+Table 2.1 shows an example of four consecutive events in our data. This play consists of two consecutive passes, a duel on the ball, and ends with a shot taken by Arsenal. 
 
 The *teams* data set describes the clubs that play in the five leagues during the 2017-2018 season. This dataset contains the name of the club (e.g. Liverpool) and a team ID, which can be matched with the team-identifying variable in the *events* dataset. 
 
@@ -125,33 +130,72 @@ The *events* and *teams* datasets, which are originally provided in JSON format,
 
 Before conducting our analysis, we made substantial changes to the merged dataset’s coordinates and coordinate system. Although soccer pitch measurements are not standardized, the preferred size for most professional clubs is 105 by 68 meters; we opted to make our pitch dimensions 105 by 70 meters for ease of calculations. Thus, the rescaled x-coordinates are now always in the range [0, 105] and the y-coordinates are now always in the range [0, 70]. From this point onward, references to the coordinates will be in terms of the rescaled pitch size. 
 
-```{r fig.align="center"}
-#, fig.width=9, fig.height=6
-ggplot() + 
+```{r fig.align="center", fig.cap="Standard pitch measurements. All units are in meters."}
+# #, fig.width=9, fig.height=6
+# ggplot() + 
+#   fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
+#   theme_void() + theme(plot.background = element_rect(fill = "#629A52", # replacement for fc_theme_classic
+#         color = NA), aspect.ratio = 70/105) + 
+#   geom_text(aes(x = 96.85, y = 53, label = "Penalty box") , vjust = 0.5) +  
+#   geom_text(aes(x = 8.25, y = 58, label = "Goal area") , vjust = 0.5) + 
+#   geom_segment(aes(x = 8.25, y = 57, xend = 2.75, yend = 38), # arrow pointing to 6-yard box 
+#                arrow = arrow(length = unit(0.15, "cm"), 
+#                              type = "closed", angle = 30)) + 
+#   geom_segment(aes(x = 87.5, xend = 87.5, y = 14.85, yend = 55.15), # penalty box vertical
+#                arrow = arrow(length = unit(0.15, "cm"), 
+#                              ends = "both", type = "closed", angle = 30)) + 
+#   geom_text(aes(x = 83.5, y = 41, label = "40.3 m")) + 
+#   geom_segment(aes(x = 88.5, xend = 104.8, y = 13.85, yend = 13.85), # penalty box horizontal arrow 
+#                arrow = arrow(length = unit(0.15, "cm"), 
+#                              ends = "both", type = "closed", angle = 30)) + 
+#   geom_text(aes(x = 96.75, y = 11.85, label = "16.5 m")) +
+#   geom_segment(aes(x = 6.5, xend = 6.5, y = 25.85, yend = 44.15), # 6-yard box vertical
+#                arrow = arrow(length = unit(0.15, "cm"), 
+#                              ends = "both", type = "closed", angle = 30)) + 
+#   geom_text(aes(x = 10.5, y = 41, label = "18.3 m")) + 
+#   geom_segment(aes(x = 0.2, xend = 5.5, y = 24.85, yend = 24.85), # 6-yard box horizontal arrow 
+#                arrow = arrow(length = unit(0.15, "cm"), 
+#                              ends = "both", type = "closed", angle = 30)) + 
+#   geom_text(aes(x = 3.25, y = 22.85, label = "5.5 m")) + 
+#   geom_segment(aes(x = 106, xend = 106, y = 14.85, yend = 25.85), # penalty box vertical bottom line
+#                arrow = arrow(length = unit(0.15, "cm"),
+#                              ends = "both", type = "closed", angle = 30)) +
+#   geom_segment(aes(x = 106, xend = 106, y = 25.85, yend = 31.35), # penalty box vertical middle line
+#                arrow = arrow(length = unit(0.15, "cm"),
+#                              ends = "both", type = "closed", angle = 30)) +
+#   geom_segment(aes(x = 106, xend = 106, y = 31.35, yend = 38.15), # penalty box vertical top line
+#                arrow = arrow(length = unit(0.15, "cm"), 
+#                              ends = "both", type = "closed", angle = 30)) + 
+#   geom_text(aes(x = 109, y = 20.35, label = "11 m")) + 
+#   geom_text(aes(x = 109, y = 28.6, label = "5.5 m")) + 
+#   geom_text(aes(x = 109, y = 34.75, label = "7.3 m")) 
+
+
+ggplot() +
   fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
   theme_void() + theme(plot.background = element_rect(fill = "#629A52", # replacement for fc_theme_classic
-        color = NA), aspect.ratio = 70/105) + 
-  geom_text(aes(x = 96.85, y = 53, label = "Penalty box") , vjust = 0.5) +  
-  geom_text(aes(x = 8.25, y = 58, label = "Goal area") , vjust = 0.5) + 
-  geom_segment(aes(x = 8.25, y = 57, xend = 2.75, yend = 38), # arrow pointing to 6-yard box 
-               arrow = arrow(length = unit(0.15, "cm"), 
-                             type = "closed", angle = 30)) + 
+        color = NA), aspect.ratio = 70/105) +
+  geom_text(aes(x = 96.85, y = 53, label = "Penalty box") , vjust = 0.5) +
+  geom_text(aes(x = 8.25, y = 58, label = "Goal area") , vjust = 0.5) +
+  geom_segment(aes(x = 8.25, y = 57, xend = 2.75, yend = 38), # arrow pointing to 6-yard box
+               arrow = arrow(length = unit(0.15, "cm"),
+                             type = "closed", angle = 30)) +
   geom_segment(aes(x = 87.5, xend = 87.5, y = 14.85, yend = 55.15), # penalty box vertical
-               arrow = arrow(length = unit(0.15, "cm"), 
-                             ends = "both", type = "closed", angle = 30)) + 
-  geom_text(aes(x = 83.5, y = 41, label = "40.3 m")) + 
-  geom_segment(aes(x = 88.5, xend = 104.8, y = 13.85, yend = 13.85), # penalty box horizontal arrow 
-               arrow = arrow(length = unit(0.15, "cm"), 
-                             ends = "both", type = "closed", angle = 30)) + 
+               arrow = arrow(length = unit(0.15, "cm"),
+                             ends = "both", type = "closed", angle = 30)) +
+  geom_text(aes(x = 82.5, y = 41, label = "40.3 m")) +
+  geom_segment(aes(x = 88.5, xend = 104.8, y = 13.85, yend = 13.85), # penalty box horizontal arrow
+               arrow = arrow(length = unit(0.15, "cm"),
+                             ends = "both", type = "closed", angle = 30)) +
   geom_text(aes(x = 96.75, y = 11.85, label = "16.5 m")) +
   geom_segment(aes(x = 6.5, xend = 6.5, y = 25.85, yend = 44.15), # 6-yard box vertical
-               arrow = arrow(length = unit(0.15, "cm"), 
-                             ends = "both", type = "closed", angle = 30)) + 
-  geom_text(aes(x = 10.5, y = 41, label = "18.3 m")) + 
-  geom_segment(aes(x = 0.2, xend = 5.5, y = 24.85, yend = 24.85), # 6-yard box horizontal arrow 
-               arrow = arrow(length = unit(0.15, "cm"), 
-                             ends = "both", type = "closed", angle = 30)) + 
-  geom_text(aes(x = 3.25, y = 22.85, label = "5.5 m")) + 
+               arrow = arrow(length = unit(0.15, "cm"),
+                             ends = "both", type = "closed", angle = 30)) +
+  geom_text(aes(x = 11, y = 41, label = "18.3 m")) +
+  geom_segment(aes(x = 0.2, xend = 5.5, y = 24.85, yend = 24.85), # 6-yard box horizontal arrow
+               arrow = arrow(length = unit(0.15, "cm"),
+                             ends = "both", type = "closed", angle = 30)) +
+  geom_text(aes(x = 4.5, y = 22.85, label = "5.5 m")) +
   geom_segment(aes(x = 106, xend = 106, y = 14.85, yend = 25.85), # penalty box vertical bottom line
                arrow = arrow(length = unit(0.15, "cm"),
                              ends = "both", type = "closed", angle = 30)) +
@@ -159,11 +203,11 @@ ggplot() +
                arrow = arrow(length = unit(0.15, "cm"),
                              ends = "both", type = "closed", angle = 30)) +
   geom_segment(aes(x = 106, xend = 106, y = 31.35, yend = 38.15), # penalty box vertical top line
-               arrow = arrow(length = unit(0.15, "cm"), 
-                             ends = "both", type = "closed", angle = 30)) + 
-  geom_text(aes(x = 109, y = 20.35, label = "11 m")) + 
-  geom_text(aes(x = 109, y = 28.6, label = "5.5 m")) + 
-  geom_text(aes(x = 109, y = 34.75, label = "7.3 m")) 
+               arrow = arrow(length = unit(0.15, "cm"),
+                             ends = "both", type = "closed", angle = 30)) +
+  geom_text(aes(x = 110, y = 20.35, label = "11 m")) +
+  geom_text(aes(x = 110, y = 28.6, label = "5.5 m")) +
+  geom_text(aes(x = 110, y = 34.75, label = "7.3 m"))
 ```
 
 There were also inconsistencies with some of the coordinates, particularly with goal kicks and shots. The starting coordinates for goal kicks are at either (0,70) for the home team or (105,0) for the away team. Goal kicks should start in the attacking team’s goal area, a 5.5 by 18.3 meter box centered at the goal-line. Thus, a goal kick’s starting x-coordinate was changed to 0, and its starting y-coordinate was sampled uniformly from the interval (25.85, 44.15), the y-coordinates of the goal area. 
@@ -171,6 +215,6 @@ There were also inconsistencies with some of the coordinates, particularly with 
 The ending coordinates for shots are either (0,70) for the home team or (105,0) for the away team. Since the ending coordinates of the shot should match the starting coordinates of the following event, we assigned all starting y-coordinates of the following event that are not 0 or 70 as the ending y-coordinate of the shot, and changed the ending x-coordinate of the shot to the starting x-coordinate of the following event. This readjustment accounts for shots that are off-target or blocked by another player, but the ball remains in play. 
 The ending x-coordinates for remaining all shots were changed to 105, since these shots are either saved y the goalkeeper or deflected out of bounds. For these shots, the starting y-coordinate of the following event is either 0 or 70. If the shot is saved by the goalkeeper, we assume that the shot was on-target. Thus, the ending y-coordinates for saved shots were sampled uniformly from the interval (31.35, 38.65), the y-coordinates of the goal. If the shot went out of bounds, we assume that the shot was off-target. Thus, the ending y-coordinate was sampled uniformly from outside the y-coordinates of the goal but within the penalty box, or uniformly from the interval (14.85, 31.35) $\cup$ (38.65, 55.15).
 
-Processing the JSON files and transforming the coordinates can be implemented with functions in the scoutr package. 
+Processing the JSON files and transforming the coordinates can be implemented with functions in the [**scoutr**](https://github.com/shawnsanto/scoutr) package. 
 
 

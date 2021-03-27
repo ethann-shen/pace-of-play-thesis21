@@ -4,7 +4,7 @@ Pace-of-play is an important characteristic in possession-based sports that can 
 
 A main aim of this work is to explore possessions via pass velocities. This new perspective of pace-of-play analyzes possessions that consist of three or more pass or free kick events, as these types of events are more definitive of a team’s pace. The use of spatio-temporal event data allows for more granular measurements of pace-of-play, such as measures of speed between consecutive events and between different regions on the pitch, which is partitioned into eight zones.
 
-In addition, we seek to build a model using these metrics (add more when we get to modeling).
+In addition, we aim to determine whether the pace metrics are useful in predicting the outcome of a match and whether those metrics are significant. 
 
 Our research goals are three-fold:
 
@@ -12,6 +12,6 @@ Our research goals are three-fold:
 
 2. Quantify variations in pace at the team and league level and provide metrics to assess how well players and teams attack/defend pace. 
 
-3. Evaluate effectiveness of pace metrics by incorporating them into models that predict the outcome of a match. 
+3. Evaluate effectiveness of pace metrics by incorporating them into models that predict the outcome of a match.  
 
 The remainder of this paper is organized as follows. Section 2 describes the datasets. Section 3 introduces the pace-of-play metrics and the modeling methods. Section 4 presents the results of the methodology. Sections 5 and 6 provide a discussion of our findings and a conclusion, respectively.

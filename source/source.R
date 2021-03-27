@@ -214,3 +214,188 @@ create_facet_heatmap <- function(aggregate_data, legend_scale = "sequential",
   p
 }
 
+round_perc_glm = function(x) {
+  if (is.double(x)) {
+    round(x * 100, digits = 2)
+  }
+}
+
+glm_cv <- function(model_formula_text, train_data, test_data, CV = TRUE) {
+  set.seed(03202021) #03202021 is  good
+  fold_df <- groupdata2::fold(train_data, k = 4, cat_col = c("home", "away")) 
+  
+  model_formula <- formula(model_formula_text)
+  acc_list = c()
+  AUC_list = c()
+  
+  if (isTRUE(CV)) {
+    for (i in 1:4) {
+      cv_train <- fold_df %>% filter(.folds != i)
+      cv_test <- fold_df %>% filter(.folds == i)
+      
+      glmer.fit <- glmer(model_formula, 
+                         data = cv_train, 
+                         family = binomial,
+                         glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
+      )
+      pred <- ifelse(predict(glmer.fit, newdata = cv_test, type = "response") > 0.5, 1,0)
+      acc_list[i] <- mean(pred == cv_test$FTR)
+      AUC_list[i] <- cvAUC::AUC(pred %>% as.double(), cv_test$FTR %>% as.double())
+    }
+    
+    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc_glm()
+    acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc_glm()
+    AUC_mean = AUC_list %>% mean(na.rm=T) %>% round_perc_glm()
+    AUC_sd = AUC_list %>% sd(na.rm=T) %>% round_perc_glm()
+    
+  } else {
+    glmer.fit <- glmer(model_formula, 
+                       data = train_data, 
+                       family = binomial,
+                       glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
+    )
+    pred <- ifelse(predict(glmer.fit, newdata = train_data, type = "response") > 0.5, 1,0)
+    acc_list <- mean(pred == train_data$FTR)
+    AUC_list <- cvAUC::AUC(pred %>% as.double(), train_data$FTR %>% as.double())
+    
+    cm_train <- caret::confusionMatrix(pred %>% as.factor(), train_data$FTR)
+    
+    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc_glm()
+    acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc_glm()
+    AUC_mean = AUC_list %>% mean(na.rm=T) %>% round_perc_glm()
+    AUC_sd = AUC_list %>% sd(na.rm=T) %>% round_perc_glm()
+  }
+  
+  glmer.fit.all.train <- glmer(model_formula, 
+                               data = train_data, 
+                               family = binomial,
+                               glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
+  )
+  
+  pred_test <- ifelse(predict(glmer.fit.all.train, newdata = test_data, type = "response") > 0.5, 1,0)
+  acc_test <- mean(pred_test == test_data$FTR) %>% round_perc_glm()
+  cm_test <- caret::confusionMatrix(pred_test %>% as.factor(), test_data$FTR)
+  AUC_test <- cvAUC::AUC(pred_test %>% as.double(), test_data$FTR %>% as.double()) %>% round_perc_glm()
+  
+  if (isTRUE(CV)) {
+    metrics_df <- tibble(
+      acc_mean = paste0(acc_mean, "%"),
+      #acc_sd = paste0(acc_sd, "%"),
+      AUC_mean = AUC_mean,
+      #AUC_sd = AUC_sd,
+      #ACC_train = paste0(acc_mean, "% ± ", acc_sd, "%"),
+      #AUC_train = paste(AUC_mean, "±", AUC_sd),
+      ACC_test = paste0(acc_test, "%"),
+      AUC_test = AUC_test
+    )
+  } else {
+    metrics_df <- tibble(
+      ACC_train = paste0(acc_mean, "%"),
+      AUC_train = paste(AUC_mean),
+      ACC_test = paste0(acc_test, "%"),
+      AUC_test = AUC_test
+    )
+  }
+  list(metrics_df, cm_test)
+}
+
+multinom_cv <- function(model_formula_text, train_data, test_data, CV=TRUE) {
+  
+  set.seed(03202021)
+  
+  fold_df <- groupdata2::fold(train_data, k = 4, cat_col = c("home", "away")) 
+  
+  
+  model_formula <- formula(model_formula_text)
+  acc_list = c()
+  TPR_loss_list = c()
+  TPR_draw_list = c()
+  TPR_win_list = c()
+  
+  if (isTRUE(CV)) {
+    for (i in 1:4) {
+      cv_train <- fold_df %>% filter(.folds != i)
+      cv_test <- fold_df %>% filter(.folds == i)
+      
+      multinom.fit.zones <- multinom(model_formula, 
+                                     data = cv_train,trace = FALSE)
+      
+      pred <- predict(multinom.fit.zones, newdata = cv_test, type = "class")
+      acc_list[i] <- mean(pred == cv_test$FTR)
+      cm <- caret::confusionMatrix(pred, cv_test$FTR)
+      TPR_loss_list[i]  <- cm$byClass["Class: -1", "Sensitivity"]
+      TPR_draw_list[i]  <- cm$byClass["Class: 0", "Sensitivity"]
+      TPR_win_list[i]  <- cm$byClass["Class: 1", "Sensitivity"]
+    }
+    
+    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc_glm()
+    acc_sd = acc_list %>% sd(na.rm=T) %>% round_perc_glm()
+    TPR_loss_mean = TPR_loss_list %>% mean(na.rm=T) %>% round_perc_glm()
+    TPR_loss_sd = TPR_loss_list %>% sd(na.rm=T) %>% round_perc_glm()
+    TPR_draw_mean = TPR_draw_list %>% mean(na.rm=T) %>% round_perc_glm()
+    TPR_draw_sd = TPR_draw_list %>% sd(na.rm=T) %>% round_perc_glm()
+    TPR_win_mean = TPR_win_list %>% mean(na.rm=T) %>% round_perc_glm()
+    TPR_win_sd = TPR_win_list %>% sd(na.rm=T) %>% round_perc_glm()
+    
+  } else {
+    multinom.fit.zones <- multinom(model_formula, 
+                                   data = train_data,
+                                   trace = FALSE)
+    
+    pred <- predict(multinom.fit.zones, newdata = train_data, type = "class")
+    acc_list <- mean(pred == train_data$FTR)
+    cm <- caret::confusionMatrix(pred, train_data$FTR)
+    TPR_loss_list  <- cm$byClass["Class: -1", "Sensitivity"]
+    TPR_draw_list  <- cm$byClass["Class: 0", "Sensitivity"]
+    TPR_win_list  <- cm$byClass["Class: 1", "Sensitivity"]
+    
+    acc_mean = acc_list %>% mean(na.rm=T) %>% round_perc_glm()
+    TPR_loss_mean = TPR_loss_list %>% mean(na.rm=T) %>% round_perc_glm()
+    TPR_draw_mean = TPR_draw_list %>% mean(na.rm=T) %>% round_perc_glm()
+    TPR_win_mean = TPR_win_list %>% mean(na.rm=T) %>% round_perc_glm()
+  }
+  
+  multinom.fit.zones.all.train <- multinom(model_formula, 
+                                           data = train_data,
+                                           trace = FALSE)
+  
+  pred_test <- predict(multinom.fit.zones.all.train, newdata = test_data, type = "class")
+  acc_test <- mean(pred_test == test_data$FTR) %>% round_perc_glm()
+  cm_test <- caret::confusionMatrix(pred_test, test_data$FTR)
+  
+  if (isTRUE(CV)) {
+    metrics_df <- tibble(
+      acc_mean=paste0(acc_mean, "%"),
+      TPR_win_mean=paste0(TPR_win_mean, "%"),
+      #acc_sd=acc_sd,
+     
+      #TPR_loss_sd=TPR_loss_sd,
+      TPR_draw_mean=paste0(TPR_draw_mean, "%"),
+      #TPR_draw_sd=TPR_draw_sd,
+      TPR_loss_mean=paste0(TPR_loss_mean, "%"),
+      # TPR_win_sd=TPR_win_sd,
+      # ACC_train = paste0(acc_mean, "% ± ", acc_sd, "%"),
+      # TPR_loss_train = paste0(TPR_loss_mean, "% ± ", TPR_loss_sd, "%"),
+      # TPR_draw_train = paste0(TPR_draw_mean, "% ± ", TPR_draw_sd, "%"),
+      # TPR_win_train = paste0(TPR_win_mean, "% ± ", TPR_win_sd, "%"),
+      ACC_test = paste0(acc_test, "%"),
+      
+     
+      TPR_win_test = cm_test$byClass["Class: 1", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%"),
+      TPR_draw_test = cm_test$byClass["Class: 0", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%"),
+      TPR_loss_test = cm_test$byClass["Class: -1", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%")
+    )
+  } else {
+    metrics_df <- tibble(
+      ACC_train = paste0(acc_mean, "%"),
+      TPR_loss_train = paste0(TPR_loss_mean, "%"),
+      TPR_draw_train = paste0(TPR_draw_mean, "%"),
+      TPR_win_train = paste0(TPR_win_mean, "%"),
+      ACC_test = paste0(acc_test, "%"),
+      TPR_loss_test = cm_test$byClass["Class: -1", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%"),
+      TPR_draw_test = cm_test$byClass["Class: 0", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%"),
+      TPR_win_test = cm_test$byClass["Class: 1", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%")
+    )
+  }
+  list(metrics_df, cm_test)
+}
