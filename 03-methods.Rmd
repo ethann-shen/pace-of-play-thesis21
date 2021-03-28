@@ -188,9 +188,9 @@ $$
 $$ 
 \begin{aligned}
 \\\\
-Y_{ij} \sim Bernoulli(P_{ij}&) \\
+Y_{ij} \sim Bernoulli(P_{ij}&) \\\\
 log(\frac{P_{ij}}{1-P_{ij}}) = \alpha_{k} + \beta_{0} + \beta_{1} * Current&UnbeatenStreak_i \ + \\
-\beta_{2} *  I(DerbyGame_{ij}=Yes) + \beta_3& * \Delta_{ij}FlankZones & (1.2)\\ \\ 
+\beta_{2} *  I(DerbyGame_{ij}=Yes) + \beta_3& * \Delta_{ij}FlankZones & (1.2)\\ 
 \alpha_k \sim N(0,\tau_0^2) 
 \end{aligned}
 $$
