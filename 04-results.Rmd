@@ -61,12 +61,17 @@ league_average_speeds %>%
   select(zone, direction, mean_england_zones) %>% 
   tidyr::gather(league, value, mean_england_zones) %>% 
   mutate(league = str_remove_all(league, "mean_|_zones") %>% str_to_title()) %>% 
-  mutate(direction = ifelse(direction == "total",  "Total", direction) %>% 
-           factor(levels = c("Total", "EW", "NS", "E"))) %>% 
+  mutate(direction = case_when(
+    direction == "total" ~ "Total", 
+    direction == "EW" ~ "E-W", 
+    direction == "NS" ~ "N-S",
+    direction == "E" ~ "E-only"
+  ) %>% paste0(., " Velocity") %>%
+    factor(levels = c("Total Velocity", "E-W Velocity", "N-S Velocity", "E-only Velocity"))) %>% 
   ggplot() + 
   geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
   facet_grid(.~direction, scales = "free_y") +
-  labs(fill = "Zone", y = "Speed (m/s)") + 
+  labs(fill = "Zone", y = "Velocity (m/s)") + 
   scale_fill_manual(values=col.pal) + 
   theme_bw() +   
   guides(fill = guide_legend(nrow = 1)) + 
@@ -74,7 +79,8 @@ league_average_speeds %>%
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         panel.grid.major = element_blank(),
-        legend.position = "bottom")
+        legend.position = "bottom",
+        strip.text.x = element_text(size = 10))
 
 
 ```
@@ -96,8 +102,13 @@ league_average_speeds %>%
   select(-(mean_england_zones:mean_spain_zones)) %>% 
   tidyr::gather(league, value, `Ligue 1`:`La Liga`) %>% 
   mutate(league = factor(league,  levels = c("Ligue 1", "Bundesliga", "Serie A", "La Liga")),
-         direction = ifelse(direction == "total",  "Total", direction) %>% 
-           factor(levels = c("Total", "EW", "NS", "E")),
+         direction = case_when(
+           direction == "total" ~ "Total", 
+           direction == "EW" ~ "E-W", 
+           direction == "NS" ~ "N-S",
+           direction == "E" ~ "E-only"
+         ) %>% paste0(., " Velocity") %>%
+           factor(levels = c("Total Velocity", "E-W Velocity", "N-S Velocity", "E-only Velocity")),
          value = value * 100) %>% 
   ggplot() + 
   geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
@@ -105,8 +116,13 @@ league_average_speeds %>%
   theme_bw()  + 
   geom_hline(yintercept = 0, colour = "black") +
   theme(panel.grid.major = element_blank(), 
-        legend.position = "none") + 
-  labs(x = "Zone", fill = "Zone", y = expression(paste(Delta, " Speed (%)"))) + 
+        legend.position = "none",
+        axis.title.x =element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        strip.text.x = element_text(size = 10),
+        strip.text.y = element_text(size = 8.5)) + 
+  labs(x = "Zone", fill = "Zone", y = expression(paste(Delta, " Velocity (%)"))) + 
   scale_fill_manual(values=col.pal)
 
 ```
@@ -421,14 +437,14 @@ We expect the pace model with $\Delta_{ij}AllZones$ to have the lowest performan
 
 ```{r}
 glmer.fit.baseline <- glmer(FTR ~  derby_game + current_unbeaten_streak + (1|home), 
-                   data = bind_rows(train_data_glm,  test_data_glm),
-                   family = binomial,
-                   glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
+                            data = bind_rows(train_data_glm,  test_data_glm),
+                            family = binomial,
+                            glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
 )
 glmer.fit.pace <- glmer(FTR ~  derby_game + current_unbeaten_streak + diff_all_attacking_flank_zone_speeds + (1|home), 
-                   data = bind_rows(train_data_glm,  test_data_glm),
-                   family = binomial,
-                   glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
+                        data = bind_rows(train_data_glm,  test_data_glm),
+                        family = binomial,
+                        glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
 )
 sjPlot::tab_model(glmer.fit.baseline,glmer.fit.pace, 
                   title = "Coefficients obtained with models 1.1 and 1.2 (this can go in Appendix if not interpreting variables)",
