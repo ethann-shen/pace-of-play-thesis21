@@ -135,6 +135,8 @@ La Liga displays the smallest difference in pace, with slightly slower speeds in
 
 In recent years, more EPL teams have been adopting this tactic. Manchester City, with goalkeeper Ederson, is one of the best teams at playing from out from the back. When Pep Guardiola took over in 2016, he seeked to implement a system that plays out from the back, which requires a goalkeeper who is comfortable with the ball on their feet and is capable of building plays from the back [1,2,3]. Replacing long-term goalkeeper Joe Hart with Ederson, someone who fulfills Guardiola’s needs, has contributed to their recent success. Although this style of play has a myriad of benefits, not all teams are capable of executing this tactic. Playing out from the back requires precise passes, as one wayward pass could fall into the feet of an opposing player. Some goalkeepers, such as Tottenham’s Hugo Lloris, arguably one of the world’s best goalkeepers in terms of anticipation and one-on-one situations, lack the ability to pick out the right passes and prevent their teams from adopting this tactic [1, 5]. The mixed success of playing from the back in the EPL may have contributed to the slight difference in pace in the defensive half in comparison to La Liga. 
 
+**is this too much? **
+
 sources: 
 https://www.espn.com/soccer/english-premier-league/story/3945761/why-playing-out-from-the-back-has-brought-mixed-results-for-premier-league-clubs
 https://www.mirror.co.uk/sport/football/news/pep-guardiola-explains-axing-joe-13445300
@@ -232,6 +234,8 @@ create_facet_heatmap(epl_10_defense %>%
 ```
 
 While defending, these 8 teams also display variability between different polygrids and regions on the pitch. The top 4 teams generally gave up more pace in the offensive zones, with the exception of Manchester United. One reason for this discrepancy could be due to Jose Mourinho’s leadership. Under Mourinho, Manchester United line up in a 4-3-3 formation that shifts to a 4-1-4-1 defensively. He is known for playing cautiously in big games; rather than imposing his style, he often looks to counter the opponents. For example, he has played 4-5-1 and 6-3-1 formations into draws against Liverpool, two defensive line ups that heavily negate Liverpool’s dynamic front three. In addition, Manchester United’s goal-keeper, David de Gea, was the best goalkeeper in the league with 18 clean sheets. 
+
+**does this description make any sense??**
 
 sources: 
 https://www.youtube.com/watch?v=1JBDCilBnas
