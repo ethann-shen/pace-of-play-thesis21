@@ -87,8 +87,6 @@ league_average_speeds %>%
 
 We noticed that $V_{T}$ is the highest in zone 8 and approximately 28-37% slower in the other seven regions. This is primarily due to the disparity among the $V_{NS}$, particularly in zone 8, as $V_{EW}$ is roughly equal in all zones. Zone 8 contains the highest $V_{NS}$ because the velocities of corner kicks are all recorded in this zone. In addition, we also expect zones 2, 4, 5 and 7 to have the highest $V_{EW}$ and lowest $V_{NS}$ - in these zones, players can pass forwards and backwards, but only up or down, depending on their position on the pitch. 
 
-[[7]][References] notes that a decline in $V_{E}$ in the offensive half of the pitch should be expected since there are diminishing returns for advancing the ball forward / A prior study suggests that a decline in $V_{E}$ in the offensive half of the pitch should be expected since there are diminishing returns for advancing the ball forward [[7]][References]. However, our analysis displays a contrasting result, as the $V_{E}$ in the offensive half of the pitch are similar to those in the defensive half and the highest in zones 7 and 8. Even though advancing the ball forward along the sides of the pitch will result in worse shooting angles, it opens that player to cross the ball to the penalty box or cut back to an onrushing player, both of which could lead to goal-scoring opportunities. 
-
 ## Pace of Play Across Leagues 
 
 Next, we analyzed how pace varies between the EPL and the four other first-division European leagues  (Ligue 1, Bundesliga, Serie A and La Liga). The figure above/below shows the percent difference (league - EPL / EPL) between the average velocities from the EPL and those of the four other European leagues. 

@@ -3,3 +3,19 @@
 limitations of modeleling 
 future analysis (network analysis) 
 develop better pace metrics if we had player tracking data 
+
+
+Limitations of Data 
+- definitely presence of inaccuractely tagged data 
+- don't know trajectory of ball 
+- do not know where other players are on the field (could develop player-pace metrics if we had player tracking data)
+- lack of seasonal data 
+
+
+Limitations of Modeling 
+- most variables we considered are highly correlated with one anotoher (like home win streak and unbeaten streak, correlated w/ point totals from previous season)
+- other variablbes are also not "game by game" (like difference in valuation, average age of players - this data is hard to find) 
+
+Our analysis shows that pace varies in different regions on the pitch, between legaues and between teams. Pace is often slower for top tier teams and generally faster for bottom tier teams, though there is much more variability in pace among the bottom tier teams. This finding is most noticeable in a team's goal kicks. Top tier teams may feel more confident playing out from the back and thus less likely to take longer goal kicks. On the other hand, bottom tier teams may struggle to maintain possession for a long time, so their goalkeepers may feel pressured to take longer goal kicks, with the hopes that one could lead to a goal-scoring chance. We also see that teams vary in their ability to attack and defend pace in different zones on the pitch. 
+
+In addition, our findings counter some of the findings obtained in prior studies. 
