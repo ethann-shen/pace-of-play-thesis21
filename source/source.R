@@ -77,7 +77,7 @@ draw_pitch <- function(plot, pitch_length = 105, pitch_width = 70, color = "#252
 }
 create_heatmap <- function(boxes, metric, legend_scale = "sequential", box_outline = FALSE,
                            pitch_length = 105, pitch_width = 70,
-                           min_x_coord = 0, max_x_coord = 105, min_y_coord = 0, max_y_coord = 70)  {
+                           min_x_coord = 0, max_x_coord = 105, min_y_coord = 0, max_y_coord = 70, background=TRUE)  {
   
   if (any(c(min_x_coord, max_x_coord, min_y_coord, max_y_coord) %% 5 != 0)) stop("Coordinates must be multiples of 5. Plese provide a different coordinate value.")  
   if (any(c(min_x_coord, max_x_coord, min_y_coord, max_y_coord) < 0)) stop("Coordinates must be positive.")
@@ -96,12 +96,12 @@ create_heatmap <- function(boxes, metric, legend_scale = "sequential", box_outli
   end_y <- (21 * max_y_coord / 5) 
   y_dim_boxes <- seq(start_y, end_y)
   
-  p <- (boxes %>% 
-          mutate(`Speed (m/s)` = metric) %>% 
-          slice(intersect(x_dim_boxes, y_dim_boxes)) %>% 
-          ggplot() + 
-          geom_sf(aes(fill = `Speed (m/s)`), color = NA)) %>% 
-    draw_pitch() + # all the aesthetics of the pitch
+  p <- boxes %>% 
+    mutate(`Speed (m/s)` = metric) %>% 
+    slice(intersect(x_dim_boxes, y_dim_boxes)) %>% 
+    ggplot() + 
+    geom_sf(aes(fill = `Speed (m/s)`), color = NA) + 
+    #draw_pitch() + # all the aesthetics of the pitch
     scale_x_continuous(breaks = seq(0, pitch_length, 15), labels = seq(0, pitch_length, 15)) +
     scale_y_continuous(breaks = seq(0, pitch_width, 10), labels = seq(0, pitch_width, 10)) 
   
@@ -120,6 +120,17 @@ create_heatmap <- function(boxes, metric, legend_scale = "sequential", box_outli
   }
   if (box_outline == TRUE) {
     p <- p + geom_sf(data = boxes, fill=NA, linetype = 2, color = "black")
+  }
+  
+  if (background == FALSE) {
+    p <- p +
+      theme(panel.background = element_rect(fill = "white"),
+            axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
+            axis.ticks.x=element_blank(),
+            axis.title.y=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks.y=element_blank())
   }
   return(p)
 }
@@ -188,7 +199,8 @@ create_facet_heatmap <- function(aggregate_data, legend_scale = "sequential",
     #scale_fill_gradient2(low  = "red", mid = "white", high = "blue", na.value = "#cdff9c") +
     theme_bw() +
     labs(x = "", y = "") +
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+    theme(panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
           panel.background = element_rect(fill = "white"),
           axis.line = element_line(colour = color),
           axis.title.x=element_blank(),
@@ -202,7 +214,7 @@ create_facet_heatmap <- function(aggregate_data, legend_scale = "sequential",
     p <- p + 
       scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c", 
                           
-                         
+                          
       ) 
   } else if (legend_scale == "diverging") {
     p <- p + scale_fill_gradient2(low  = "blue", mid = "white", high = "red", na.value = "#cdff9c",
@@ -368,7 +380,7 @@ multinom_cv <- function(model_formula_text, train_data, test_data, CV=TRUE) {
       acc_mean=paste0(acc_mean, "%"),
       TPR_win_mean=paste0(TPR_win_mean, "%"),
       #acc_sd=acc_sd,
-     
+      
       #TPR_loss_sd=TPR_loss_sd,
       TPR_draw_mean=paste0(TPR_draw_mean, "%"),
       #TPR_draw_sd=TPR_draw_sd,
@@ -380,7 +392,7 @@ multinom_cv <- function(model_formula_text, train_data, test_data, CV=TRUE) {
       # TPR_win_train = paste0(TPR_win_mean, "% ± ", TPR_win_sd, "%"),
       ACC_test = paste0(acc_test, "%"),
       
-     
+      
       TPR_win_test = cm_test$byClass["Class: 1", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%"),
       TPR_draw_test = cm_test$byClass["Class: 0", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%"),
       TPR_loss_test = cm_test$byClass["Class: -1", "Sensitivity"] %>% round_perc_glm() %>% paste0(.,"%")
@@ -399,3 +411,31 @@ multinom_cv <- function(model_formula_text, train_data, test_data, CV=TRUE) {
   }
   list(metrics_df, cm_test)
 }
+
+
+create_heatmap2 <- function(grids, metric, font_size = 12, legend_title = "Speed (m/s)") {
+  grids %>% 
+    mutate(`Speed (m/s)` = eval(parse(text = metric)),
+           facet = metric %>% str_split("_") %>% map(4) %>% .[[1]],
+           facet = case_when(
+             facet == "total" ~ "Total", 
+             facet == "EW" ~ "E-W", 
+             facet == "NS" ~ "N-S",
+             facet == "E" ~ "E-only"
+           ) %>% paste0(., " Velocity")) %>% 
+    ggplot() +
+    geom_sf(aes(fill = `Speed (m/s)`), color = NA) +
+    facet_wrap(facet~.) + 
+    labs(fill = legend_title) + 
+    scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c") + 
+    scoutr::fc_annotate_pitch(fill = NA, color ="black") +
+    theme(panel.background = element_rect(fill = "white"),
+          panel.border = element_rect(color="black", fill=NA),
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank(),
+          strip.text.x = element_text(size = font_size))
+} 

@@ -14,7 +14,7 @@ load("source/data/abbreviation_df.Rda")
 
 ## Pace of Play by Across the Pitch 
 
-We first examined how pace differs among the 294 polygrids in the EPL. 
+We first examined how pace in the English Premier League (EPL) differs among the 294 polygrids.
 
 ```{r}
 yup = tibble(
@@ -30,16 +30,35 @@ yup = tibble(
            factor(levels = c("Total", "EW", "NS", "E"))) 
 
 create_facet_heatmap(yup %>% rename(club = direction), nrow = 2, ncol = 2, legend_scale = "sequential") + labs(fill = "Speed (m/s)")
-epl1 <- create_heatmap(grids5x5, england_all_median_total_speed) + labs(subtitle = "Total", fill="") + theme_void() +
-  theme(plot.subtitle = element_text(hjust = 0.5))
-epl2 <- create_heatmap(grids5x5, england_all_median_EW_speed) + labs(subtitle = "EW", fill="") + theme_void() +
-  theme(plot.subtitle = element_text(hjust = 0.5))
-epl3 <- create_heatmap(grids5x5, england_all_median_NS_speed) + labs(subtitle = "NS", fill="") + theme_void() +
-  theme(plot.subtitle = element_text(hjust = 0.5))
-epl4 <- create_heatmap(grids5x5, england_all_median_E_speed) + labs(subtitle = "E", fill="") + theme_void() +
-  theme(plot.subtitle = element_text(hjust = 0.5))
+# epl1 <- create_heatmap(grids5x5, england_all_median_total_speed, background = FALSE) + 
+#   labs(subtitle = "Total", fill="") + 
+#   scoutr::fc_annotate_pitch(fill = NA, color ="black") +
+#   theme(plot.subtitle = element_text(hjust = 0.5))
+# epl2 <- create_heatmap(grids5x5, england_all_median_EW_speed, background = FALSE) + 
+#   labs(subtitle = "EW", fill="") +
+#   scoutr::fc_annotate_pitch(fill = NA, color ="black") + 
+#   theme(plot.subtitle = element_text(hjust = 0.5))
+# epl3 <- create_heatmap(grids5x5, england_all_median_NS_speed, background = FALSE) + 
+#   labs(subtitle = "NS", fill="") + 
+#   scoutr::fc_annotate_pitch(fill = NA, color ="black") +
+#   theme(plot.subtitle = element_text(hjust = 0.5))
+# epl4 <- create_heatmap(grids5x5, england_all_median_E_speed, background = FALSE) + 
+#   labs(subtitle = "E", fill="") +
+#   scoutr::fc_annotate_pitch(fill = NA, color ="black") +
+#   theme(plot.subtitle = element_text(hjust = 0.5))
+# 
+# gridExtra::grid.arrange(epl1,  epl2, epl3, epl4, ncol = 2)
+```
 
-gridExtra::grid.arrange(epl1,  epl2, epl3, epl4, ncol = 2)
+
+```{r fig.align="center"}
+p1 <- create_heatmap2(grids5x5, "england_all_median_total_speed", font_size = 9, legend_title = "")
+p2 <- create_heatmap2(grids5x5, "england_all_median_EW_speed", font_size = 9, legend_title = "")
+p3 <- create_heatmap2(grids5x5, "england_all_median_NS_speed", font_size = 9, legend_title = "")
+p4 <- create_heatmap2(grids5x5, "england_all_median_E_speed", font_size = 9, legend_title = "")
+
+
+gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2)
 ```
 
 **which plot is better**
@@ -52,7 +71,7 @@ From the $V_{E}$, it seems like the teams in the EPL prefer to advance the ball 
 
 ## Pace of Play by Zone 
 
-We then examined how pace differs among the 8 zones in the EPL. 
+We then examined how pace in the EPL differs among the 8 zones. 
 
 ```{r EPL-avg-velocities, fig.align="center", fig.cap="Velocity by zone in the EPL for the 2017-18 regular season"}
 col.pal <- c("#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d","#666666")
@@ -89,7 +108,7 @@ We noticed that $V_{T}$ is the highest in zone 8 and approximately 28-37% slower
 
 ## Pace of Play Across Leagues 
 
-Next, we analyzed how pace varies between the EPL and the four other first-division European leagues  (Ligue 1, Bundesliga, Serie A and La Liga). The figure above/below shows the percent difference (league - EPL / EPL) between the average velocities from the EPL and those of the four other European leagues. 
+Next, we analyzed how pace varies between the EPL and the four other first-division European leagues (Ligue 1, Bundesliga, Serie A and La Liga). The figure above/below shows the percent difference **(league - EPL / EPL)** (remove this?) between the average velocities from the EPL and those of the four other European leagues. 
 
 ```{r other-leagues-avg-velocities, fig.align="center", fig.cap="Velocity by Zone relative to the EPL for the 2017-18 regular season"}
 league_average_speeds %>% 
@@ -389,10 +408,10 @@ hier_log_output %>%
   mutate(model_type = c("Baseline", "$\\Delta_{ij}$AllZones", "$\\Delta_{ij}$OffZones", "$\\Delta_{ij}$FlankZones")) %>%
   select(model_type, everything()) %>% 
   slice(c(1,4)) %>% 
-  kable(booktabs = T, align = "c",
-        caption = "Hierarchical logistic model results with 4-fold cross validation.",
-        col.names = c("Model", "Mean Accuracy",  "Mean AUC", "Accuracy", "AUC"
-        )) %>% 
+  kbl(booktabs = T, align = "c", 
+      caption = "Hierarchical logistic model results with 4-fold cross validation.",
+      col.names = c("Model", "Mean Accuracy",  "Mean AUC", "Accuracy", "AUC"
+      )) %>% 
   kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   add_header_above(c(" " = 1, "Train Data" = 2, "Test Data" = 2))
 
@@ -456,8 +475,56 @@ sjPlot::tab_model(glmer.fit.baseline,glmer.fit.pace,
                   show.icc=FALSE,
                   show.r2=FALSE,
                   show.obs=FALSE,
-                  #show.re.var=FALSE,
-                  show.ngroups=FALSE)
+                  # show.re.var=FALSE,
+                  show.ngroups=FALSE) 
+
+glmer.fit.baseline.summary <- glmer.fit.baseline %>% summary()
+glmer.fit.pace.summary <- glmer.fit.pace %>% summary()
+
+glmer.fit.baseline.coef <- tibble(
+  predictor = c("(Intercept)", "DerbyGame", "CUS"),
+  log.estimate = glmer.fit.baseline.summary$coefficients[,1],
+  estimate = glmer.fit.baseline.summary$coefficients[,1] %>% exp(),
+  std.error = glmer.fit.baseline.summary$coefficients[,2],
+  p_val = glmer.fit.baseline.summary$coefficients[,4],
+  lower.estimate = (log.estimate - 1.96*std.error) %>% exp(),
+  upper.estimate = (log.estimate + 1.96*std.error) %>% exp(),
+) %>% 
+  mutate_if(is.double, round, 3) %>% 
+  mutate(CI = paste0("(", lower.estimate, ", ", upper.estimate, ")"),
+         estimate_ci = paste(estimate, CI),
+         p_val = cell_spec(p_val, bold = ifelse(p_val <= 0.05, TRUE,  FALSE))) %>% 
+  select(estimate_ci, p_val) %>% 
+  mutate_all(as.character)
+
+glmer.fit.baseline.coef[nrow(glmer.fit.baseline.coef)+1,] <- " "
+
+
+glmer.fit.pace.coef <- tibble(
+  predictor = c("(Intercept)", "DerbyGame", "CUS", "$\\Delta_{ij}$FlankZones"),
+  log.estimate = glmer.fit.pace.summary$coefficients[,1],
+  estimate = glmer.fit.pace.summary$coefficients[,1] %>% exp(),
+  std.error = glmer.fit.pace.summary$coefficients[,2],
+  p_val = glmer.fit.pace.summary$coefficients[,4],
+  lower.estimate = (log.estimate - 1.96*std.error) %>% exp(),
+  upper.estimate = (log.estimate + 1.96*std.error) %>% exp(),
+) %>% 
+  mutate_if(is.double, round, 3) %>% 
+  mutate(CI = paste0("(", lower.estimate, ", ", upper.estimate, ")"),
+         estimate_ci = paste(estimate, CI),
+         p_val = ifelse(p_val == 0,  "<0.001", p_val),
+         p_val = cell_spec(p_val, bold = ifelse(p_val <= 0.05, TRUE,  FALSE))) %>% 
+  select(predictor, estimate_ci, p_val)
+
+
+bind_cols(glmer.fit.baseline.coef, glmer.fit.pace.coef) %>% 
+  select(predictor, everything()) %>% 
+  kbl(caption = "Coefficients obtained with models 1.1 and 1.2", escape=F,
+      col.names = c("Predictor", "Odds Ratio",  "p-value", "Odds Ratio", "p-value")
+  ) %>% 
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
+  add_header_above(c(" " = 1, "Baseline Model" = 2, "Pace Model" = 2)) 
+
 ```
 
 ### Multinomial Logistic Model 
@@ -487,10 +554,10 @@ multinom_output %>%
   mutate(model_type = c("Baseline", "$\\Delta_{ij}$AllZones", "$\\Delta_{ij}$OffZones", "$\\Delta_{ij}$FlankZones")) %>%
   select(model_type,acc_mean, ACC_test) %>%
   slice(c(1,3)) %>% 
-  kable( booktabs = T, align = "c",
-         caption = "Multinomial logistic model results with 4-fold cross validation.",
-         col.names = c("Model", "Mean Accuracy", "Accuracy"
-         )) %>%
+  kbl(booktabs = T, align = "c",
+      caption = "Multinomial logistic model results with 4-fold cross validation.",
+      col.names = c("Model", "Mean Accuracy", "Accuracy"
+      )) %>%
   kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   add_header_above(c(" " = 1, "Cross Validation Data" = 1, "Test Data" = 1))
 
@@ -528,10 +595,10 @@ multinom_output %>%
   mutate(model_type = c("Baseline", "$\\Delta_{ij}$AllZones", "$\\Delta_{ij}$OffZones", "$\\Delta_{ij}$FlankZones")) %>%
   select(model_type, everything(), -acc_mean, -ACC_test) %>%
   slice(c(1,3)) %>% 
-  kable(booktabs = T, align = "c", 
-        caption = "Multinomial logistic model results with 4-fold cross validation.",
-        col.names = c("Model", "Mean TPR (win)", "Mean TPR (draw)", "Mean TPR (loss)",  "TPR (win)", "TPR (draw)", "TPR (loss)"
-        )) %>%
+  kbl(booktabs = T, align = "c", 
+      caption = "Multinomial logistic model results with 4-fold cross validation.",
+      col.names = c("Model", "Mean TPR (win)", "Mean TPR (draw)", "Mean TPR (loss)",  "TPR (win)", "TPR (draw)", "TPR (loss)"
+      )) %>%
   kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   add_header_above(c(" " = 1, "Train Data" = 3, "Test Data" = 3))
 ```

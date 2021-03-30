@@ -122,7 +122,7 @@ example %>%
 
 Table 2.1 shows an example of four consecutive events in our data. This play consists of two consecutive passes, a duel on the ball, and ends with a shot taken by Arsenal. 
 
-The *teams* data set describes the clubs that play in the five leagues during the 2017-2018 season. This dataset contains the name of the club (e.g. Liverpool) and a team ID, which can be matched with the team-identifying variable in the *events* dataset. 
+The *teams* data describes the clubs that play in the five leagues during the 2017-2018 season. This dataset contains the name of the club (e.g. Liverpool) and a team ID, which can be matched with the team-identifying variable in the *events* dataset. 
 
 ## Processing the Data 
  
