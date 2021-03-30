@@ -1,6 +1,6 @@
-`r if (knitr::is_html_output()) '
+
 # References {-}
-'`
+
 1). Ferrero, V. (2013). The Effectiveness of Using Pace, eFG%, TOV ... - CAE Users. Retrieved from http://homepages.cae.wisc.edu/~ece539/fall13/project/Ferrero_rpt.pdf
 
 2). Knutson, T. (2013, January 24). A Look at Pace in Football. Retrieved from https://bitterandblue.sbnation.com/2013/1/24/3908816/football-soccer-analytics-pace
@@ -43,5 +43,5 @@
 
 21).https://spielverlagerung.com/2016/10/19/mourinhos-midfield-pressing-and-6-3-1-halts-klopps-side/
 
-
+22). https://www.nature.com/articles/s41597-019-0247-7
 

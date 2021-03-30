@@ -393,7 +393,7 @@ hier_log_output %>%
         caption = "Hierarchical logistic model results with 4-fold cross validation.",
         col.names = c("Model", "Mean Accuracy",  "Mean AUC", "Accuracy", "AUC"
         )) %>% 
-  kable_styling(latex_options = c("hold_position")) %>%
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   add_header_above(c(" " = 1, "Train Data" = 2, "Test Data" = 2))
 
 hier_log_cm <- glm_cv("FTR ~  derby_game + current_unbeaten_streak + diff_all_attacking_flank_zone_speeds + (1|home)",
@@ -491,7 +491,7 @@ multinom_output %>%
          caption = "Multinomial logistic model results with 4-fold cross validation.",
          col.names = c("Model", "Mean Accuracy", "Accuracy"
          )) %>%
-  kable_styling(latex_options = c("hold_position")) %>%
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   add_header_above(c(" " = 1, "Cross Validation Data" = 1, "Test Data" = 1))
 
 multinom_cm <- multinom_cv("FTR ~ derby_game + current_unbeaten_streak + home +  diff_all_attacking_flank_zone_speeds",
@@ -528,11 +528,11 @@ multinom_output %>%
   mutate(model_type = c("Baseline", "$\\Delta_{ij}$AllZones", "$\\Delta_{ij}$OffZones", "$\\Delta_{ij}$FlankZones")) %>%
   select(model_type, everything(), -acc_mean, -ACC_test) %>%
   slice(c(1,3)) %>% 
-  kable(booktabs = T, align = "c",
+  kable(booktabs = T, align = "c", 
         caption = "Multinomial logistic model results with 4-fold cross validation.",
         col.names = c("Model", "Mean TPR (win)", "Mean TPR (draw)", "Mean TPR (loss)",  "TPR (win)", "TPR (draw)", "TPR (loss)"
         )) %>%
-  kable_styling(latex_options = c("hold_position")) %>%
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   add_header_above(c(" " = 1, "Train Data" = 3, "Test Data" = 3))
 ```
 
