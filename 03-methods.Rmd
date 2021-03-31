@@ -100,7 +100,7 @@ After creating the pace-of-play metrics, we wanted to evaluate their effectivene
 
 When selecting variables, we did not include traditional post-game performance-based features, such as number of shots or corners taken. We only considered pre-game, historical variables that can be gathered before each game is played. Even though we incorporate a pace metric from the same game as a variable, we anticipate that teams can also make these pre-game variables by substituting our pace metrics with historical measurements of pace. 
 
-```{r}
+```{r eval=FALSE}
 # https://stackoverflow.com/questions/53394214/r-kableextra-trouble-inserting-linebreak-in-html-format-in-a-cell-containing/53394439
 # vars <- c("FTR", "HomeWinStreak", "HomeUnbeatenStreak", "HomeTeam", "DerbyGame",  "League", "$\\Delta_{ij}$Points1617")
 # var_descriptions <- linebreak(c("Difference in game points from 2016-17 season (home - away)", "Outcome of a game", "Longest home win streak from 2016-17 season", "Longest home unbeaten streak from 2016-17 season", "Name of the home team", "Indicates if game is a derby",  "League that game takes place in"))
@@ -132,11 +132,42 @@ tibble(
   kableExtra::kbl(caption = "Description of Variables",
         col.names = c("Variable", "Description", "Values"),
         booktabs = TRUE, align = "lcc") %>%
-  kableExtra::kable_styling()  %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"), position = "center")  %>%
   kableExtra::collapse_rows(columns = c(1,3))  %>%
   kableExtra::pack_rows("Response", 1, 1) %>%
   kableExtra::pack_rows("Predictors", 2,5)
-  
+
+
+
+vars <- c(rep("FTR",2), rep("CurrentUnbeatenStreak",2), "DerbyGame",  rep("League",2), "HomeTeam")
+var_descriptions <- linebreak(c("Outcome of a game with", "respect to home team", "Current home unbeaten", "streak (win/draw)", "Indicates if game is a derby",  rep("League that game takes place in",2), "Name of the home team"))
+var_values <- linebreak(c(
+  rep("1 (Win), 0 (Draw), -1 (Loss)",2),
+  rep("0 to 19",2),
+  "0 (No), 1 (Yes)",
+  "EPL, Ligue 1, Bundesliga,", "Serie A, La Liga",
+  "Liverpool, Barcelona, etc."
+))
+
+tibble(
+  vars = vars,
+  var_descriptions = var_descriptions,
+  var_values = var_values
+)  %>%
+  kableExtra::kbl("latex", caption = "Description of Variables",
+                    col.names = c("Variable", "Description", "Values"),
+                    booktabs = TRUE, align = "lcc") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"),full_width = F, position = "center") %>%
+  kableExtra::collapse_rows(columns = c(1,2,3), latex_hline = "major")  %>%
+  kableExtra::pack_rows("Response", 1, 2) %>%
+  kableExtra::pack_rows("Predictors", 3,8) 
+```
+
+(ref:rlpyp-results) **PYP prior on RLdata500.** Performance of proposed method (PYP) on RLdata500. 11,000 iterations of Gibbs sampler were executed.
+
+```{r out.width='100%', echo=FALSE, fig.cap='(ref:rlpyp-results)'}
+# insert results table from sensitivity analysis
+knitr::include_graphics("table1.png")
 ```
 
 For each of the 1826 games, the response variable, *FTR*, describes the outcome with respect to the home team. A *FTR* of 1 indicates that the home team won while -1 indicates the away team won. *CurrentUnbeatenStreak* (*CUS*) is the home team's current unbeaten streak leading up to a game. The streak resets to 0 when a team loses at home. For the first home game of the season, a team's unbeaten streak from the 2016-17 season is used. For example, Manchester City went unbeaten in their last 12 home games in the 2016-17 season, so their *CUS* for their first home game is 12. For the 14 newly promoted teams, their *CUS* for their first home game is 0. This is because they played in a lower division, so their home unbeaten streak is not comparable to that of a team who played in the first division. *DerbyGame* is an indicator variable, where 1 indicates whether or not a game is a derby game. A game is marked as a derby game if the two teams are located in the same city (Manchester City vs. Manchester United) or if there is a historical rivalry (El Clásico). *League* specifies which of the five leagues the game takes place in and *HomeTeam* is the name of the home team. 
@@ -162,10 +193,10 @@ tibble(
   var_descriptions = pace_var_descriptions,
   var_values = pace_var_values
 )  %>%
-  kableExtra::kbl(caption = "Description of Pace Variables",
+  kableExtra::kbl(caption = "Description of Pace Variables", escape=F,
         col.names = c("Variable", "Description", "Values"),
         booktabs = TRUE, align = "lcc") %>%
-  kableExtra::kable_styling()  %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"), position = "center")  %>%
   kableExtra::collapse_rows(columns = c(1,3))  %>%
   kableExtra::column_spec(1, width = "13em") %>%
   kableExtra::column_spec(2, width = "27.5em")
