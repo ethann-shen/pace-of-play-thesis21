@@ -51,12 +51,23 @@ create_facet_heatmap(yup %>% rename(club = direction), nrow = 2, ncol = 2, legen
 ```
 
 
-```{r fig.align="center"}
-p1 <- create_heatmap2(grids5x5, "england_all_median_total_speed", font_size = 9, legend_title = "")
-p2 <- create_heatmap2(grids5x5, "england_all_median_EW_speed", font_size = 9, legend_title = "")
-p3 <- create_heatmap2(grids5x5, "england_all_median_NS_speed", font_size = 9, legend_title = "")
-p4 <- create_heatmap2(grids5x5, "england_all_median_E_speed", font_size = 9, legend_title = "")
-
+```{r fig.align="center", fig.height=5}
+p1 <- create_heatmap2(grids5x5, "england_all_median_total_speed", font_size = 9, legend_title = "") +
+  theme(legend.key.size = unit(0.5, 'cm')) +
+  scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",
+                      breaks = seq(8, 18, 3)) 
+p2 <- create_heatmap2(grids5x5, "england_all_median_EW_speed", font_size = 9, legend_title = "") +
+  theme(legend.key.size = unit(0.5, 'cm')) +
+  scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",
+                      breaks = seq(3, 10, 2)) 
+p3 <- create_heatmap2(grids5x5, "england_all_median_NS_speed", font_size = 9, legend_title = "") +
+  theme(legend.key.size = unit(0.5, 'cm')) +
+  scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",
+                      breaks = seq(5, 17, 4)) 
+p4 <- create_heatmap2(grids5x5, "england_all_median_E_speed", font_size = 9, legend_title = "") +
+  theme(legend.key.size = unit(0.5, 'cm')) +
+  scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",
+                      breaks = seq(4, 10, 2)) 
 
 gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2)
 ```

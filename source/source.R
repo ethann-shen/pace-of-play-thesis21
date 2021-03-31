@@ -414,6 +414,12 @@ multinom_cv <- function(model_formula_text, train_data, test_data, CV=TRUE) {
 
 
 create_heatmap2 <- function(grids, metric, font_size = 12, legend_title = "Speed (m/s)") {
+  
+  rng = range(eval(parse(text = metric)), na.rm=TRUE)
+  lower <- ceiling(rng[1])
+  upper <- floor(rng[2])
+  
+  
   grids %>% 
     mutate(`Speed (m/s)` = eval(parse(text = metric)),
            facet = metric %>% str_split("_") %>% map(4) %>% .[[1]],
@@ -427,7 +433,11 @@ create_heatmap2 <- function(grids, metric, font_size = 12, legend_title = "Speed
     geom_sf(aes(fill = `Speed (m/s)`), color = NA) +
     facet_wrap(facet~.) + 
     labs(fill = legend_title) + 
-    scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c") + 
+    # scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",#n.breaks=4
+    #                     breaks = seq(lower, upper, (upper - lower)/4),
+    # 
+    #                     #limits = c(lower, upper)
+    #                     ) +
     scoutr::fc_annotate_pitch(fill = NA, color ="black") +
     theme(panel.background = element_rect(fill = "white"),
           panel.border = element_rect(color="black", fill=NA),
@@ -437,5 +447,6 @@ create_heatmap2 <- function(grids, metric, font_size = 12, legend_title = "Speed
           axis.title.y=element_blank(),
           axis.text.y=element_blank(),
           axis.ticks.y=element_blank(),
-          strip.text.x = element_text(size = font_size))
+          strip.text.x = element_text(size = font_size),
+          legend.key.size = unit(0.5, 'cm'))
 } 
