@@ -433,14 +433,14 @@ hier_log_cm <- glm_cv("FTR ~  derby_game + current_unbeaten_streak + diff_all_at
 
 hier_log_cm$table %>%
   broom::tidy() %>%
-  rename(Actual = Reference) %>%
-  mutate(Prediction = ifelse(Prediction == "0", "Loss/Draw", "Win"),
-         Actual = ifelse(Actual == "0", "Loss/Draw", "Win")) %>%
+  rename(Target = Reference) %>%
+  # mutate(Prediction = ifelse(Prediction == "0", "Loss/Draw", "Win"),
+  #        Actual = ifelse(Actual == "0", "Loss/Draw", "Win")) %>%
   cvms::plot_confusion_matrix(
     add_row_percentages = FALSE,
     add_col_percentages = FALSE,
-    targets_col = "Actual",
-    predictions_col = "Prediction",
+    # targets_col = "Actual",
+    # predictions_col = "Prediction",
     counts_col = "n")
 
 hier_log_cm <- glm_cv("FTR ~  derby_game + current_unbeaten_streak + (1|home)",
@@ -450,14 +450,14 @@ hier_log_cm <- glm_cv("FTR ~  derby_game + current_unbeaten_streak + (1|home)",
 
 hier_log_cm$table %>%
   broom::tidy() %>%
-  rename(Actual = Reference) %>%
-  mutate(Prediction = ifelse(Prediction == "0", "Loss/Draw", "Win"),
-         Actual = ifelse(Actual == "0", "Loss/Draw", "Win")) %>%
+  rename(Target = Reference) %>%
+  # mutate(Prediction = ifelse(Prediction == "0", "Loss/Draw", "Win"),
+  #        Actual = ifelse(Actual == "0", "Loss/Draw", "Win")) %>%
   cvms::plot_confusion_matrix(
     add_row_percentages = FALSE,
     add_col_percentages = FALSE,
-    targets_col = "Actual",
-    predictions_col = "Prediction",
+    #targets_col = "Actual",
+    #predictions_col = "Prediction",
     counts_col = "n")
 ```
 
@@ -467,7 +467,7 @@ We expect the pace model with $\Delta_{ij}AllZones$ to have the lowest performan
 
 **Confusion Matrices go here or in appendix?**
 
-```{r}
+```{r eval=FALSE}
 glmer.fit.baseline <- glmer(FTR ~  derby_game + current_unbeaten_streak + (1|home), 
                             data = bind_rows(train_data_glm,  test_data_glm),
                             family = binomial,
@@ -578,25 +578,31 @@ multinom_cm <- multinom_cv("FTR ~ derby_game + current_unbeaten_streak + home + 
 
 multinom_cm$table %>%
   broom::tidy() %>%
-  rename(target = Reference, prediction = Prediction) %>%
-  mutate(prediction = case_when(
-    prediction == "-1" ~ "Loss",
-    prediction == "0" ~ "Draw",
-    prediction == "1" ~ "Win"
-  ) %>% factor(levels = c("Win", "Draw", "Loss")),
-  target = case_when(
-    target == "-1" ~ "Loss",
-    target == "0" ~ "Draw",
-    target == "1" ~ "Win"
-  )%>% factor(levels = c("Win", "Draw", "Loss"))) %>%
+  rename(Target = Reference) %>%
   cvms::plot_confusion_matrix(
     add_row_percentages = FALSE,
     add_col_percentages = FALSE,
-    targets_col = "target",
-    predictions_col = "prediction",
-    counts_col = "n") +
-  ggplot2::labs(title = "Wrist Data (Model 1)") +
-  ggplot2::theme(plot.title = element_text(hjust = 0.5, size = 10))
+    counts_col = "n")
+
+  # rename(target = Reference) %>%
+  # mutate(prediction = case_when(
+  #   prediction == "-1" ~ "Loss",
+  #   prediction == "0" ~ "Draw",
+  #   prediction == "1" ~ "Win"
+  # ) %>% factor(levels = c("Win", "Draw", "Loss")),
+  # target = case_when(
+  #   target == "-1" ~ "Loss",
+  #   target == "0" ~ "Draw",
+  #   target == "1" ~ "Win"
+  # )%>% factor(levels = c("Win", "Draw", "Loss"))) %>%
+  # cvms::plot_confusion_matrix(
+  #   add_row_percentages = FALSE,
+  #   add_col_percentages = FALSE,
+  #   targets_col = "target",
+  #   predictions_col = "prediction",
+  #   counts_col = "n") +
+  # ggplot2::labs(title = "Wrist Data (Model 1)") +
+  # ggplot2::theme(plot.title = element_text(hjust = 0.5, size = 10))
 
 multinom_cm <- multinom_cv("FTR ~ derby_game + current_unbeaten_streak + home",
                            train_data = train_data_multinom,
@@ -604,25 +610,11 @@ multinom_cm <- multinom_cv("FTR ~ derby_game + current_unbeaten_streak + home",
 
 multinom_cm$table %>%
   broom::tidy() %>%
-  rename(target = Reference, prediction = Prediction) %>%
-  mutate(prediction = case_when(
-    prediction == "-1" ~ "Loss",
-    prediction == "0" ~ "Draw",
-    prediction == "1" ~ "Win"
-  ) %>% factor(levels = c("Win", "Draw", "Loss")),
-  target = case_when(
-    target == "-1" ~ "Loss",
-    target == "0" ~ "Draw",
-    target == "1" ~ "Win"
-  )%>% factor(levels = c("Win", "Draw", "Loss"))) %>%
+  rename(Target = Reference) %>%
   cvms::plot_confusion_matrix(
     add_row_percentages = FALSE,
     add_col_percentages = FALSE,
-    targets_col = "target",
-    predictions_col = "prediction",
-    counts_col = "n") +
-  ggplot2::labs(title = "Wrist Data (Model 1)") +
-  ggplot2::theme(plot.title = element_text(hjust = 0.5, size = 10))
+    counts_col = "n")
 ```
 
 The baseline multinomial model reports an accuracy of `r multinom_output[1,]$acc_mean` on the train data while the best performing pace model, the one with $\Delta_{ij}OffZones$, reports a slightly higher accuracy of `r multinom_output[3,]$acc_mean`. Once again, we see that the addition of pace metrics do not significantly improve the predictive power of the model.  
