@@ -100,7 +100,7 @@ After creating the pace-of-play metrics, we wanted to evaluate their effectivene
 
 When selecting variables, we did not include traditional post-game performance-based features, such as number of shots or corners taken. We only considered pre-game, historical variables that can be gathered before each game is played. Even though we incorporate a pace metric from the same game as a variable, we anticipate that teams can also make these pre-game variables by substituting our pace metrics with historical measurements of pace. 
 
-```{r eval=FALSE}
+```{r}
 # https://stackoverflow.com/questions/53394214/r-kableextra-trouble-inserting-linebreak-in-html-format-in-a-cell-containing/53394439
 # vars <- c("FTR", "HomeWinStreak", "HomeUnbeatenStreak", "HomeTeam", "DerbyGame",  "League", "$\\Delta_{ij}$Points1617")
 # var_descriptions <- linebreak(c("Difference in game points from 2016-17 season (home - away)", "Outcome of a game", "Longest home win streak from 2016-17 season", "Longest home unbeaten streak from 2016-17 season", "Name of the home team", "Indicates if game is a derby",  "League that game takes place in"))
