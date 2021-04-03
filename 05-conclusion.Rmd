@@ -10,7 +10,7 @@ While the models performed adequately at predicting the outcome of a match, it i
 
 ## Future Steps 
 
-The scope of this analysis discusses pace on a team and league level. However, pace can also be evaluated at the player-level. Future work includes quantifying player-level pace using the metrics we developed and also evaluating passing networks using network analysis to determine a player's value within a team and if that player's value has changed across the season. 
+The scope of this analysis discusses pace on a team and league level. However, pace can also be evaluated at the player-level. Future work includes quantifying player-level pace using the metrics we developed and also evaluating passing networks using network analysis to determine a player's value within a team and if that player's value has changed across the season. We can also examine the impact of pace on events in the game, such as pace before a shot is taken and how pace impacts a team's pass completion rate. 
 
 
 **future steps: multinomial hierarchical logistic  regression, or something in bayesian**

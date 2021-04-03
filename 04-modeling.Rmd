@@ -1,0 +1,483 @@
+# Modeling
+
+## Variable and Model Selection
+
+After creating the pace-of-play metrics, we wanted to evaluate their effectiveness when used as variables in models that predict the outcome of a game. We implemented models with and without the pace metrics to determine if the models with the pace metrics achieve a higher accuracy. Our main goal is to create a predictive model that teams can use to predict the outcome of the game before the actual game. Therefore, we only considered pre-game variables that can be gathered before each game is played. Thus, when selecting variables, we did not include traditional post-game performance-based features, such as number of shots or corners taken. 
+
+When selecting variables, we did not include traditional post-game performance-based features, such as number of shots or corners taken. We only considered pre-game, historical variables that can be gathered before each game is played. Even though we incorporate a pace metric from the same game as a variable, we anticipate that teams can also make these pre-game variables by substituting our pace metrics with historical measurements of pace. 
+
+```{r vars-table}
+# https://stackoverflow.com/questions/53394214/r-kableextra-trouble-inserting-linebreak-in-html-format-in-a-cell-containing/53394439
+# vars <- c("FTR", "HomeWinStreak", "HomeUnbeatenStreak", "HomeTeam", "DerbyGame",  "League", "$\\Delta_{ij}$Points1617")
+# var_descriptions <- linebreak(c("Difference in game points from 2016-17 season (home - away)", "Outcome of a game", "Longest home win streak from 2016-17 season", "Longest home unbeaten streak from 2016-17 season", "Name of the home team", "Indicates if game is a derby",  "League that game takes place in"))
+# var_values <- c(
+#   "-69 to 69",
+#   "Win, Draw, Loss",
+#   "1 to 17",
+#   "2 to 19",
+#   "Manchester City, Barcelona, etc. ",
+#   "0 (No), 1 (Yes)",
+#   "EPL, Ligue 1, Bundesliga, Serie A, La Liga"
+# )
+
+vars <- c("FTR", "Unbeaten", "Derby",  "League", "Team")
+var_descriptions <- linebreak(c("Outcome of a game with respect to home team", "Current home unbeaten streak (win/draw)", "Indicates if game is a derby",  "League that game takes place in", "Name of the home team"))
+var_values <- c(
+  "-1 (Loss), 0 (Draw), 1 (Win)",
+  "0 to 19",
+  "0 (No), 1 (Yes)",
+  "EPL, Ligue 1, Bundesliga, Serie A, La Liga",
+  "Liverpool, Barcelona, etc."
+)
+
+tibble(
+  vars = vars,
+  var_descriptions = var_descriptions,
+  var_values = var_values
+)  %>%
+  kableExtra::kbl(caption = "Description of modeling variables.",
+                  col.names = c("Variable", "Description", "Values"),
+                  booktabs = TRUE, align = "lcc") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"), position = "center")  %>%
+  kableExtra::collapse_rows(columns = c(1,3))  %>%
+  kableExtra::pack_rows("Response", 1, 1) %>%
+  kableExtra::pack_rows("Predictors", 2,5)
+
+
+
+# vars <- c(rep("FTR",2), rep("CurrentUnbeatenStreak",2), "DerbyGame",  rep("League",2), "HomeTeam")
+# var_descriptions <- linebreak(c("Outcome of a game with", "respect to home team", "Current home unbeaten", "streak (win/draw)", "Indicates if game is a derby",  rep("League that game takes place in",2), "Name of the home team"))
+# var_values <- linebreak(c(
+#   rep("1 (Win), 0 (Draw), -1 (Loss)",2),
+#   rep("0 to 19",2),
+#   "0 (No), 1 (Yes)",
+#   "EPL, Ligue 1, Bundesliga,", "Serie A, La Liga",
+#   "Liverpool, Barcelona, etc."
+# ))
+# 
+# tibble(
+#   vars = vars,
+#   var_descriptions = var_descriptions,
+#   var_values = var_values
+# )  %>%
+#   kableExtra::kbl("latex", caption = "Description of Variables",
+#                     col.names = c("Variable", "Description", "Values"),
+#                     booktabs = TRUE, align = "lcc") %>%
+#   kableExtra::kable_styling(latex_options = c("hold_position"),full_width = F, position = "center") %>%
+#   kableExtra::collapse_rows(columns = c(1,2,3), latex_hline = "major")  %>%
+#   kableExtra::pack_rows("Response", 1, 2) %>%
+#   kableExtra::pack_rows("Predictors", 3,8) 
+```
+
+For each of the 1826 games, the response variable, *FTR*, describes the outcome with respect to the home team. A *FTR* of 1 indicates that the home team won while -1 indicates the away team won. *Unbeaten* is the home team's current unbeaten streak leading up to a game. The streak resets to 0 when a team loses at home. For the first home game of the season, a team's unbeaten streak from the 2016-17 season is used. For example, Manchester City went unbeaten in their last 12 home games in the 2016-17 season, so their *Unbeaten* for their first home game is 12. For the 14 newly promoted teams, their *Unbeaten* for their first home game is 0. This is because they played in a lower division, so their home unbeaten streak is not comparable to that of a team who played in the first division. *Derby* is an indicator variable, where 1 indicates whether or not a game is a derby game. A game is marked as a derby game if the two teams are located in the same city (Manchester City vs. Manchester United) or if there is a historical rivalry (El Clásico). *League* specifies which of the five leagues the game takes place in and *Team* is the name of the home team. 
+
+```{r pace-vars-table}
+# https://stackoverflow.com/questions/53394214/r-kableextra-trouble-inserting-linebreak-in-html-format-in-a-cell-containing/53394439
+pace_vars <- c("$\\Delta_{ij}^{AZ}$", 
+               "$\\Delta_{ij}^{OZ}$", 
+               "$\\Delta_{ij}^{FZ}$")
+#pace_vars <- c("$\\Delta_{ij}$AZ", "$\\Delta_{ij}$OZ", "$\\Delta_{ij}$FZ")
+pace_var_descriptions <- linebreak(c("Sum of the differences in total velocity for all zones (1-8) for home team $i$ and away team $j$",
+                                     "Sum of the differences in total velocity for all zones in offensive half (5-8) for home team $i$ and away team $j$",
+                                     "Sum of the differences in total velocity for zones 5,7,8 for home team $i$ and away team $j$"))
+
+pace_var_values <- c(
+  "-88.93 to 67.72 (m/s)",
+  "-80.68 to 45.55 (m/s)",
+  "-79.1 to 39.74 (m/s)"
+)
+
+tibble(
+  vars = pace_vars,
+  var_descriptions = pace_var_descriptions,
+  var_values = pace_var_values
+)  %>%
+  kableExtra::kbl(caption = "Description of pace variables.", escape=F,
+                  col.names = c("Variable", "Description", "Values"),
+                  booktabs = TRUE, align = "lcc") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"), position = "center")  %>%
+  kableExtra::collapse_rows(columns = c(1,3))  %>%
+  kableExtra::column_spec(1, width = "13em") %>%
+  kableExtra::column_spec(2, width = "27.5em")
+```
+
+For each game, we conducted a [zonal analysis][Zonal Analysis]  of the total velocities for the home and away teams. However, we took the median of the median velocities of the 5x5 polygrids to determine the aggregate speeds for each zone instead of the mean of the medians. Bottom-tier teams have a smaller number of recorded events per game and are more susceptible to outliers in both the polygrid and zonal analyses. Thus, using the median of the median velocities makes these zonal speeds more resistant to outliers. Then we calculated the difference (home - away) in velocity for each of the 8 zones. For home team $i$ and away team $j$, $\Delta_{ij}^{AZ}$ is the sum of the differences for all 8 zones, $\Delta_{ij}^{OZ}$ is the sum of the differences for the four zones in the offensive half (zones 5-8) and $\Delta_{ij}^{FZ}$ is the sum of the differences for zones 5, 7, 8. 
+
+To evaluate the models, we first split the data into a train and test set. The test data, which is 21.5% of the full data, includes 2 home and 2 away games for each of the 98 teams, for a total of 392 games. We perform 4-fold cross validation on the training data and lastly assess model performance by predicting on the testing data. We propose two different types of models - the first is a hierarchical logistic regression model that predicts between wins and non-wins (draws and losses) while second is a multinomial logistic regression model that predicts on all three potential outcomes. Draws and losses are the baseline category in the hierarchical logistic models and losses are the baseline in the multinomial logistic models. These models were preferred over other classification algorithms since we are concerned with both predictive power and interpretability. For both sets of models, we first constructed a baseline model that only uses the predictors mentioned in Table \@ref(tab:vars-table). We then added one of the pace variables from Table \@ref(tab:pace-vars-table) to determine if the addition of a pace metric improves the model's accuracy. Only one pace metric can be added to the model since they are all highly correlated. Interaction effects between the baseline predictors were also considered, but they did not improve the predictive power of any model. We used accuracy and AUC as evaluation metrics for the hierarchical logistic regression and accuracy and True Positive Rate (TPR) for the multinomial logistic regression. 
+
+## Hierarchical Logistic Model 
+
+The baseline hierarchical logistic model (without any pace metrics) is as follows:
+
+$$ 
+\begin{aligned}
+Y_{ij} \sim Bernoulli(&\pi_{ij}) \\
+log(\frac{\pi_{ij}}{1-\pi_{ij}}) = \beta_{0} + \beta_{1} * Unbeaten_i \ + 
+\beta_{2} *  I(&Derby_{ij}=Yes) + \alpha_{i}  && (1.1)\\ 
+\alpha_i \sim N(0,\tau^2) 
+\end{aligned}
+$$
+
+The modified hierarchical logistic model (with the pace variable) is as follows:
+
+$$ 
+\begin{aligned}
+Y_{ij} \sim Bernoulli(&\pi_{ij}) \\
+log(\frac{\pi_{ij}}{1-\pi_{ij}}) = \beta_{0} + \beta_{1} * Unbeaten_i \ + 
+\beta_{2} *  I(Der&by_{ij}=Yes) +\beta_3 * \Delta_{ij}^{FZ} + \alpha_{i} & (1.2)\\ 
+\alpha_i \sim N(0,\tau^2) 
+\end{aligned}
+$$
+
+Let $i \in (1, 2, \dots, 98)$ represent the home team and $j \in (1, 2, \dots, 38)$ ($(1, 2, \dots, 34)$ for teams in the Bundesliga) be the $j^{th}$ game they play during the season. Then $Y_{ij}$ is the outcome (win vs. draw/loss) of the game and $\pi_{ij}$ is the probability that home team $i$ wins the game. $\alpha_i$ represents the random intercept term for team $i$. We do not include a random intercept for *League*, as most of the variability between leagues is already explained by the variability between teams. The only difference between models 1.1 and 1.2 is the addition of the variable $\Delta_{ij}^{FZ}$ in 1.2. 
+
+```{r}
+load("source/data/modeling/modeling_df.Rda")
+load("source/data/modeling/modeling_glm_df.Rda")
+load("source/data/modeling/modeling_multinom_df.Rda")
+train_data_glm$home <- relevel(train_data_glm$home %>% as.factor(),ref = "Manchester City")
+test_data_glm$home <- relevel(test_data_glm$home %>% as.factor(),ref = "Manchester City")
+train_data_multinom$home <- relevel(train_data_multinom$home %>% as.factor(),ref = "Manchester City")
+test_data_multinom$home <- relevel(test_data_multinom$home %>% as.factor(),ref = "Manchester City")
+```
+
+```{r }
+if (!file.exists("source/data/modeling/hier_log_output.Rda")) {
+  hier_log_output <- bind_rows(
+    glm_cv("FTR ~  derby_game + current_unbeaten_streak + (1|home)",
+           train_data = train_data_glm,
+           test_data = test_data_glm,
+           CV = TRUE) %>% .[[1]],
+    
+    glm_cv("FTR ~  derby_game + current_unbeaten_streak + diff_all_zone_speeds + (1|home)",
+           train_data = train_data_glm,
+           test_data = test_data_glm,
+           CV = TRUE) %>% .[[1]],
+    
+    glm_cv("FTR ~  derby_game + current_unbeaten_streak + diff_all_attacking_zone_speeds + (1|home)",
+           train_data = train_data_glm,
+           test_data = test_data_glm,
+           CV = TRUE) %>% .[[1]],
+    
+    glm_cv("FTR ~  derby_game + current_unbeaten_streak + diff_all_attacking_flank_zone_speeds + (1|home)",
+           train_data = train_data_glm,
+           test_data = test_data_glm,
+           CV = TRUE) %>% .[[1]]
+  ) 
+  save(hier_log_output, file="source/data/modeling/hier_log_output.Rda")
+} else {
+  load("source/data/modeling/hier_log_output.Rda")
+}
+
+hier_log_output %>% 
+  mutate(model_type = c("Baseline", "$\\Delta_{ij}^{AZ}$", "$\\Delta_{ij}^{OZ}$", "$\\Delta_{ij}^{FK}$")) %>%
+  select(model_type, everything()) %>% 
+  slice(c(1,4)) %>% 
+  kbl(booktabs = TRUE, align = "c",
+      caption = "Hierarchical logistic model results with 4-fold cross validation.",
+      col.names = c("Model", "Mean Accuracy",  "Mean AUC", "Accuracy", "AUC"
+      )) %>% 
+  kable_styling(latex_options = c("hold_position")) %>%
+  add_header_above(c(" " = 1, "Train Data" = 2, "Test Data" = 2))
+```
+
+The baseline hierarchical logistic model reports an accuracy of `r hier_log_output[1,]$ACC_test` and AUC of `r hier_log_output[1,]$AUC_test` on the test data while the best performing pace model, the one with $\Delta_{ij}^{FZ}$, reports a slightly higher accuracy of `r hier_log_output[4,]$ACC_test` and AUC of `r hier_log_output[4,]$AUC_test`. This suggests that the addition of pace metrics do not significantly improve the predictive power of the model on the test set. The results for the other two pace models can be found in Appendix Table XXXX. 
+
+We expect the pace model with $\Delta_{ij}^{AZ}$ to have the lowest performance out of the three pace models. These pace variables assume that pace across the pitch is weighted evenly. Even though pace varies in the defensive half of the pitch, these differences are not necessarily indicative of a team's scoring capabilities. Variation in pace in the offensive half is more indicative of a team's attacking strength, which is more directly related to the outcome of a match. 
+
+```{r hier-log-model-coef}
+glmer.fit.baseline <- glmer(FTR ~ current_unbeaten_streak + derby_game +  (1|home), 
+                            data = bind_rows(train_data_glm,  test_data_glm),
+                            family = binomial,
+                            glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
+)
+glmer.fit.pace <- glmer(FTR ~ current_unbeaten_streak + derby_game + diff_all_attacking_flank_zone_speeds + (1|home), 
+                        data = bind_rows(train_data_glm,  test_data_glm),
+                        family = binomial,
+                        glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE)
+)
+
+glmer.fit.baseline.summary <- glmer.fit.baseline %>% summary()
+glmer.fit.pace.summary <- glmer.fit.pace %>% summary()
+
+glmer.fit.baseline.coef <- tibble(
+  predictor = c("(Intercept)", "Unbeaten", "Derby"),
+  log.estimate = glmer.fit.baseline.summary$coefficients[,1],
+  estimate = glmer.fit.baseline.summary$coefficients[,1] %>% exp(),
+  std.error = glmer.fit.baseline.summary$coefficients[,2],
+  p_val = glmer.fit.baseline.summary$coefficients[,4],
+  lower.estimate = (log.estimate - 1.96*std.error) %>% exp(),
+  upper.estimate = (log.estimate + 1.96*std.error) %>% exp(),
+) %>% 
+  mutate_if(is.double, round, 3) %>% 
+  mutate(log.estimate = log.estimate %>% round(2),
+         CI = paste0("(", lower.estimate %>% round(2), ", ", upper.estimate %>% round(2), ")"),
+         estimate_ci = paste(estimate %>% round(2), CI),
+         p_val = case_when(
+           p_val < 0.001 ~ "< 0.001",
+           p_val < 0.01 ~ "< 0.01",
+           TRUE ~ p_val %>% round(2) %>% as.character()
+         ),
+         p_val = cell_spec(p_val, bold = ifelse(p_val <= 0.05, TRUE,  FALSE))) %>% 
+  select(log.estimate, estimate_ci, p_val) %>% 
+  mutate_all(as.character)
+
+glmer.fit.baseline.coef[nrow(glmer.fit.baseline.coef)+1,] <- " "
+
+
+glmer.fit.pace.coef <- tibble(
+  predictor = c("(Intercept)", "Unbeaten", "Derby", "$\\Delta_{ij}^{FK}$"),
+  log.estimate = glmer.fit.pace.summary$coefficients[,1],
+  estimate = glmer.fit.pace.summary$coefficients[,1] %>% exp(),
+  std.error = glmer.fit.pace.summary$coefficients[,2],
+  p_val = glmer.fit.pace.summary$coefficients[,4],
+  lower.estimate = (log.estimate - 1.96*std.error) %>% exp(),
+  upper.estimate = (log.estimate + 1.96*std.error) %>% exp(),
+) %>% 
+  mutate_if(is.double, round, 3) %>% 
+  mutate(log.estimate = log.estimate %>% round(2),
+         CI = paste0("(", lower.estimate %>% round(2), ", ", upper.estimate %>% round(2), ")"),
+         estimate_ci = paste(estimate %>% round(2), CI),
+         p_val = case_when(
+           p_val < 0.001 ~ "< 0.001",
+           p_val < 0.01 ~ "< 0.01",
+           TRUE ~ p_val %>% round(2) %>% as.character()
+         ),
+         p_val = cell_spec(p_val, bold = ifelse(p_val <= 0.05, TRUE,  FALSE))) %>% 
+  select(log.estimate, predictor, estimate_ci, p_val)
+
+
+bind_cols(glmer.fit.baseline.coef, glmer.fit.pace.coef) %>% 
+  select(predictor, everything()) %>% 
+  kbl(caption = "Coefficients obtained from models 1.1 and 1.2.", escape=F, booktabs = TRUE, align = "c",
+      col.names = c("Predictor", "Log Odds Ratio", "Odds Ratio",  "p-value", "Log Odds Ratio", "Odds Ratio", "p-value")
+  ) %>% 
+  kable_styling(latex_options = c("hold_position"), font_size = 11.5) %>%
+  add_header_above(c(" " = 1, "Baseline Model" = 3, "Pace Model" = 3)) 
+```
+
+Table \@ref(tab:hier-log-model-coef) displays the exponentiated coefficient values for all the variables that used in the baseline and pace metric models, respectively. All the coefficients, except for *Unbeaten* in the baseline model, are statistically significant. Thus, for every meter per second increase in $\Delta_{ij}^{FK}$ for home team $i$ and away team $j$, we expect the the odds of winning the game to multiply by a factor of 0.953 - this indicates that as the home team's $V_T$ in the flank zones increases, the home team has a smaller chance of winning the game. This reflects the results in the previous sections which showed that lower-ranked teams (and thus teams that have a lower chance of winning a match) generally have a higher $V_T$. 
+
+## Multinomial Logistic Model 
+
+The baseline multinomial logistic model (without any pace metrics) is as follows:
+
+$$
+\begin{aligned}
+P(Y_{ijk} = k) =& \pi_{ijk}  \\
+log(\frac{\pi_{ijk}}{\pi_{ij1}}) = \beta_{0k} + \beta_{1k} * Unbeaten + \ \beta_{2k}* I&(Derby_{ij}=Yes)  + \ & (2.1)\\
+\sum_{T = 2}^{98}\beta_{3kT}*I(Tea&m_{i}=t) & \\ 
+k \in  (2, 3)
+\end{aligned}
+$$
+
+The modified multinomial logistic model (with the pace variable) is as follows:
+
+$$
+\begin{aligned}
+P(Y_{ijk} = k) =& \pi_{ijk}  \\
+log(\frac{\pi_{ijk}}{\pi_{ij1}}) = \beta_{0k} + \beta_{1k} * Unbeaten + \ \beta_{2k}* I&(Derby_{ij}=Yes)  + \ & (2.2)\\
+\sum_{T = 2}^{98}\beta_{3kT}*I(Team_{i}=t&) + \beta_{4k} * \Delta_{ij}^{FZ}& \\ 
+k \in  (2, 3)
+\end{aligned}
+$$
+
+Recall that the baseline of the response variable $FTR$, $k=1$, is a loss. Let $i \in (1, 2, \dots, 98)$ represent the home team and $j \in (1, 2, \dots, 38)$ ($(1, 2, \dots, 34)$ for teams in the Bundesliga) be the $j^{th}$ game they play during the season. $k \in (2,3)$ represents a draw and a win, respectively. Thus $\pi_{ijk}$ is the probability that the game ends in a draw when $k=2$ and a win when $k=3$. For the term $Team$, $t=1$ is the baseline, which is Manchester City.  The only difference between models 2.1 and 2.2 is the addition of the variable $\Delta_{ij}^{FZ}$ in 2.2.
+
+```{r}
+if (!file.exists("source/data/modeling/multinom_output.Rda")) {
+  multinom_output <- bind_rows(
+    multinom_cv("FTR ~ derby_game + current_unbeaten_streak + home ",
+                train_data = train_data_multinom,
+                test_data = test_data_multinom, CV=T) %>% .[[1]],
+    multinom_cv("FTR ~ derby_game + current_unbeaten_streak + home +  diff_all_zone_speeds",
+                train_data = train_data_multinom,
+                test_data = test_data_multinom, CV=T) %>% .[[1]],
+    multinom_cv("FTR ~ derby_game + current_unbeaten_streak + home +  diff_all_attacking_zone_speeds",
+                train_data = train_data_multinom,
+                test_data = test_data_multinom, CV=T) %>% .[[1]],
+    multinom_cv("FTR ~ derby_game + current_unbeaten_streak + home +  diff_all_attacking_flank_zone_speeds",
+                train_data = train_data_multinom,
+                test_data = test_data_multinom, CV=T) %>% .[[1]]
+  )
+  save(multinom_output, file="source/data/modeling/multinom_output.Rda")
+} else {
+  load("source/data/modeling/multinom_output.Rda")
+}
+
+multinom_output %>%
+  mutate(model_type = c("Baseline", "$\\Delta_{ij}^{AZ}$", "$\\Delta_{ij}^{OZ}$", "$\\Delta_{ij}^{FK}$")) %>%
+  select(model_type,acc_mean, ACC_test) %>%
+  slice(c(1,4)) %>% 
+  kbl(booktabs = T, align = "c",
+      caption = "Multinomial logistic model results with 4-fold cross validation.",
+      col.names = c("Model", "Mean Accuracy", "Accuracy"
+      )) %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  add_header_above(c(" " = 1, "Cross Validation Data" = 1, "Test Data" = 1))
+```
+
+The baseline multinomial model reports an accuracy of `r multinom_output[1,]$ACC_test` on the test data while the best performing pace model, the one with $\Delta_{ij}^{FZ}$, reports a slightly higher accuracy of `r multinom_output[4,]$ACC_test`. The best modified model with a pace metric actually performs slightly worse on the train set than the baseline model. Once again, we see that the addition of pace metrics do not significantly improve the predictive power of the model on the test set. 
+
+```{r}
+multinom_output %>%
+  mutate(model_type = c("Baseline", "$\\Delta_{ij}^{AZ}$", "$\\Delta_{ij}^{OZ}$", "$\\Delta_{ij}^{FK}$")) %>%
+  select(model_type, everything(), -acc_mean, -ACC_test) %>%
+  slice(c(1,4)) %>% 
+  kbl(booktabs = T, align = "c", 
+      caption = "Multinomial logistic model results with 4-fold cross validation.",
+      col.names = c("Model", "Mean TPR (win)", "Mean TPR (draw)", "Mean TPR (loss)",  "TPR (win)", "TPR (draw)", "TPR (loss)"
+      )) %>%
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
+  add_header_above(c(" " = 1, "Train Data" = 3, "Test Data" = 3))
+```
+
+The True Positive Rates from the multinomial model indicate that it predicts wins decently well but struggles to correctly predict a draw or loss. On paper, one team is typically stronger than the other and thus more likely to win. Predicting a draw or loss requires the stronger team to underperform, which is usually unexpected and therefore more unpredictable. The results for the other two pace models can be found in Appendix Table XXXX. 
+
+```{r}
+multinom.fit.baseline.summary <- multinom("FTR ~ current_unbeaten_streak + derby_game + home",
+                                          data = bind_rows(train_data_multinom, test_data_multinom),
+                                          trace = FALSE) %>% summary()
+
+# get  pvalues: https://rpubs.com/malshe/214303
+z <- multinom.fit.baseline.summary$coefficients/multinom.fit.baseline.summary$standard.errors
+p <- (1 - pnorm(abs(z), 0, 1))*2
+
+multinom.fit.baseline.coef <- tibble(
+  predictor = c("(Intercept)", "Unbeaten", "Derby"),
+  log.estimate0 = multinom.fit.baseline.summary$coefficients[1,1:3],
+  log.estimate1 = multinom.fit.baseline.summary$coefficients[2,1:3],
+  std.error0 = multinom.fit.baseline.summary$standard.errors[1,1:3],
+  std.error1 = multinom.fit.baseline.summary$standard.errors[2,1:3],
+  estimate0 = log.estimate0 %>% exp(),
+  estimate1 = log.estimate1 %>% exp(),
+  lower.estimate0 = (log.estimate0 - 1.96*std.error0) %>% exp(),
+  lower.estimate1 = (log.estimate1 - 1.96*std.error1) %>% exp(),
+  upper.estimate0 = (log.estimate0 + 1.96*std.error0) %>% exp(),
+  upper.estimate1 = (log.estimate1 + 1.96*std.error1) %>% exp(),
+  pval0 = p[1,1:3],
+  pval1 = p[2,1:3]
+) %>%
+  mutate_if(is.double, round, 3) %>% 
+  mutate(log.estimate0 = log.estimate0 %>% round(2),
+         log.estimate1 = log.estimate1 %>% round(2),
+         CI0 = paste0("(", lower.estimate0 %>% round(2), ", ", upper.estimate0 %>% round(2), ")"),
+         CI1 = paste0("(", lower.estimate1 %>% round(2), ", ", upper.estimate1 %>% round(2), ")"),
+         estimate_ci0 = paste(estimate0 %>% round(2), CI0),
+         estimate_ci1 = paste(estimate1 %>% round(2), CI1),
+         pval0 = case_when(
+           pval0 < 0.001 ~ "< 0.001",
+           pval0 < 0.01 ~ "< 0.01",
+           TRUE ~ pval0 %>% round(2) %>% as.character()
+         ),
+         pval0 = cell_spec(pval0, bold = ifelse(pval0 <= 0.05, TRUE,  FALSE)),
+         pval1 = case_when(
+           pval1 < 0.001 ~ "< 0.001",
+           pval1 < 0.01 ~ "< 0.01",
+           TRUE ~ pval1 %>% round(2) %>% as.character()
+         ),
+         pval1 = cell_spec(pval1, bold = ifelse(pval1 <= 0.05, TRUE,  FALSE))) %>% 
+  select(log.estimate0, log.estimate1, estimate_ci0, estimate_ci1, pval0, pval1) %>% 
+  mutate_all(as.character)
+
+multinom.fit.baseline.coef[nrow(multinom.fit.baseline.coef)+1,] <- " "
+
+multinom.fit.pace.summary <- multinom("FTR ~ current_unbeaten_streak + derby_game + diff_all_attacking_flank_zone_speeds + home",
+                                      data = bind_rows(train_data_multinom, test_data_multinom),
+                                      trace = FALSE) %>% summary()
+
+z.pace <- multinom.fit.pace.summary$coefficients/multinom.fit.pace.summary$standard.errors
+p.pace <- (1 - pnorm(abs(z.pace), 0, 1))*2
+
+multinom.fit.pace.coef <- tibble(
+  predictor = c("(Intercept)", "Unbeaten", "Derby", "$\\Delta_{ij}^{FK}$"),
+  log.estimate0 = multinom.fit.pace.summary$coefficients[1,1:4],
+  log.estimate1 = multinom.fit.pace.summary$coefficients[2,1:4],
+  std.error0 = multinom.fit.pace.summary$standard.errors[1,1:4],
+  std.error1 = multinom.fit.pace.summary$standard.errors[2,1:4],
+  estimate0 = log.estimate0 %>% exp(),
+  estimate1 = log.estimate1 %>% exp(),
+  lower.estimate0 = (log.estimate0 - 1.96*std.error0) %>% exp(),
+  lower.estimate1 = (log.estimate1 - 1.96*std.error1) %>% exp(),
+  upper.estimate0 = (log.estimate0 + 1.96*std.error0) %>% exp(),
+  upper.estimate1 = (log.estimate1 + 1.96*std.error1) %>% exp(),
+  pval0 = p.pace[1,1:4],
+  pval1 = p.pace[2,1:4]
+) %>%
+  mutate_if(is.double, round, 3) %>% 
+  mutate(log.estimate0 = log.estimate0 %>% round(2),
+         log.estimate1 = log.estimate1 %>% round(2),
+         CI0 = paste0("(", lower.estimate0%>% round(2), ", ", upper.estimate0%>% round(2), ")"),
+         CI1 = paste0("(", lower.estimate1%>% round(2), ", ", upper.estimate1%>% round(2), ")"),
+         estimate_ci0 = paste(estimate0%>% round(2), CI0),
+         estimate_ci1 = paste(estimate1%>% round(2), CI1),
+         pval0 = case_when(
+           pval0 < 0.001 ~ "< 0.001",
+           pval0 < 0.01 ~ "< 0.01",
+           TRUE ~ pval0 %>% round(2) %>% as.character()
+         ),
+         pval0 = cell_spec(pval0, bold = ifelse(pval0 <= 0.05, TRUE,  FALSE)),
+         pval1 = case_when(
+           pval1 < 0.001 ~ "< 0.001",
+           pval1 < 0.01 ~ "< 0.01",
+           TRUE ~ pval1 %>% round(2) %>% as.character()
+         ),
+         pval1 = cell_spec(pval1, bold = ifelse(pval1 <= 0.05, TRUE,  FALSE))) %>% 
+  select(predictor, log.estimate0, log.estimate1, estimate_ci0, estimate_ci1, pval0, pval1)
+```
+
+```{r}
+bind_cols(
+  bind_cols(
+    multinom.fit.baseline.coef %>% 
+      select(log.estimate0:log.estimate1) %>% 
+      tidyr::gather(response, logcoef, log.estimate0:log.estimate1) %>% 
+      select(-response),
+    multinom.fit.baseline.coef %>% 
+      select(estimate_ci0:estimate_ci1) %>% 
+      tidyr::gather(response, coef, estimate_ci0:estimate_ci1) %>% 
+      mutate(response = case_when(
+        response == "estimate_ci0" ~ "FTR = draw",
+        response == "estimate_ci1" ~ "FTR = win"
+      )),
+    multinom.fit.baseline.coef %>% 
+      select(pval0, pval1) %>% 
+      tidyr::gather(response, pval, pval0:pval1) %>% 
+      select(-response)
+  ),
+  inner_join(
+    multinom.fit.pace.coef %>% 
+      select(predictor, log.estimate0:log.estimate1) %>% 
+      tidyr::gather(response, logcoef, log.estimate0:log.estimate1) %>% 
+      mutate(response = case_when(
+        response == "log.estimate0" ~ "FTR = draw",
+        response == "log.estimate1" ~ "FTR = win"
+      )),
+    multinom.fit.pace.coef %>% 
+      select(predictor, estimate_ci0:estimate_ci1) %>% 
+      tidyr::gather(response, coef, estimate_ci0:estimate_ci1) %>% 
+      mutate(response = case_when(
+        response == "estimate_ci0" ~ "FTR = draw",
+        response == "estimate_ci1" ~ "FTR = win"
+      )), 
+      by = c("predictor", "response")) %>% 
+    inner_join(
+      multinom.fit.pace.coef %>% 
+        select(predictor, pval0, pval1) %>% 
+        tidyr::gather(response, pval, pval0:pval1) %>% 
+        mutate(response = case_when(
+          response == "pval0" ~ "FTR = draw",
+          response == "pval1" ~ "FTR = win"
+        )), 
+      by = c("predictor", "response")
+    )
+) %>% 
+  select(predictor, response...2, everything(), -response...6) %>% 
+kbl(caption = "Coefficients obtained from models 2.1 and 2.2.", escape=F, booktabs = TRUE,
+    col.names = c("Predictor", "Response", "Log Odds", "Odds Ratio",  "p-value","Log Odds", "Odds Ratio", "p-value")
+) %>% 
+  kable_styling(latex_options = c("hold_position"), font_size = 13) %>%
+  add_header_above(c(" " = 2, "Baseline Model Odds Ratio" = 3, "Pace Model Odds Ratio" = 3)) 
+```
+
+

@@ -203,7 +203,8 @@ create_facet_heatmap <- function(aggregate_data, legend_scale = "sequential",
           panel.grid.minor = element_blank(),
           panel.background = element_rect(fill = "white"),
           axis.line = element_line(colour = color),
-          axis.title.x=element_blank(),
+          axis.title.x=element_text(vjust=-2),
+          #axis.title.x=element_blank(),
           axis.text.x=element_blank(),
           axis.ticks.x=element_blank(),
           axis.title.y=element_blank(),
@@ -413,7 +414,7 @@ multinom_cv <- function(model_formula_text, train_data, test_data, CV=TRUE) {
 }
 
 
-create_heatmap2 <- function(grids, metric, font_size = 12, legend_title = "Speed (m/s)") {
+create_heatmap2 <- function(grids, metric, font_size = 12, legend_title = "Speed (m/s)", legend_position = "bottom") {
   
   rng = range(eval(parse(text = metric)), na.rm=TRUE)
   lower <- ceiling(rng[1])
@@ -439,14 +440,19 @@ create_heatmap2 <- function(grids, metric, font_size = 12, legend_title = "Speed
     #                     #limits = c(lower, upper)
     #                     ) +
     scoutr::fc_annotate_pitch(fill = NA, color ="black") +
+    
     theme(panel.background = element_rect(fill = "white"),
           panel.border = element_rect(color="black", fill=NA),
-          axis.title.x=element_blank(),
+          axis.title.x=element_text(size = 10),
           axis.text.x=element_blank(),
           axis.ticks.x=element_blank(),
           axis.title.y=element_blank(),
           axis.text.y=element_blank(),
           axis.ticks.y=element_blank(),
           strip.text.x = element_text(size = font_size),
-          legend.key.size = unit(0.5, 'cm'))
+          legend.key.size = unit(0.5, 'cm'),
+          legend.position = legend_position,
+          #legend.text = element_text(size = 16),
+          legend.key.height = unit(0.3, 'cm'),
+          legend.key.width = unit(0.6, 'cm'),)
 } 

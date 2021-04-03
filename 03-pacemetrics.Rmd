@@ -1,0 +1,413 @@
+# Pace-of-Play Metrics
+
+## Framework
+
+### Possession Sequences
+
+Ball possession is the amount of time that a team possesses the ball during a game. However, there is no widely accepted definition of what events concludes a possession and triggers a new one [[6]][References]. Thus, we created a possession identifier that indicates the current unique possession in a game. In our definition, new possessions begin after a team demonstrates that it has established control of the ball. This occurs in the following situations: at the start of a half, when the team successfully intercepts or tackles the ball, after a shot is taken and after the opposing team last touches the ball before it goes out of bounds or commits a foul. A new possession can also begin even if the same team has possession of the ball. For example, if the ball goes out for a throw in for the attacking team, this indicates a new possession for the same attacking team. In addition, if the attacking team makes a pass after a sequence of duels, events in which opposing players contest the ball, this constitutes the same possession. According to our definition above, there were an average of 306 possessions per game.
+
+When analyzing pace, we only included passes and free kicks (excluding free kick shots and penalty kicks) since these events are reliable indicators of the pace of the game. In addition, we only kept possessions that consist of three or more pass or free kick events, as these types of possessions are more definitive of a team’s pace. From this point onwards, events will only refer to these passes and free kicks. Following the exclusion of certain possessions, the remaining possessions contained an average of 5.5 events per possession. 
+
+### Metrics of Pace 
+
+After creating a possession identifier, we first calculated the distance each event travelled. The east-west distances ($\delta_{EW}$) are determined by the difference of the starting and ending x-coordinates while the north-south distances ($\delta_{NS}$) are determined by the difference of the starting and ending y-coordinates. The total distances ($\delta_{T}$) are calculated with the formula $\sqrt{(\delta_{EW}^2 + \delta_{NS}^2)}$. Events are assigned an E-only distance ($\delta_{E}$) only if the pass travels toward the opposing goal. In reality, passes rarely travel in a straight line and players will often dribble the ball before making a pass. However, the dataset does not provide information about the ball's true trajectory and movement, so these distances are calculated under the assumption that the ball travels in a straight line from its starting to ending coordinates. 
+
+Next, we calculated the duration between events. For each event, the dataset only provides a timestamp in seconds since the beginning of the current half of the game. Thus, within each possession, the duration for an event was calculated as the difference of the timestamp of the following event and that of the current event. With this definition of duration, the last event in the possession sequence is unable to be included in the calculation of pace. 
+
+We used the distance travelled and duration between successive passes and free kicks in the same possession to calculate four different measures of pace: total ($V_{T}$), east-west ($V_{EW}$), north-south ($V_{NS}$), and east-only ($V_{E}$) velocity. $V_{E}$ differs from $V_{EW}$ in that only forward progress is measured, and any backward progress is excluded from the analysis. Note that these four metrics are the average velocities of the event rather than the instantaneous velocities, since we did not have access to tracking data. 
+
+All of the previously mentioned procedures can be implemented with functions in the [**scoutr**](https://github.com/shawnsanto/scoutr) package. 
+
+### Spatial Polygrid Analysis 
+
+We rescaled the pitch to 105 by 70 meters instead of 105 by 68 meters, to be able to divide the pitch into 294 equal, non-overlapping 5x5 meter square polygrids [[7]][References]. $V_{T}$, $V_{EW}$, $V_{NS}$, and $V_{E}$ for a given event was assigned to all polygrids that the event's path intersects. Each polygrid contains $n$ velocity values for the $n$ event paths that intersect it. For each of the 5x5 polygrids, we then take the median for each of the four different pace metrics. There are polygrids, particularly ones in the corners or along the attacking team's goal line, that have very few recorded velocity values because only a few events intersect those polygrids. These polygrids often contain passes with extremely high velocities, most of which are due to tagging errors. Thus, the median was taken, instead of the mean, to account for the presence of outliers.
+
+### Zonal Analysis
+
+(ref:zone-grid-plot) Plot of the 294 polygrids and 8 zones overlaid on the pitch. The grey lines represent the polygrids and black borders represent the boundaries of the 8 zones.
+
+We divided the pitch into 8 regions. For each zone, we determined which of the 294 5x5 polygrids intersect the zone. As seen in Figure \@ref(fig:zone-grid-plot), there are some polygrids that fall into multiple zones. We then take the mean of the median $V_{T}$, $V_{EW}$, $V_{NS}$, and $V_{E}$ values of those 5x5 polygrids to determine the aggregate speeds for the zone. We note that there is no significant difference between taking the mean or the median of the median velocities.
+
+```{r zone-grid-plot, fig.align = "center", fig.cap="(ref:zone-grid-plot)"}
+zones %>%  
+  mutate(rowid = 1:8) %>% 
+  ggplot() +
+  fc_annotate_pitch(fill = "NA",color = "#F8FAF7") +
+  theme_void() + theme(plot.background = element_rect(fill = "#629A52", 
+        color = NA), aspect.ratio = 70/105, legend.position = "none")  + 
+  
+  geom_sf(color = "black", alpha = 0.8, size = 0.7) + # border around region, lighter color for polygrids 
+  #geom_sf_label(aes(label = rowid)) 
+  geom_sf_label(aes(label = rowid),
+                nudge_x = c(-0.6,-2.75,-2,-2.75,2.75,2,2.75,0.6),
+                nudge_y = c(2.5,0,2.5,0,0,2.5,0,2.5), size = 6, alpha = 0.9) +
+  geom_sf(data = grids5x5, aes(geometry = geometry), fill=NA, color = "#2E2E2E35")
+```
+
+This method was conducted in favor of another one that assigns an event’s speeds to all zones that intersect the path of the event. Our approach automatically factors in the event’s distance within the zone and is more resistant to outliers. For example, for a pass that intersects $n$ different 5x5 polygrids in a zone, the zone’s aggregate speed will be affected by that pass’ speed $n$ times instead of just once. This approach is thus more resistant to outliers. 
+
+## Results / Exploring Pace (which sounds better?)
+
+```{r load-results-files}
+load("source/data/league_average_speeds.Rda")
+load("source/data/total_speeds_modeling.Rda")
+load("source/data/league_tables.Rda")
+load("source/data/england_defense_total_speed_dfs.Rda")
+load("source/data/top_team_averages.Rda")
+load("source/data/all_league_grids.Rda")
+load("source/data/england_all_speeds.Rda")
+load("source/data/abbreviation_df.Rda")
+```
+
+### EPL Pace (Polygrid)
+
+We first examined how pace in the English Premier League (EPL) differs among the 294 polygrids.
+
+(ref:EPL-avg-velocities-grids) Velocity by polygrid in the EPL for the 2017-18 regular season. Note that the scale of the four plots are different. 
+
+```{r EPL-avg-velocities-grids, fig.align="center", fig.cap="(ref:EPL-avg-velocities-grids)", fig.height=6}
+p1 <- create_heatmap2(grids5x5, "england_all_median_total_speed", font_size = 9, legend_title = "") +
+  theme(legend.key.size = unit(0.5, 'cm')) +
+  scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",
+                      breaks = seq(8, 18, 3)) + labs(x = "Velocity (m/s)") + theme(axis.title.x=element_text(vjust=-2))#, plot.margin = unit(c(0,-1.25,-0.05,0), "cm"))
+p2 <- create_heatmap2(grids5x5, "england_all_median_EW_speed", font_size = 9, legend_title = "") +
+  theme(legend.key.size = unit(0.5, 'cm')) +
+  scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",
+                      breaks = seq(3, 10, 2)) + labs(x = "Velocity (m/s)") + theme(axis.title.x=element_text(vjust=-2))#, plot.margin = unit(c(0,0,-0.05,-1.25), "cm"))
+p3 <- create_heatmap2(grids5x5, "england_all_median_NS_speed", font_size = 9, legend_title = "") +
+  theme(legend.key.size = unit(0.5, 'cm')) +
+  scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",
+                      breaks = seq(5, 17, 4)) + labs(x = "Velocity (m/s)") + theme(axis.title.x=element_text(vjust=-2))#, plot.margin = unit(c(-0,-1.25,0,0), "cm"))
+p4 <- create_heatmap2(grids5x5, "england_all_median_E_speed", font_size = 9, legend_title = "") +
+  theme(legend.key.size = unit(0.5, 'cm')) +
+  scale_fill_gradient(low = "#ffffb2", high = "#bd0026", na.value = "#cdff9c",
+                      breaks = seq(4, 10, 2)) + labs(x = "Velocity (m/s)") + theme(axis.title.x=element_text(vjust=-2))#, plot.margin = unit(c(-0,0,0,-1.25), "cm"))
+
+gridExtra::grid.arrange(p1, p2, p3, p4, ncol = 2)
+```
+
+```{r}
+# yup = tibble(
+#   grid = 1:294,
+#   england_all_median_E_speed = england_all_median_E_speed,
+#   england_all_median_EW_speed = england_all_median_EW_speed,
+#   england_all_median_NS_speed = england_all_median_NS_speed,
+#   england_all_median_total_speed = england_all_median_total_speed
+# ) %>% 
+#   tidyr::gather(direction, value, england_all_median_E_speed:england_all_median_total_speed) %>% 
+#   mutate(direction = str_remove_all(direction, "england_all_median_|_speed"),
+#          direction = ifelse(direction == "total",  "Total", direction) %>% 
+#            factor(levels = c("Total", "EW", "NS", "E"))) 
+# 
+# create_facet_heatmap(yup %>% rename(club = direction), nrow = 2, ncol = 2, legend_scale = "sequential") + labs(fill = "Speed (m/s)")
+```
+
+Figure \@ref(fig:EPL-avg-velocities-grids) displays the velocities for each polygrid for all games played in the EPL. $V_{T}$ is the fastest in the polygrids within the opposing team’s penalty box and along the opposing team’s goal line. This is primarily due to higher $V_{NS}$ in those areas, as $V_{EW}$ is relatively slow. Passes completed within the penalty box will usually be taken faster, as players will often be looking for goal-scoring opportunities but will also be under more pressure from defenders. In addition, corner kicks often have a higher velocity than most passes. Most corners are taken into the 6-yard box, so their trajectories will intersect with the polygrids along the goal line. 
+
+It is interesting to note that in the offensive half of the pitch, $V_{T}$ is slower along the left and right flanks and faster in the middle. This is primarily driven by the patterns in $V_{EW}$ and $V_{NS}$, as $V_{EW}$ is generally faster along the flanks while $V_{NS}$ is faster in the middle. However, the $V_{NS}$ in the middle are faster than the $V_{EW}$ along the flanks, which is why $V_{T}$ is also faster in the middle. 
+
+From the $V_{E}$, it seems like the teams in the EPL prefer to advance the ball past the center line along the flanks, rather than down the middle. At the end of the 2017/18 season, 8 out of the 10 players with the most assists were most often deployed as either left or right wingers or midfielders. Another interesting result is that $V_{E}$ is relatively similar in the offensive and defensive thirds. A prior study suggests that a decline in $V_{E}$ in the offensive third should be expected since there are diminishing returns for advancing the ball forward [[7]][References]. However, this decline in speed is only apparent in the polygrids around the 6-yard box. In most cases, players who receive the ball in this position would shoot, as these positions provide players with the optimal shooting angles. However, $V_{E}$ does not decline in other polygrids in the offensive third. Central midfielders stationed around the outskirts penalty box could pass the ball to wingers on the left or right flanks. Even though the shooting angle worsens for the wingers, they can easily advance toward the goal line and cross the ball to the penalty box or cut back [[12]][References] to an onrushing player, both of which could lead to goal-scoring opportunities. 
+
+### EPL Pace (Zonal)
+
+We then examined how pace in the EPL differs among the 8 zones. 
+
+(ref:EPL-avg-velocities-zonal) Velocity by zone in the EPL for the 2017-18 regular season.
+
+```{r EPL-avg-velocities-zonal, fig.align="center", fig.cap="(ref:EPL-avg-velocities-zonal)"}
+col.pal <- c("#1b9e77","#d95f02","#7570b3","#e7298a","#66a61e","#e6ab02","#a6761d","#666666")
+
+league_average_speeds %>% 
+  select(zone, direction, mean_england_zones) %>% 
+  tidyr::gather(league, value, mean_england_zones) %>% 
+  mutate(league = str_remove_all(league, "mean_|_zones") %>% str_to_title()) %>% 
+  mutate(direction = case_when(
+    direction == "total" ~ "Total", 
+    direction == "EW" ~ "E-W", 
+    direction == "NS" ~ "N-S",
+    direction == "E" ~ "E-only"
+  ) %>% paste0(., " Velocity") %>%
+    factor(levels = c("Total Velocity", "E-W Velocity", "N-S Velocity", "E-only Velocity"))) %>% 
+  ggplot() + 
+  geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
+  facet_grid(.~direction, scales = "free_y") +
+  labs(fill = "Zone", y = "Velocity (m/s)") + 
+  scale_fill_manual(values=col.pal) + 
+  theme_bw() +   
+  guides(fill = guide_legend(nrow = 1)) + 
+  theme(axis.title.x =element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position = "bottom",
+        strip.text.x = element_text(size = 10))
+
+
+```
+
+Figure \@ref(fig:EPL-avg-velocities-zonal) shows the zonal velocities We noticed that $V_{T}$ is the highest in zone 8 and approximately 28-37% slower in the other seven regions. This is primarily due to the disparity among the $V_{NS}$, particularly in zone 8, as $V_{EW}$ is roughly equal in all zones. Zone 8 contains the highest $V_{NS}$ because the velocities of corner kicks are all recorded in this zone. In addition, we also expect zones 2, 4, 5 and 7 to have the highest $V_{EW}$ and lowest $V_{NS}$ - in these zones, players can pass forwards and backwards, but only up or down, depending on their position on the pitch. 
+
+### Pace Across Leagues 
+
+Next, we analyzed how pace varies between the EPL and the four other first-division European leagues (Ligue 1, Bundesliga, Serie A and La Liga). 
+
+(ref:other-leagues-avg-velocities) Percent difference in velocity by zone relative to the EPL for the 2017-18 regular season.
+
+```{r other-leagues-avg-velocities, fig.align="center", fig.cap="(ref:other-leagues-avg-velocities)"}
+league_average_speeds %>% 
+  mutate(`Ligue 1` = map2(mean_england_zones, mean_france_zones, perc_change) %>% unlist(),
+         Bundesliga = map2(mean_england_zones, mean_germany_zones, perc_change) %>% unlist(),
+         `Serie A` = map2(mean_england_zones, mean_italy_zones, perc_change) %>% unlist(),
+         `La Liga` = map2(mean_england_zones, mean_spain_zones, perc_change) %>% unlist()) %>% 
+  select(-(mean_england_zones:mean_spain_zones)) %>% 
+  tidyr::gather(league, value, `Ligue 1`:`La Liga`) %>% 
+  mutate(league = factor(league,  levels = c("Ligue 1", "Bundesliga", "Serie A", "La Liga")),
+         direction = case_when(
+           direction == "total" ~ "Total", 
+           direction == "EW" ~ "E-W", 
+           direction == "NS" ~ "N-S",
+           direction == "E" ~ "E-only"
+         ) %>% paste0(., " Velocity") %>%
+           factor(levels = c("Total Velocity", "E-W Velocity", "N-S Velocity", "E-only Velocity")),
+         value = value * 100) %>% 
+  ggplot() + 
+  geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
+  facet_grid(direction~league, scales = "free_y") +
+  theme_bw()  + 
+  geom_hline(yintercept = 0, colour = "black") +
+  theme(panel.grid.major = element_blank(), 
+        legend.position = "bottom",
+        axis.title.x =element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        strip.text.x = element_text(size = 10),
+        strip.text.y = element_text(size = 8.5)) + 
+  labs(x = "Zone", fill = "Zone", y = expression(paste(Delta, " Velocity (%)"))) + 
+  guides(fill = guide_legend(nrow = 1)) + 
+  scale_fill_manual(values=col.pal)
+
+```
+
+Figure \@ref(fig:other-leagues-avg-velocities) shows the percent difference between the average velocities from the EPL and those of the four other European leagues. Pace in Ligue 1 is slower in the defensive half of the pitch but mostly faster in the offensive pitch. $V_{T}$ is approximately 1% faster in zones 5, 6, 7, and is primarily driven by changes in the $V_{EW}$, as $V_{NS}$ is relatively similar to that of the EPL. This could be due to the fact that the average number of goals scored per game is slightly higher in Ligue 1 than in the EPL (2.72 vs. 2.68). Faster pace in the offensive half can yield more goal-scoring opportunities. In addition, the 2017-2018 season saw the transfer of Neymar from Barcelona to PSG and the emergence of Kylian Mbappe. While Ligue 1 is often described as a poor attacking league, the advent/presence of this formidable attacking duo may have reinvigorated the league [[8]][References]. 
+
+Differences in the offensive half are most notable in the Bundesliga. $V_{T}$ in the Bundesliga is 2-4% faster in zones 5, 6, 7 and is driven by an increase in both the $V_{EW}$ and $V_{NS}$. The increase in total could have been due to a higher average number of goals scored per game compared to the EPL (2.79 vs. 2.68). Additionally, Bundesliga players are more likely to create scoring chances and take more shots than those in the other four leagues [[9]][References], which is corroborated by the fact that the $V_{E}$ are approximately 3-5% faster than the EPL.
+
+Pace in Serie A is generally slower and primarily driven by a decline in $V_{EW}$ across seven zones, with the most noteworthy occurring in zone 1. We performed a simulation based hypothesis test and determined there is no significant difference in the zone 1 speeds of the EPL and Serie A. Nothing in the data or the available literature provides any further insight on this phenomenon. 
+
+La Liga displays the smallest difference in pace, with slightly slower speeds in zones 1 and 2. We expected La Liga teams to have the slowest velocities in the defensive half, as they are known for playing out from the back, a common tactic in which teams begin passing in their defensive third. This type of build-up play can help increase the quality of passes into teams’ midfielders and forwards. Goalkeepers such as Keylor Navas and Marc-Andre Ter Stegen both possess excellent ball control and distribution, which thus allows their teams to start plays from the back [[17]][References].  
+
+In recent years, more EPL teams have been adopting this tactic. Manchester City, with goalkeeper Ederson, is one of the best teams at playing from out from the back. When Pep Guardiola took over in 2016, he seeked to implement a system that plays out from the back, which requires a goalkeeper who is comfortable with the ball on their feet and is capable of building plays from the back [[13]][References] [[14]][References] [[15]][References]. Replacing long-term goalkeeper Joe Hart with Ederson, someone who fulfills Guardiola’s needs, has contributed to their recent success. Although this style of play has a myriad of benefits, not all teams are capable of executing this tactic. Playing out from the back requires precise passes, as one wayward pass could fall into the feet of an opposing player. Some goalkeepers, such as Tottenham’s Hugo Lloris, arguably one of the world’s best goalkeepers in terms of anticipation and one-on-one situations, lack the ability to pick out the right passes and prevent their teams from adopting this tactic [[13]][References] [[16]][References]. The mixed success of playing from the back in the EPL may have contributed to the slight difference in pace in the defensive half in comparison to La Liga. 
+
+In general, players from La Liga and the EPL display the most similar performance-related match actions [[9]][References] and recorded a similar average number of goals per game (2.69 vs. 2.68), suggesting that only slight differences in pace should be expected between these two leagues. 
+
+Ultimately, differences between these leagues are likely due to stylistic differences between leagues and individual teams, rather than differences in player ability. 
+
+### EPL Team-level Pace (Polygrid)
+
+We examined team-level pace for the 20 teams in the EPL using both the polygrid and zonal methods and compared each team’s $V_{T}$ to the EPL league average.
+
+(ref:epl-attacking-polygrids) Polygrid analysis of total speed by team vs. EPL average while attacking. Select teams are ordered by final standings from the 2017-18 season. All units are in m/s.
+
+```{r epl-attacking-polygrids, fig.align = "center", fig.cap="(ref:epl-attacking-polygrids)", fig.width=18,fig.height=9}
+epl_10 <- epl_grids %>% 
+  mutate(median_liverpool_total_speed = ifelse(median_liverpool_total_speed >= 72, NA,  median_liverpool_total_speed)) %>%
+  mutate_at(vars(-matches("median_england_total_speed")), list( ~ . - median_england_total_speed)) %>% 
+  select(-median_england_total_speed) %>% 
+  rename_all( ~ str_remove_all(.x, "median_|_total_speed") %>% str_replace_all("_", " ")) %>% 
+  select(`man city`,  `Manchester United`, `Tottenham Hotspur`, liverpool, `crystal palace`, `bournemouth`, `Stoke City`, wba) %>% 
+  mutate(bournemouth = ifelse(bournemouth >= 2,  0, bournemouth)) %>% 
+  mutate(zone = 1:294) %>% 
+  gather(club, value,  `man city`:wba) %>% 
+  mutate(club = str_to_title(club),
+         club = case_when(
+           club == "Man City" ~ "Manchester City", 
+           club == "Bournemouth" ~ "AFC Bournemouth", 
+           club == "Wba"~ "West Bromwich Albion",
+           TRUE ~ as.character(club)
+         )) %>% 
+  left_join(league_tables %>% 
+              slice(1:20) %>% 
+              select(Pos, Team),
+            by = c("club" = "Team")) %>% 
+  mutate(club = paste0(club, " (", Pos, ")"), 
+         club = reorder(club, Pos)) #%>% 
+# left_join(abbreviation_df, by = "club") %>% 
+# mutate(club = paste0(abb, " (", Pos, ")"),
+#        club = reorder(club, Pos))
+
+create_facet_heatmap(epl_10 %>% 
+                       mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995),
+                                             quantile(value, na.rm=TRUE, 0.995), value)) %>% 
+                       mutate(value = ifelse(value <= quantile(value, na.rm=TRUE, 0.0025),
+                                             quantile(value, na.rm=TRUE, 0.0025), value)), legend_scale = "diverging") +
+  labs(x = expression(paste(Delta, " Speed (m/s)")), fill = "") + 
+  theme(strip.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        legend.text = element_text(size = 16),
+        legend.key.height = unit(0.75, 'cm'),
+        legend.key.width = unit(2, 'cm'),
+        legend.position = "bottom")# + guides(fill=guide_colourbar(title.vjust=1))#+ guides(fill = guide_legend(title.position = 'top'))#+ 
+#guides(fill = guide_legend( title.position = "top"))
+#guides(fill = guide_legend(label.position = "left", label.hjust = 1))
+```
+
+Figure \@ref(fig:epl-attacking-polygrids) displays the difference between the median total velocity in each 5x5m polygrid for 8 teams and that of the EPL average, with the rest displayed in the Appendix. None of these teams are faster or slower in all 294 polygrids, but the pace of the top six teams (Manchester City, Manchester United, Tottenham Hotspur, Liverpool, Chelsea and Arsenal) is generally slower than the league average. As we move down the league table, the polygrid velocities display more variation, but the four bottom-tier teams in Figure 4.3 are generally faster. It might seem odd that the top tier teams have a slower pace, but this is primarily due to the way we define pace. We expect these teams to maintain possession for a greater portion of the game and complete more passes. It is more likely for teams to maintain possession when making shorter, more controlled passes. Thus, we expect that the average distance and velocity per pass to increase as we move down the league table. 
+
+In addition, goal kicks from the top four teams are relatively slower than the league average, with Manchester City's having the slowest velocities. Although there is some variation, goal kicks from the bottom tier teams are generally faster than the league average. Since lower tier teams may not have possession for long periods of time, their goalkeepers may feel pressured to take longer goal kicks down the pitch, with the hope that one could create a goal-scoring opportunity. This is corroborated by the fact that Manchester City’s goalkeeper Ederson took 71% of his Premier League passes short, while every other goalkeeper, except for Liverpool's Simon Mignolet, took less than 50% of their passes short [[11]][References].
+
+(ref:epl-defense-polygrids) Polygrid analysis of total speed by team vs. EPL average while defending. Select teams are ordered by final standings from the 2017-18 season. All units are in m/s.
+
+```{r epl-defense-polygrids, fig.align = "center", fig.cap="(ref:epl-defense-polygrids)", fig.width=18,fig.height=9}
+epl_10_defense <- all_grid_england_defense_speed %>% 
+  mutate(club = case_when(
+    club == "Afc Bournemouth" ~ "AFC Bournemouth",
+    club == "Brighton Hove Albion" ~ "Brighton & Hove Albion",
+    TRUE ~ as.character(club)
+  )) %>% 
+  gather(zone, value, -club) %>% 
+  spread(club, value) %>% 
+  mutate(zone = str_remove_all(zone, "zone") %>% as.numeric()) %>% 
+  arrange(zone) %>% 
+  bind_cols(epl_grids %>% select(median_england_total_speed)) %>% 
+  mutate_at(vars(-matches("median_england_total_speed"), -matches("zone")), list( ~ . - median_england_total_speed)) %>% 
+  select(-median_england_total_speed) %>% 
+  gather(club, value,  `AFC Bournemouth`:`West Ham United`, -zone) %>% 
+  left_join(league_tables %>% 
+              slice(1:20) %>% 
+              select(Pos, Team),
+            by = c("club" = "Team")) %>% 
+  filter(club %in% c("Manchester City", "Manchester United", "Tottenham Hotspur", "Liverpool", "Crystal Palace", "AFC Bournemouth", "Stoke City", "West Bromwich Albion")) %>% 
+  mutate(club = paste0(club, " (", Pos, ")"),
+         club = reorder(club, Pos)) 
+
+create_facet_heatmap(epl_10_defense %>% 
+                       mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995), 
+                                             quantile(value, na.rm=TRUE, 0.995), 
+                                             ifelse(value <= quantile(value, na.rm=TRUE, 0.0025),
+                                                    quantile(value, na.rm=TRUE, 0.0025), value))),
+                     legend_scale = "diverging") +
+  labs(x = expression(paste(Delta, " Speed (m/s)")), fill = "") + 
+  theme(strip.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        legend.text = element_text(size = 16),
+        legend.key.height = unit(0.75, 'cm'),
+        legend.key.width = unit(2, 'cm'),
+        legend.position = "bottom")
+
+# %>% mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995), quantile(value, na.rm=TRUE, 0.995), ifelse(value <= quantile(value, na.rm=TRUE, 0.005),quantile(value, na.rm=TRUE, 0.005), value)))
+```
+
+Figure \@ref(fig:epl-defense-polygrids) shows that while defending, these 8 teams also display variability between different polygrids and regions on the pitch. The top 4 teams generally gave up more pace in the offensive zones, with the exception of Manchester United. One reason for this discrepancy could be due to Jose Mourinho’s leadership [[18]][References] [[19]][References]. Under Mourinho, Manchester United line up in a 4-3-3 formation that shifts to a 4-1-4-1 defensively [[20]][References]. He is known for playing cautiously in big games; rather than imposing his style, he often looks to counter the opponents. For example, he has played 4-5-1 and 6-3-1 formations into draws against Liverpool, two defensive line ups that heavily negate Liverpool’s dynamic front three [[21]][References]. In addition, Manchester United’s goal-keeper, David de Gea, was the best goalkeeper in the league with 18 clean sheets. 
+
+### EPL Team-level Pace (Zonal)
+
+We also examined team-level pace using the zonal method, which allows us to get a more high-level understanding of how pace varies across different clubs in the EPL. 
+
+```{r epl-team-attacking-zonal, fig.align = "center", fig.cap="Zonal analysis of total speed by team vs. EPL average while attacking. Teams are ordered by final standings from the 2017-18 season. All units are in m/s.", fig.width=17, fig.height=8}
+#fig.height=12
+all_total_avg_speeds %>% slice(1:20) %>% 
+  rownames_to_column() %>% 
+  gather(zone, value, -club) %>% 
+  spread(club, value) %>% 
+  filter(zone != "rowname") %>% 
+  bind_cols(
+    league_average_speeds %>% filter(direction == "total") %>% select(mean_england_zones)
+  ) %>%
+  select(-zone) %>% 
+  mutate_if(is.character, as.double) %>% 
+  mutate_at(vars(-matches("mean_england_zones"), -matches("zone")), list( ~ . - mean_england_zones)) %>% 
+  select(-mean_england_zones) %>% 
+  mutate(zone = 1:8) %>% 
+  gather(club, value,  `AFC Bournemouth`:`West Ham United`, -zone) %>% 
+  left_join(league_tables %>% slice(1:20) %>% select(Pos, Team),
+            by = c("club" = "Team")) %>% 
+  mutate(club = paste0(club, " (", Pos, ")"),
+         club = reorder(club, Pos)) %>%
+  # left_join(abbreviation_df, by = "club") %>%
+  # mutate(abb = case_when(
+  #   club == "AFC Bournemouth" ~ "BOU",
+  #   club == "Brighton & Hove Albion" ~ "BHA",
+  #   club == "Huddersfield Town" ~ "HUD",
+  #   club == "Stoke City" ~ "STO",
+  #   club == "Swansea City" ~ "SWA",
+  #   club == "Watford" ~ "WAT",
+  #   TRUE ~ as.character(abb)
+  # )) %>%
+  # mutate(club = paste0(abb, " (", Pos, ")"),
+  #        club = reorder(club, Pos))  %>%
+  ggplot() + 
+  geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
+  facet_wrap(.~club, nrow = 2, labeller = label_wrap_gen(width=14.5)) +
+  theme_bw()  + 
+  geom_hline(yintercept = 0, colour = "black") +
+  labs( fill = "Zone", y = expression(paste(Delta, " Speed (m/s)"))) + 
+  theme(panel.grid.major = element_blank(),
+        axis.title.x =element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y = element_text(size = 18),
+        axis.text.y.left = element_text(size = 16),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 16),
+        strip.text.x = element_text(size = 14.5), # text for facet_wrap labels
+        legend.position = "bottom") + 
+  guides(fill = guide_legend(nrow = 1)) + 
+  scale_fill_manual(values=col.pal) 
+```
+
+The overall results verify those found in the polygrid analysis. The top six teams (Manchester City, Manchester United, Tottenham Hotspur, Liverpool, Chelsea and Arsenal) were consistently slower than the league averages in all but 3 instances. As we move down the table, the zonal speeds display more variation, but these teams are generally faster than the league average. While attacking, teams such as Liverpool (4) and AFC Bournemouth (12) are faster than the league average in some zones and slower in other zones. However, the majority of the teams are either faster or slower in all 8 zones. For example, Newcastle United’s (10) speeds are faster in all 8 zones, while those of Manchester City (1) are all slower. 
+
+```{r epl-team-defending-zonal, fig.align = "center", fig.cap="Zonal analysis of total speed by team vs. EPL average while defending. Teams are ordered by final standings from the 2017-18 season. All units are in m/s.", fig.width=17, fig.height=8}
+#theme_update(text = element_text(size=16))
+all_england_defense_speed %>% 
+  mutate(club = case_when(
+    club == "Afc Bournemouth" ~ "AFC Bournemouth",
+    club == "Brighton Hove Albion" ~ "Brighton & Hove Albion",
+    TRUE ~ as.character(club)
+  )) %>% 
+  gather(zone, value, -club) %>% 
+  spread(club, value) %>% 
+  bind_cols(
+    league_average_speeds %>% filter(direction == "total") %>%  select(mean_england_zones)
+  ) %>% 
+  mutate_at(vars(-matches("mean_england_zones"), -matches("zone")), list( ~ . - mean_england_zones)) %>% 
+  select(-mean_england_zones) %>% 
+  mutate(zone = 1:8) %>% 
+  gather(club, value,  `AFC Bournemouth`:`West Ham United`, -zone) %>% 
+  left_join(league_tables %>% slice(1:20) %>% select(Pos, Team),
+            by = c("club" = "Team")) %>% 
+  mutate(club = paste0(club, " (", Pos, ")"),
+         club = reorder(club, Pos)) %>%
+  # left_join(abbreviation_df, by = "club") %>% 
+  # mutate(abb = case_when(
+  #   club == "AFC Bournemouth" ~ "BOU",
+  #   club == "Brighton & Hove Albion" ~ "BHA",
+  #   club == "Huddersfield Town" ~ "HUD",
+  #   club == "Stoke City" ~ "STO",
+  #   club == "Swansea City" ~ "SWA",
+  #   club == "Watford" ~ "WAT",
+  #   TRUE ~ as.character(abb)
+  # )) %>%
+  # mutate(club = paste0(abb, " (", Pos, ")"),
+  #        club = reorder(club, Pos)) %>% 
+  ggplot() + 
+  geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
+  facet_wrap(.~club,nrow = 2, labeller = label_wrap_gen(width=14.5)) +
+  theme_bw()  + 
+  geom_hline(yintercept = 0, colour = "black") +
+  labs(fill = "Zone", y = expression(paste(Delta, " Speed (m/s)"))) + 
+  theme(panel.grid.major = element_blank(),
+        axis.title.x =element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y = element_text(size = 16),
+        axis.text.y.left = element_text(size = 16),
+        legend.title = element_text(size = 20),
+        legend.text = element_text(size = 14),
+        strip.text.x = element_text(size = 16), # text for facet_wrap labels
+        legend.position = "bottom") + 
+  guides(fill = guide_legend(nrow = 1)) + 
+  scale_fill_manual(values=col.pal)
+```
+
+While defending, only Manchester City consistently gave up more pace, while the other 19 teams displayed variability between different zones. The top 6 teams generally gave up more pace in the offensive zones, with the exception of Manchester United (2). 
