@@ -107,7 +107,7 @@ To evaluate the models, we first split the data into a train and test set. The t
 
 ## Hierarchical Logistic Model 
 
-The baseline hierarchical logistic model (without any pace metrics) is as follows:
+The baseline hierarchical logistic model (without any pace variables) is as follows:
 
 $$ 
 \begin{aligned}
@@ -252,15 +252,15 @@ bind_cols(glmer.fit.baseline.coef, glmer.fit.pace.coef) %>%
   kbl(caption = "Coefficients obtained from models 1.1 and 1.2.", escape=F, booktabs = TRUE, align = "c",
       col.names = c("Predictor", "Log Odds Ratio", "Odds Ratio",  "p-value", "Log Odds Ratio", "Odds Ratio", "p-value")
   ) %>% 
-  kable_styling(latex_options = c("hold_position"), font_size = 11.5) %>%
+  kable_styling(latex_options = c("hold_position"), font_size = 13.5) %>%
   add_header_above(c(" " = 1, "Baseline Model" = 3, "Pace Model" = 3)) 
 ```
 
-Table \@ref(tab:hier-log-model-coef) displays the exponentiated coefficient values for all the variables that used in the baseline and pace metric models, respectively. All the coefficients, except for *Unbeaten* in the baseline model, are statistically significant. Thus, for every meter per second increase in $\Delta_{ij}^{FK}$ for home team $i$ and away team $j$, we expect the the odds of winning the game to multiply by a factor of 0.953 - this indicates that as the home team's $V_T$ in the flank zones increases, the home team has a smaller chance of winning the game. This reflects the results in the previous sections which showed that lower-ranked teams (and thus teams that have a lower chance of winning a match) generally have a higher $V_T$. 
+Table \@ref(tab:hier-log-model-coef) displays the exponentiated coefficient values for all the variables that used in the baseline and pace metric models, respectively. All the coefficients, except for *Unbeaten* in the baseline model, are statistically significant. We note that the log odds for $\Delta_{ij}^{FK}$ is negative and statistically significant. This indicates that as the home team's $V_T$ in the flank zones increases, the home team has approximately a 5% smaller chance of winning the game **is this interpretation correct?**. This reflects the results from Figure \@ref(fig:epl-attacking-polygrids), which showed that lower ranked teams, and thus teams that have a lower chance of winning a match, generally have a higher $V_T$. 
 
 ## Multinomial Logistic Model 
 
-The baseline multinomial logistic model (without any pace metrics) is as follows:
+The baseline multinomial logistic model (without any pace variables) is as follows:
 
 $$
 \begin{aligned}
@@ -317,22 +317,22 @@ multinom_output %>%
   add_header_above(c(" " = 1, "Cross Validation Data" = 1, "Test Data" = 1))
 ```
 
-The baseline multinomial model reports an accuracy of `r multinom_output[1,]$ACC_test` on the test data while the best performing pace model, the one with $\Delta_{ij}^{FZ}$, reports a slightly higher accuracy of `r multinom_output[4,]$ACC_test`. The best modified model with a pace metric actually performs slightly worse on the train set than the baseline model. Once again, we see that the addition of pace metrics do not significantly improve the predictive power of the model on the test set. 
+The baseline multinomial model reports an accuracy of `r multinom_output[1,]$ACC_test` on the test data while the best performing pace model, the one with $\Delta_{ij}^{FZ}$, reports a slightly higher accuracy of `r multinom_output[4,]$ACC_test`. This modified model, which is the best of the three pace models, actually performs slightly worse on the train set than the baseline model. Once again, we see that the addition of a pace variable in the model does not significantly improve the predictive power of the model on the test set. The results for the other two pace models can be found in Appendix Table XXXX. 
 
-```{r}
+```{r multinom-tprs}
 multinom_output %>%
   mutate(model_type = c("Baseline", "$\\Delta_{ij}^{AZ}$", "$\\Delta_{ij}^{OZ}$", "$\\Delta_{ij}^{FK}$")) %>%
   select(model_type, everything(), -acc_mean, -ACC_test) %>%
   slice(c(1,4)) %>% 
   kbl(booktabs = T, align = "c", 
-      caption = "Multinomial logistic model results with 4-fold cross validation.",
+      caption = "True Positive Rates from the baseline and modified multinomial models for each match outcome.",
       col.names = c("Model", "Mean TPR (win)", "Mean TPR (draw)", "Mean TPR (loss)",  "TPR (win)", "TPR (draw)", "TPR (loss)"
       )) %>%
   kable_styling(latex_options = c("hold_position"), full_width = FALSE) %>%
   add_header_above(c(" " = 1, "Train Data" = 3, "Test Data" = 3))
 ```
 
-The True Positive Rates from the multinomial model indicate that it predicts wins decently well but struggles to correctly predict a draw or loss. On paper, one team is typically stronger than the other and thus more likely to win. Predicting a draw or loss requires the stronger team to underperform, which is usually unexpected and therefore more unpredictable. The results for the other two pace models can be found in Appendix Table XXXX. 
+Table \@ref(tab:multinom-tprs) indicates that the models predict wins decently well but struggle to  predict draws and losses. On paper, one team is typically stronger than the other and thus more likely to win. Predicting a draw or loss requires one team to either perform better or worse than they normally do, which can be unexpected and therefore more unpredictable. Draws are considerably harder to predict than losses because this entails that both teams score the same number of goals.  
 
 ```{r}
 multinom.fit.baseline.summary <- multinom("FTR ~ current_unbeaten_streak + derby_game + home",
@@ -426,7 +426,7 @@ multinom.fit.pace.coef <- tibble(
   select(predictor, log.estimate0, log.estimate1, estimate_ci0, estimate_ci1, pval0, pval1)
 ```
 
-```{r}
+```{r multinom-log-model-coef}
 bind_cols(
   bind_cols(
     multinom.fit.baseline.coef %>% 
@@ -476,8 +476,10 @@ bind_cols(
 kbl(caption = "Coefficients obtained from models 2.1 and 2.2.", escape=F, booktabs = TRUE,
     col.names = c("Predictor", "Response", "Log Odds", "Odds Ratio",  "p-value","Log Odds", "Odds Ratio", "p-value")
 ) %>% 
-  kable_styling(latex_options = c("hold_position"), font_size = 13) %>%
+  kable_styling(latex_options = c("hold_position"), font_size = 13.5) %>%
   add_header_above(c(" " = 2, "Baseline Model Odds Ratio" = 3, "Pace Model Odds Ratio" = 3)) 
 ```
+
+Table \@ref(tab:multinom-log-model-coef) displays the exponentiated coefficient values for all the variables that used in the baseline and pace variable models, respectively. Once again, we note that both the log odds for $\Delta_{ij}^{FK}$ are negative and statistically significant. This indicates that as $V_T$ in the flank zones increases by one meter per second, the odds of the home team drawing a match versus losing are expected to multiply by 0.95 and the odds of the home team winning a match versus losing are expected to multiply by 0.94 **is this interpretation correct/necessary?**. Both draws and wins are better outcomes than a loss, so this matches the results from Figure \@ref(fig:epl-attacking-polygrids) and Table \@ref(tab:hier-log-model-coef). Teams with higher $V_T$ are generally weaker and thus more likely to lose a match rather than draw or win a match. 
 
 

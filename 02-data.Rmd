@@ -89,9 +89,9 @@ grids5x5 %>%
 
 There are three main types of data available for soccer analytics. The first type is similar to box score data, which provides the match outcome and statistics about each team’s performance, such as the number of shots taken and percentage of completed passes. Our analysis utilizes event data, which records the 2D location of the ball throughout the match. The third and most granular type is tracking data, which generally records the 2D position of all players on the pitch and the 3D position of the ball throughout the match. 
 
-We utilize data collected by [Wyscout](https://wyscout.com), a leading soccer analytics platform. The data includes the 1,826 regular season games played during the 2017-2018 season of five prominent European soccer leagues, including the English first division (EPL), the French first division (Ligue 1), the German first division (Bundesliga), the Italian first division (Serie A) and the Spanish first division (La Liga). **We primarily use the *events* and *teams* datasets.** (sounds weird, can probably remove)
+We utilize data collected by [Wyscout](https://wyscout.com), a leading soccer analytics platform. The data includes the 1,826 regular season games played during the 2017-2018 season of five prominent European soccer leagues, including the English first division (EPL), the French first division (Ligue 1), the German first division (Bundesliga), the Italian first division (Serie A) and the Spanish first division (La Liga). 
 
-For each of the five leagues, the *events* data details all the events that occur during the course of each match. The data includes a number of variables that describe the event, including its name, time at which it occurs and its starting and ending coordinates. It also includes variables that identify the player, team, match, and match period (1st or 2nd half) that the event corresponds to; the player, team and match IDs are unique numerical values assigned by Wyscout. Both the *x* and *y* coordinates are always in the range [0, 100] and indicate the percentage of the pitch from the perspective of the attacking team, which is assumed to always play from the left side to the right side of the pitch [[22]][References]. The value of the $x$ coordinate indicates the event’s nearness (in percentage) to the opponent’s goal, while the value of the $y$ coordinate indicates the event’s nearness (in percentage) to the right side of the field. For consecutive events in which the ball stays in play and is possessed by the same team, the ending coordinates of an event will match the subsequent event’s starting coordinates. The data contains an average of 1,682 events per match. A list of all the events can be found in Appendix Table XXXX. 
+For each of the five leagues, the *events* data details all the events that occur during the course of each match. The data includes a number of variables that describe the event, including its name, time at which it occurs and its starting and ending coordinates. It also includes variables that identify the player, team, match, and match period (1st or 2nd half) that the event corresponds to; the player, team and match IDs are unique numerical values assigned by Wyscout. Both the *x* and *y* coordinates are always in the range [0, 100] and indicate the percentage of the pitch from the perspective of the attacking team, which is assumed to always play from the left side to the right side of the pitch [[22]][References]. The value of the *x* coordinate indicates the event’s nearness (in percentage) to the opponent’s goal, while the value of the *y* coordinate indicates the event’s nearness (in percentage) to the right side of the field. For consecutive events in which the ball stays in play and is possessed by the same team, the ending coordinates of an event will match the subsequent event’s starting coordinates. The data contains an average of 1,682 events per match. A list of all the events can be found in Appendix Table XXXX. 
 
 Wyscout’s data collection is performed by expert analysts that tag the events from match videos [[22]][References]. For each ball touch in the match, the analyst will add the event type, timestamp, and the coordinates on the pitch. A series of quality control is performed, algorithmically and manually. Though these steps substantially reduce the margin of error, there is still potential for uncatchable mistakes.  
 
@@ -107,10 +107,10 @@ example <- first_game %>% #head(1000) %>% select(match_id, team_id, sub_event_na
 
 example %>% 
   select(match_id, name, event_name, event_sec, start, end) %>% #kable()
-  kableExtra::kbl(escape =F, caption = "Representation of a play consisting of 5 actions in a match between Arsenal and Leicester City",
-                  col.names = c("Match ID", "Team Name", "Event Name", "Timestamp", "$(x,y)_{start}$", "$(x,y)_{end}$"),
-                  booktabs = TRUE) %>% 
-  kable_styling(latex_options = c("hold_position"),full_width = F)
+  kableExtra::kbl(escape = FALSE, booktabs = TRUE, align = "c",
+                  caption = "Representation of a play consisting of 5 actions in a match between Arsenal and Leicester City",
+                  col.names = c("Match ID", "Team Name", "Event Name", "Timestamp", "$(x,y)_{start}$", "$(x,y)_{end}$")) %>% 
+  kable_styling(latex_options = c("hold_position"), full_width = FALSE)
 # example %>%
 #   ggplot()  +
 #   fc_annotate_pitch(fill = "#629A52",color = "#F8FAF7") +
@@ -120,7 +120,7 @@ example %>%
 #                arrow = arrow(length = unit(0.03, "npc")))
 ```
 
-Table 2.1 shows an example of four consecutive events in our data. This play consists of two consecutive passes, a duel on the ball, and ends with a shot taken by Arsenal. 
+Table \@ref(tab:example-data) shows an example of four consecutive events in our data. This play consists of two consecutive passes, a duel on the ball, and ends with a shot taken by Arsenal. 
 
 The *teams* data describes the clubs that play in the five leagues during the 2017-2018 season. This dataset contains the name of the club (e.g. Liverpool) and a team ID, which can be matched with the team-identifying variable in the *events* dataset. 
 
@@ -128,7 +128,7 @@ The *teams* data describes the clubs that play in the five leagues during the 20
  
 The *events* and *teams* datasets, which are originally provided in JSON format, were transformed into data frames. We then merge the datasets by team ID so we also know the name of the club corresponding to each event. 
 
-Before conducting our analysis, we made substantial changes to the merged dataset’s coordinates and coordinate system. Although soccer pitch measurements are not standardized, the preferred size for most professional clubs is 105 by 68 meters; we opted to make our pitch dimensions 105 by 70 meters for ease of calculations. Thus, the rescaled x-coordinates are now always in the range [0, 105] and the y-coordinates are now always in the range [0, 70]. From this point onward, references to the coordinates will be in terms of the rescaled pitch size. 
+Before conducting our analysis, we made substantial changes to the merged dataset’s coordinates and coordinate system. Although soccer pitch measurements are not standardized, the preferred size for most professional clubs is 105 by 68 meters; we opted to make our pitch dimensions 105 by 70 meters for ease of calculations. Thus, the rescaled *x* coordinates are now always in the range [0, 105] and the *y* coordinates are now always in the range [0, 70]. From this point onward, references to the coordinates will be in terms of the rescaled pitch size. 
 
 ```{r fig.align="center", fig.cap="Standard pitch measurements. All units are in meters."}
 # #, fig.width=9, fig.height=6
@@ -210,10 +210,10 @@ ggplot() +
   geom_text(aes(x = 110, y = 34.75, label = "7.3 m"))
 ```
 
-There were also inconsistencies with some of the coordinates, particularly with goal kicks and shots. The starting coordinates for goal kicks are initially recorded at either (0,70) for the home team or (105,0) for the away team. Goal kicks should start within the attacking team’s goal area, a 5.5 by 18.3 meter box centered at the goal-line. Thus, a goal kick’s starting x-coordinate was changed to 0, and its starting y-coordinate was sampled uniformly from the interval [25.85, 44.15], the y-coordinates of the goal area. 
+There were also inconsistencies with some of the coordinates, particularly with goal kicks and shots. The starting coordinates for goal kicks are initially recorded at either (0,70) for the home team or (105,0) for the away team. Goal kicks should start within the attacking team’s goal area, a 5.5 by 18.3 meter box centered at the goal-line. Thus, a goal kick’s starting *x* coordinate was changed to 0, and its starting *y* coordinate was sampled uniformly from the interval [25.85, 44.15], the *y* coordinates of the goal area. 
 
-The ending coordinates for shots are initially recorded at either (0,70) for the home team or (105,0) for the away team. Since the ending coordinates of the shot should match the starting coordinates of the following event, we assigned all starting y-coordinates of the following event that are not 0 or 70 as the ending y-coordinate of the shot, and changed the ending x-coordinate of the shot to the starting x-coordinate of the following event. This readjustment accounts for shots that are off-target or blocked by another player, but the ball remains in play. 
-The ending x-coordinates for remaining all shots were changed to 105, since these shots are either saved y the goalkeeper or deflected out of bounds. For these shots, the starting y-coordinate of the following event is either 0 or 70. If the shot is saved by the goalkeeper, we assume that the shot was on-target. Thus, the ending y-coordinates for saved shots were sampled uniformly from the interval [31.35, 38.65], the y-coordinates of the goal. If the shot went out of bounds, we assume that the shot was off-target. Thus, the ending y-coordinate was sampled uniformly from outside the y-coordinates of the goal but within the penalty box, or uniformly from the interval [14.85, 31.35] $\cup$ [38.65, 55.15].
+The ending coordinates for shots are initially recorded at either (0,70) for the home team or (105,0) for the away team. Since the ending coordinates of the shot should match the starting coordinates of the following event, we assigned all starting *y* coordinates of the following event that are not 0 or 70 as the ending *y* coordinate of the shot, and changed the ending *x* coordinate of the shot to the starting *x* coordinate of the following event. This readjustment accounts for shots that are off-target or blocked by another player, but the ball remains in play. 
+The ending *x* coordinates for remaining all shots were changed to 105, since these shots are either saved y the goalkeeper or deflected out of bounds. For these shots, the starting *y* coordinate of the following event is either 0 or 70. If the shot is saved by the goalkeeper, we assume that the shot was on-target. Thus, the ending *y* coordinates for saved shots were sampled uniformly from the interval [31.35, 38.65], the *y* coordinates of the goal. If the shot went out of bounds, we assume that the shot was off-target. Thus, the ending *y* coordinate was sampled uniformly from outside the *y* coordinates of the goal but within the penalty box, or uniformly from the interval [14.85, 31.35] $\cup$ [38.65, 55.15].
 
 Processing the JSON files and transforming the coordinates can be implemented with functions in the [**scoutr**](https://github.com/shawnsanto/scoutr) R package, a complete and consistent set of functions for reading, manipulating, and visualization Wyscout soccer data. 
 

@@ -24,7 +24,7 @@
 <meta name="author" content="Ethan Shen" />
 
 
-<meta name="date" content="2021-04-02" />
+<meta name="date" content="2021-04-03" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -273,7 +273,7 @@ Sum of the differences in total velocity for zones 5,7,8 for home team <span cla
 </div>
 <div id="hierarchical-logistic-model" class="section level2">
 <h2><span class="header-section-number">4.2</span> Hierarchical Logistic Model</h2>
-<p>The baseline hierarchical logistic model (without any pace metrics) is as follows:</p>
+<p>The baseline hierarchical logistic model (without any pace variables) is as follows:</p>
 <p><span class="math display">\[ 
 \begin{aligned}
 Y_{ij} \sim Bernoulli(&amp;\pi_{ij}) \\
@@ -368,7 +368,7 @@ Baseline
 </table>
 <p>The baseline hierarchical logistic model reports an accuracy of 63.52% and AUC of 60.57 on the test data while the best performing pace model, the one with <span class="math inline">\(\Delta_{ij}^{FZ}\)</span>, reports a slightly higher accuracy of 64.29% and AUC of 61.68. This suggests that the addition of pace metrics do not significantly improve the predictive power of the model on the test set. The results for the other two pace models can be found in Appendix Table XXXX.</p>
 <p>We expect the pace model with <span class="math inline">\(\Delta_{ij}^{AZ}\)</span> to have the lowest performance out of the three pace models. These pace variables assume that pace across the pitch is weighted evenly. Even though pace varies in the defensive half of the pitch, these differences are not necessarily indicative of a team’s scoring capabilities. Variation in pace in the offensive half is more indicative of a team’s attacking strength, which is more directly related to the outcome of a match.</p>
-<table class="table" style="font-size: 11.5px; margin-left: auto; margin-right: auto;">
+<table class="table" style="font-size: 13.5px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
 <span id="tab:hier-log-model-coef">Table 4.4: </span>Coefficients obtained from models 1.1 and 1.2.
 </caption>
@@ -503,11 +503,11 @@ Derby
 </tr>
 </tbody>
 </table>
-<p>Table <a href="modeling.html#tab:hier-log-model-coef">4.4</a> displays the exponentiated coefficient values for all the variables that used in the baseline and pace metric models, respectively. All the coefficients, except for <em>Unbeaten</em> in the baseline model, are statistically significant. Thus, for every meter per second increase in <span class="math inline">\(\Delta_{ij}^{FK}\)</span> for home team <span class="math inline">\(i\)</span> and away team <span class="math inline">\(j\)</span>, we expect the the odds of winning the game to multiply by a factor of 0.953 - this indicates that as the home team’s <span class="math inline">\(V_T\)</span> in the flank zones increases, the home team has a smaller chance of winning the game. This reflects the results in the previous sections which showed that lower-ranked teams (and thus teams that have a lower chance of winning a match) generally have a higher <span class="math inline">\(V_T\)</span>.</p>
+<p>Table <a href="modeling.html#tab:hier-log-model-coef">4.4</a> displays the exponentiated coefficient values for all the variables that used in the baseline and pace metric models, respectively. All the coefficients, except for <em>Unbeaten</em> in the baseline model, are statistically significant. We note that the log odds for <span class="math inline">\(\Delta_{ij}^{FK}\)</span> is negative and statistically significant. This indicates that as the home team’s <span class="math inline">\(V_T\)</span> in the flank zones increases, the home team has approximately a 5% smaller chance of winning the game <strong>is this interpretation correct?</strong>. This reflects the results from Figure <a href="pace-of-play-metrics.html#fig:epl-attacking-polygrids">3.5</a>, which showed that lower ranked teams, and thus teams that have a lower chance of winning a match, generally have a higher <span class="math inline">\(V_T\)</span>.</p>
 </div>
 <div id="multinomial-logistic-model" class="section level2">
 <h2><span class="header-section-number">4.3</span> Multinomial Logistic Model</h2>
-<p>The baseline multinomial logistic model (without any pace metrics) is as follows:</p>
+<p>The baseline multinomial logistic model (without any pace variables) is as follows:</p>
 <p><span class="math display">\[
 \begin{aligned}
 P(Y_{ijk} = k) =&amp; \pi_{ijk}  \\
@@ -582,10 +582,10 @@ Baseline
 </tr>
 </tbody>
 </table>
-<p>The baseline multinomial model reports an accuracy of 45.15% on the test data while the best performing pace model, the one with <span class="math inline">\(\Delta_{ij}^{FZ}\)</span>, reports a slightly higher accuracy of 46.68%. The best modified model with a pace metric actually performs slightly worse on the train set than the baseline model. Once again, we see that the addition of pace metrics do not significantly improve the predictive power of the model on the test set.</p>
+<p>The baseline multinomial model reports an accuracy of 45.15% on the test data while the best performing pace model, the one with <span class="math inline">\(\Delta_{ij}^{FZ}\)</span>, reports a slightly higher accuracy of 46.68%. This modified model, which is the best of the three pace models, actually performs slightly worse on the train set than the baseline model. Once again, we see that the addition of a pace variable in the model does not significantly improve the predictive power of the model on the test set. The results for the other two pace models can be found in Appendix Table XXXX.</p>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-10">Table 4.6: </span>Multinomial logistic model results with 4-fold cross validation.
+<span id="tab:multinom-tprs">Table 4.6: </span>True Positive Rates from the baseline and modified multinomial models for each match outcome.
 </caption>
 <thead>
 <tr>
@@ -675,10 +675,10 @@ Baseline
 </tr>
 </tbody>
 </table>
-<p>The True Positive Rates from the multinomial model indicate that it predicts wins decently well but struggles to correctly predict a draw or loss. On paper, one team is typically stronger than the other and thus more likely to win. Predicting a draw or loss requires the stronger team to underperform, which is usually unexpected and therefore more unpredictable. The results for the other two pace models can be found in Appendix Table XXXX.</p>
-<table class="table" style="font-size: 13px; margin-left: auto; margin-right: auto;">
+<p>Table <a href="modeling.html#tab:multinom-tprs">4.6</a> indicates that the models predict wins decently well but struggle to predict draws and losses. On paper, one team is typically stronger than the other and thus more likely to win. Predicting a draw or loss requires one team to either perform better or worse than they normally do, which can be unexpected and therefore more unpredictable. Draws are considerably harder to predict than losses because this entails that both teams score the same number of goals.</p>
+<table class="table" style="font-size: 13.5px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
-<span id="tab:unnamed-chunk-12">Table 4.7: </span>Coefficients obtained from models 2.1 and 2.2.
+<span id="tab:multinom-log-model-coef">Table 4.7: </span>Coefficients obtained from models 2.1 and 2.2.
 </caption>
 <thead>
 <tr>
@@ -927,6 +927,7 @@ FTR = win
 </tr>
 </tbody>
 </table>
+<p>Table <a href="modeling.html#tab:multinom-log-model-coef">4.7</a> displays the exponentiated coefficient values for all the variables that used in the baseline and pace variable models, respectively. Once again, we note that both the log odds for <span class="math inline">\(\Delta_{ij}^{FK}\)</span> are negative and statistically significant. This indicates that as <span class="math inline">\(V_T\)</span> in the flank zones increases by one meter per second, the odds of the home team drawing a match versus losing are expected to multiply by 0.95 and the odds of the home team winning a match versus losing are expected to multiply by 0.94 <strong>is this interpretation correct/necessary?</strong>. Both draws and wins are better outcomes than a loss, so this matches the results from Figure <a href="pace-of-play-metrics.html#fig:epl-attacking-polygrids">3.5</a> and Table <a href="modeling.html#tab:hier-log-model-coef">4.4</a>. Teams with higher <span class="math inline">\(V_T\)</span> are generally weaker and thus more likely to lose a match rather than draw or win a match.</p>
 
 </div>
 </div>

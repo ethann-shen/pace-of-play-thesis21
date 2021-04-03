@@ -13,8 +13,8 @@ tab:pace-vars-table
 tab:unnamed-chunk-8
 tab:hier-log-model-coef
 tab:unnamed-chunk-9
-tab:unnamed-chunk-10
-tab:unnamed-chunk-12
+tab:multinom-tprs
+tab:multinom-log-model-coef
 intro
 data
 processing-the-data
