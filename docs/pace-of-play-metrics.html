@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Pace-of-Play Metrics | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</title>
+  <meta name="description" content="insert description." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Pace-of-Play Metrics | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="insert description." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Pace-of-Play Metrics | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
+  
+  <meta name="twitter:description" content="insert description." />
+  
+
+<meta name="author" content="Ethan Shen" />
+
+
+<meta name="date" content="2021-04-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="data.html"/>
+<link rel="next" href="modeling.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Abstract</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#acknowledgements"><i class="fa fa-check"></i>Acknowledgements</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>2</b> Data</a><ul>
+<li class="chapter" data-level="2.1" data-path="data.html"><a href="data.html#processing-the-data"><i class="fa fa-check"></i><b>2.1</b> Processing the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html"><i class="fa fa-check"></i><b>3</b> Pace-of-Play Metrics</a><ul>
+<li class="chapter" data-level="3.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#framework"><i class="fa fa-check"></i><b>3.1</b> Framework</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#possession-sequences"><i class="fa fa-check"></i><b>3.1.1</b> Possession Sequences</a></li>
+<li class="chapter" data-level="3.1.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#metrics-of-pace"><i class="fa fa-check"></i><b>3.1.2</b> Metrics of Pace</a></li>
+<li class="chapter" data-level="3.1.3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#spatial-polygrid-analysis"><i class="fa fa-check"></i><b>3.1.3</b> Spatial Polygrid Analysis</a></li>
+<li class="chapter" data-level="3.1.4" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#zonal-analysis"><i class="fa fa-check"></i><b>3.1.4</b> Zonal Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#results-exploring-pace-which-sounds-better"><i class="fa fa-check"></i><b>3.2</b> Results / Exploring Pace (which sounds better?)</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-pace-polygrid"><i class="fa fa-check"></i><b>3.2.1</b> EPL Pace (Polygrid)</a></li>
+<li class="chapter" data-level="3.2.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-pace-zonal"><i class="fa fa-check"></i><b>3.2.2</b> EPL Pace (Zonal)</a></li>
+<li class="chapter" data-level="3.2.3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#pace-across-leagues"><i class="fa fa-check"></i><b>3.2.3</b> Pace Across Leagues</a></li>
+<li class="chapter" data-level="3.2.4" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-team-level-pace-polygrid"><i class="fa fa-check"></i><b>3.2.4</b> EPL Team-level Pace (Polygrid)</a></li>
+<li class="chapter" data-level="3.2.5" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-team-level-pace-zonal"><i class="fa fa-check"></i><b>3.2.5</b> EPL Team-level Pace (Zonal)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="modeling.html"><a href="modeling.html"><i class="fa fa-check"></i><b>4</b> Modeling</a><ul>
+<li class="chapter" data-level="4.1" data-path="modeling.html"><a href="modeling.html#variable-and-model-selection"><i class="fa fa-check"></i><b>4.1</b> Variable and Model Selection</a></li>
+<li class="chapter" data-level="4.2" data-path="modeling.html"><a href="modeling.html#hierarchical-logistic-model"><i class="fa fa-check"></i><b>4.2</b> Hierarchical Logistic Model</a></li>
+<li class="chapter" data-level="4.3" data-path="modeling.html"><a href="modeling.html#multinomial-logistic-model"><i class="fa fa-check"></i><b>4.3</b> Multinomial Logistic Model</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>5</b> Conclusion</a><ul>
+<li class="chapter" data-level="5.1" data-path="conclusion.html"><a href="conclusion.html#future-steps"><i class="fa fa-check"></i><b>5.1</b> Future Steps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://stat.duke.edu/" target="blank">Duke University<br>Department of Statistical Science</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="pace-of-play-metrics" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Pace-of-Play Metrics</h1>
+<div id="framework" class="section level2">
+<h2><span class="header-section-number">3.1</span> Framework</h2>
+<div id="possession-sequences" class="section level3">
+<h3><span class="header-section-number">3.1.1</span> Possession Sequences</h3>
+<p>Ball possession is the amount of time that a team possesses the ball during a game. However, there is no widely accepted definition of what events concludes a possession and triggers a new one <a href="references.html#references">[6]</a>. Thus, we created a possession identifier that indicates the current unique possession in a game. In our definition, new possessions begin after a team demonstrates that it has established control of the ball. This occurs in the following situations: at the start of a half, when the team successfully intercepts or tackles the ball, after a shot is taken and after the opposing team last touches the ball before it goes out of bounds or commits a foul. A new possession can also begin even if the same team has possession of the ball. For example, if the ball goes out for a throw in for the attacking team, this indicates a new possession for the same attacking team. In addition, if the attacking team makes a pass after a sequence of duels, events in which opposing players contest the ball, this constitutes the same possession. According to our definition above, there were an average of 306 possessions per game.</p>
+<p>When analyzing pace, we only included passes and free kicks (excluding free kick shots and penalty kicks) since these events are reliable indicators of the pace of the game. In addition, we only kept possessions that consist of three or more pass or free kick events, as these types of possessions are more definitive of a team’s pace. From this point onwards, events will only refer to these passes and free kicks. Following the exclusion of certain possessions, the remaining possessions contained an average of 5.5 events per possession.</p>
+</div>
+<div id="metrics-of-pace" class="section level3">
+<h3><span class="header-section-number">3.1.2</span> Metrics of Pace</h3>
+<p>After creating a possession identifier, we first calculated the distance each event travelled. The east-west distances (<span class="math inline">\(\delta_{EW}\)</span>) are determined by the difference of the starting and ending x-coordinates while the north-south distances (<span class="math inline">\(\delta_{NS}\)</span>) are determined by the difference of the starting and ending y-coordinates. The total distances (<span class="math inline">\(\delta_{T}\)</span>) are calculated with the formula <span class="math inline">\(\sqrt{(\delta_{EW}^2 + \delta_{NS}^2)}\)</span>. Events are assigned an E-only distance (<span class="math inline">\(\delta_{E}\)</span>) only if the pass travels toward the opposing goal. In reality, passes rarely travel in a straight line and players will often dribble the ball before making a pass. However, the dataset does not provide information about the ball’s true trajectory and movement, so these distances are calculated under the assumption that the ball travels in a straight line from its starting to ending coordinates.</p>
+<p>Next, we calculated the duration between events. For each event, the dataset only provides a timestamp in seconds since the beginning of the current half of the game. Thus, within each possession, the duration for an event was calculated as the difference of the timestamp of the following event and that of the current event. With this definition of duration, the last event in the possession sequence is unable to be included in the calculation of pace.</p>
+<p>We used the distance travelled and duration between successive passes and free kicks in the same possession to calculate four different measures of pace: total (<span class="math inline">\(V_{T}\)</span>), east-west (<span class="math inline">\(V_{EW}\)</span>), north-south (<span class="math inline">\(V_{NS}\)</span>), and east-only (<span class="math inline">\(V_{E}\)</span>) velocity. <span class="math inline">\(V_{E}\)</span> differs from <span class="math inline">\(V_{EW}\)</span> in that only forward progress is measured, and any backward progress is excluded from the analysis. Note that these four metrics are the average velocities of the event rather than the instantaneous velocities, since we did not have access to tracking data.</p>
+<p>All of the previously mentioned procedures can be implemented with functions in the <a href="https://github.com/shawnsanto/scoutr"><strong>scoutr</strong></a> package.</p>
+</div>
+<div id="spatial-polygrid-analysis" class="section level3">
+<h3><span class="header-section-number">3.1.3</span> Spatial Polygrid Analysis</h3>
+<p>We rescaled the pitch to 105 by 70 meters instead of 105 by 68 meters, to be able to divide the pitch into 294 equal, non-overlapping 5x5 meter square polygrids <a href="references.html#references">[7]</a>. <span class="math inline">\(V_{T}\)</span>, <span class="math inline">\(V_{EW}\)</span>, <span class="math inline">\(V_{NS}\)</span>, and <span class="math inline">\(V_{E}\)</span> for a given event was assigned to all polygrids that the event’s path intersects. Each polygrid contains <span class="math inline">\(n\)</span> velocity values for the <span class="math inline">\(n\)</span> event paths that intersect it. For each of the 5x5 polygrids, we then take the median for each of the four different pace metrics. There are polygrids, particularly ones in the corners or along the attacking team’s goal line, that have very few recorded velocity values because only a few events intersect those polygrids. These polygrids often contain passes with extremely high velocities, most of which are due to tagging errors. Thus, the median was taken, instead of the mean, to account for the presence of outliers.</p>
+</div>
+<div id="zonal-analysis" class="section level3">
+<h3><span class="header-section-number">3.1.4</span> Zonal Analysis</h3>
+
+<p>We divided the pitch into 8 regions. For each zone, we determined which of the 294 5x5 polygrids intersect the zone. As seen in Figure <a href="pace-of-play-metrics.html#fig:zone-grid-plot">3.1</a>, there are some polygrids that fall into multiple zones. We then take the mean of the median <span class="math inline">\(V_{T}\)</span>, <span class="math inline">\(V_{EW}\)</span>, <span class="math inline">\(V_{NS}\)</span>, and <span class="math inline">\(V_{E}\)</span> values of those 5x5 polygrids to determine the aggregate speeds for the zone. We note that there is no significant difference between taking the mean or the median of the median velocities.</p>
+<div class="figure" style="text-align: center"><span id="fig:zone-grid-plot"></span>
+<img src="thesis_files/figure-html/zone-grid-plot-1.png" alt="Plot of the 294 polygrids and 8 zones overlaid on the pitch. The grey lines represent the polygrids and black borders represent the boundaries of the 8 zones." width="672" />
+<p class="caption">
+Figure 3.1: Plot of the 294 polygrids and 8 zones overlaid on the pitch. The grey lines represent the polygrids and black borders represent the boundaries of the 8 zones.
+</p>
+</div>
+<p>This method was conducted in favor of another one that assigns an event’s speeds to all zones that intersect the path of the event. Our approach automatically factors in the event’s distance within the zone and is more resistant to outliers. For example, for a pass that intersects <span class="math inline">\(n\)</span> different 5x5 polygrids in a zone, the zone’s aggregate speed will be affected by that pass’ speed <span class="math inline">\(n\)</span> times instead of just once. This approach is thus more resistant to outliers.</p>
+</div>
+</div>
+<div id="results-exploring-pace-which-sounds-better" class="section level2">
+<h2><span class="header-section-number">3.2</span> Results / Exploring Pace (which sounds better?)</h2>
+<div id="epl-pace-polygrid" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> EPL Pace (Polygrid)</h3>
+<p>We first examined how pace in the English Premier League (EPL) differs among the 294 polygrids.</p>
+
+<div class="figure" style="text-align: center"><span id="fig:EPL-avg-velocities-grids"></span>
+<img src="thesis_files/figure-html/EPL-avg-velocities-grids-1.png" alt="Velocity by polygrid in the EPL for the 2017-18 regular season. Note that the scale of the four plots are different." width="672" />
+<p class="caption">
+Figure 3.2: Velocity by polygrid in the EPL for the 2017-18 regular season. Note that the scale of the four plots are different.
+</p>
+</div>
+<p>Figure <a href="pace-of-play-metrics.html#fig:EPL-avg-velocities-grids">3.2</a> displays the velocities for each polygrid for all games played in the EPL. <span class="math inline">\(V_{T}\)</span> is the fastest in the polygrids within the opposing team’s penalty box and along the opposing team’s goal line. This is primarily due to higher <span class="math inline">\(V_{NS}\)</span> in those areas, as <span class="math inline">\(V_{EW}\)</span> is relatively slow. Passes completed within the penalty box will usually be taken faster, as players will often be looking for goal-scoring opportunities but will also be under more pressure from defenders. In addition, corner kicks often have a higher velocity than most passes. Most corners are taken into the 6-yard box, so their trajectories will intersect with the polygrids along the goal line.</p>
+<p>It is interesting to note that in the offensive half of the pitch, <span class="math inline">\(V_{T}\)</span> is slower along the left and right flanks and faster in the middle. This is primarily driven by the patterns in <span class="math inline">\(V_{EW}\)</span> and <span class="math inline">\(V_{NS}\)</span>, as <span class="math inline">\(V_{EW}\)</span> is generally faster along the flanks while <span class="math inline">\(V_{NS}\)</span> is faster in the middle. However, the <span class="math inline">\(V_{NS}\)</span> in the middle are faster than the <span class="math inline">\(V_{EW}\)</span> along the flanks, which is why <span class="math inline">\(V_{T}\)</span> is also faster in the middle.</p>
+<p>From the <span class="math inline">\(V_{E}\)</span>, it seems like the teams in the EPL prefer to advance the ball past the center line along the flanks, rather than down the middle. At the end of the 2017/18 season, 8 out of the 10 players with the most assists were most often deployed as either left or right wingers or midfielders. Another interesting result is that <span class="math inline">\(V_{E}\)</span> is relatively similar in the offensive and defensive thirds. A prior study suggests that a decline in <span class="math inline">\(V_{E}\)</span> in the offensive third should be expected since there are diminishing returns for advancing the ball forward <a href="references.html#references">[7]</a>. However, this decline in speed is only apparent in the polygrids around the 6-yard box. In most cases, players who receive the ball in this position would shoot, as these positions provide players with the optimal shooting angles. However, <span class="math inline">\(V_{E}\)</span> does not decline in other polygrids in the offensive third. Central midfielders stationed around the outskirts penalty box could pass the ball to wingers on the left or right flanks. Even though the shooting angle worsens for the wingers, they can easily advance toward the goal line and cross the ball to the penalty box or cut back <a href="references.html#references">[12]</a> to an onrushing player, both of which could lead to goal-scoring opportunities.</p>
+</div>
+<div id="epl-pace-zonal" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> EPL Pace (Zonal)</h3>
+<p>We then examined how pace in the EPL differs among the 8 zones.</p>
+
+<div class="figure" style="text-align: center"><span id="fig:EPL-avg-velocities-zonal"></span>
+<img src="thesis_files/figure-html/EPL-avg-velocities-zonal-1.png" alt="Velocity by zone in the EPL for the 2017-18 regular season." width="672" />
+<p class="caption">
+Figure 3.3: Velocity by zone in the EPL for the 2017-18 regular season.
+</p>
+</div>
+<p>Figure <a href="pace-of-play-metrics.html#fig:EPL-avg-velocities-zonal">3.3</a> shows the zonal velocities We noticed that <span class="math inline">\(V_{T}\)</span> is the highest in zone 8 and approximately 28-37% slower in the other seven regions. This is primarily due to the disparity among the <span class="math inline">\(V_{NS}\)</span>, particularly in zone 8, as <span class="math inline">\(V_{EW}\)</span> is roughly equal in all zones. Zone 8 contains the highest <span class="math inline">\(V_{NS}\)</span> because the velocities of corner kicks are all recorded in this zone. In addition, we also expect zones 2, 4, 5 and 7 to have the highest <span class="math inline">\(V_{EW}\)</span> and lowest <span class="math inline">\(V_{NS}\)</span> - in these zones, players can pass forwards and backwards, but only up or down, depending on their position on the pitch.</p>
+</div>
+<div id="pace-across-leagues" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Pace Across Leagues</h3>
+<p>Next, we analyzed how pace varies between the EPL and the four other first-division European leagues (Ligue 1, Bundesliga, Serie A and La Liga).</p>
+
+<div class="figure" style="text-align: center"><span id="fig:other-leagues-avg-velocities"></span>
+<img src="thesis_files/figure-html/other-leagues-avg-velocities-1.png" alt="Percent difference in velocity by zone relative to the EPL for the 2017-18 regular season." width="672" />
+<p class="caption">
+Figure 3.4: Percent difference in velocity by zone relative to the EPL for the 2017-18 regular season.
+</p>
+</div>
+<p>Figure <a href="pace-of-play-metrics.html#fig:other-leagues-avg-velocities">3.4</a> shows the percent difference between the average velocities from the EPL and those of the four other European leagues. Pace in Ligue 1 is slower in the defensive half of the pitch but mostly faster in the offensive pitch. <span class="math inline">\(V_{T}\)</span> is approximately 1% faster in zones 5, 6, 7, and is primarily driven by changes in the <span class="math inline">\(V_{EW}\)</span>, as <span class="math inline">\(V_{NS}\)</span> is relatively similar to that of the EPL. This could be due to the fact that the average number of goals scored per game is slightly higher in Ligue 1 than in the EPL (2.72 vs. 2.68). Faster pace in the offensive half can yield more goal-scoring opportunities. In addition, the 2017-2018 season saw the transfer of Neymar from Barcelona to PSG and the emergence of Kylian Mbappe. While Ligue 1 is often described as a poor attacking league, the advent/presence of this formidable attacking duo may have reinvigorated the league <a href="references.html#references">[8]</a>.</p>
+<p>Differences in the offensive half are most notable in the Bundesliga. <span class="math inline">\(V_{T}\)</span> in the Bundesliga is 2-4% faster in zones 5, 6, 7 and is driven by an increase in both the <span class="math inline">\(V_{EW}\)</span> and <span class="math inline">\(V_{NS}\)</span>. The increase in total could have been due to a higher average number of goals scored per game compared to the EPL (2.79 vs. 2.68). Additionally, Bundesliga players are more likely to create scoring chances and take more shots than those in the other four leagues <a href="references.html#references">[9]</a>, which is corroborated by the fact that the <span class="math inline">\(V_{E}\)</span> are approximately 3-5% faster than the EPL.</p>
+<p>Pace in Serie A is generally slower and primarily driven by a decline in <span class="math inline">\(V_{EW}\)</span> across seven zones, with the most noteworthy occurring in zone 1. We performed a simulation based hypothesis test and determined there is no significant difference in the zone 1 speeds of the EPL and Serie A. Nothing in the data or the available literature provides any further insight on this phenomenon.</p>
+<p>La Liga displays the smallest difference in pace, with slightly slower speeds in zones 1 and 2. We expected La Liga teams to have the slowest velocities in the defensive half, as they are known for playing out from the back, a common tactic in which teams begin passing in their defensive third. This type of build-up play can help increase the quality of passes into teams’ midfielders and forwards. Goalkeepers such as Keylor Navas and Marc-Andre Ter Stegen both possess excellent ball control and distribution, which thus allows their teams to start plays from the back <a href="references.html#references">[17]</a>.</p>
+<p>In recent years, more EPL teams have been adopting this tactic. Manchester City, with goalkeeper Ederson, is one of the best teams at playing from out from the back. When Pep Guardiola took over in 2016, he seeked to implement a system that plays out from the back, which requires a goalkeeper who is comfortable with the ball on their feet and is capable of building plays from the back <a href="references.html#references">[13]</a> <a href="references.html#references">[14]</a> <a href="references.html#references">[15]</a>. Replacing long-term goalkeeper Joe Hart with Ederson, someone who fulfills Guardiola’s needs, has contributed to their recent success. Although this style of play has a myriad of benefits, not all teams are capable of executing this tactic. Playing out from the back requires precise passes, as one wayward pass could fall into the feet of an opposing player. Some goalkeepers, such as Tottenham’s Hugo Lloris, arguably one of the world’s best goalkeepers in terms of anticipation and one-on-one situations, lack the ability to pick out the right passes and prevent their teams from adopting this tactic <a href="references.html#references">[13]</a> <a href="references.html#references">[16]</a>. The mixed success of playing from the back in the EPL may have contributed to the slight difference in pace in the defensive half in comparison to La Liga.</p>
+<p>In general, players from La Liga and the EPL display the most similar performance-related match actions <a href="references.html#references">[9]</a> and recorded a similar average number of goals per game (2.69 vs. 2.68), suggesting that only slight differences in pace should be expected between these two leagues.</p>
+<p>Ultimately, differences between these leagues are likely due to stylistic differences between leagues and individual teams, rather than differences in player ability.</p>
+</div>
+<div id="epl-team-level-pace-polygrid" class="section level3">
+<h3><span class="header-section-number">3.2.4</span> EPL Team-level Pace (Polygrid)</h3>
+<p>We examined team-level pace for the 20 teams in the EPL using both the polygrid and zonal methods and compared each team’s <span class="math inline">\(V_{T}\)</span> to the EPL league average.</p>
+
+<div class="figure" style="text-align: center"><span id="fig:epl-attacking-polygrids"></span>
+<img src="thesis_files/figure-html/epl-attacking-polygrids-1.png" alt="Polygrid analysis of total speed by team vs. EPL average while attacking. Select teams are ordered by final standings from the 2017-18 season. All units are in m/s." width="1728" />
+<p class="caption">
+Figure 3.5: Polygrid analysis of total speed by team vs. EPL average while attacking. Select teams are ordered by final standings from the 2017-18 season. All units are in m/s.
+</p>
+</div>
+<p>Figure <a href="pace-of-play-metrics.html#fig:epl-attacking-polygrids">3.5</a> displays the difference between the median total velocity in each 5x5m polygrid for 8 teams and that of the EPL average, with the rest displayed in the Appendix. None of these teams are faster or slower in all 294 polygrids, but the pace of the top six teams (Manchester City, Manchester United, Tottenham Hotspur, Liverpool, Chelsea and Arsenal) is generally slower than the league average. As we move down the league table, the polygrid velocities display more variation, but the four bottom-tier teams in Figure 4.3 are generally faster. It might seem odd that the top tier teams have a slower pace, but this is primarily due to the way we define pace. We expect these teams to maintain possession for a greater portion of the game and complete more passes. It is more likely for teams to maintain possession when making shorter, more controlled passes. Thus, we expect that the average distance and velocity per pass to increase as we move down the league table.</p>
+<p>In addition, goal kicks from the top four teams are relatively slower than the league average, with Manchester City’s having the slowest velocities. Although there is some variation, goal kicks from the bottom tier teams are generally faster than the league average. Since lower tier teams may not have possession for long periods of time, their goalkeepers may feel pressured to take longer goal kicks down the pitch, with the hope that one could create a goal-scoring opportunity. This is corroborated by the fact that Manchester City’s goalkeeper Ederson took 71% of his Premier League passes short, while every other goalkeeper, except for Liverpool’s Simon Mignolet, took less than 50% of their passes short <a href="references.html#references">[11]</a>.</p>
+
+<div class="figure" style="text-align: center"><span id="fig:epl-defense-polygrids"></span>
+<img src="thesis_files/figure-html/epl-defense-polygrids-1.png" alt="Polygrid analysis of total speed by team vs. EPL average while defending. Select teams are ordered by final standings from the 2017-18 season. All units are in m/s." width="1728" />
+<p class="caption">
+Figure 3.6: Polygrid analysis of total speed by team vs. EPL average while defending. Select teams are ordered by final standings from the 2017-18 season. All units are in m/s.
+</p>
+</div>
+<p>Figure <a href="pace-of-play-metrics.html#fig:epl-defense-polygrids">3.6</a> shows that while defending, these 8 teams also display variability between different polygrids and regions on the pitch. The top 4 teams generally gave up more pace in the offensive zones, with the exception of Manchester United. One reason for this discrepancy could be due to Jose Mourinho’s leadership <a href="references.html#references">[18]</a> <a href="references.html#references">[19]</a>. Under Mourinho, Manchester United line up in a 4-3-3 formation that shifts to a 4-1-4-1 defensively <a href="references.html#references">[20]</a>. He is known for playing cautiously in big games; rather than imposing his style, he often looks to counter the opponents. For example, he has played 4-5-1 and 6-3-1 formations into draws against Liverpool, two defensive line ups that heavily negate Liverpool’s dynamic front three <a href="references.html#references">[21]</a>. In addition, Manchester United’s goal-keeper, David de Gea, was the best goalkeeper in the league with 18 clean sheets.</p>
+</div>
+<div id="epl-team-level-pace-zonal" class="section level3">
+<h3><span class="header-section-number">3.2.5</span> EPL Team-level Pace (Zonal)</h3>
+<p>We also examined team-level pace using the zonal method, which allows us to get a more high-level understanding of how pace varies across different clubs in the EPL.</p>
+<div class="figure" style="text-align: center"><span id="fig:epl-team-attacking-zonal"></span>
+<img src="thesis_files/figure-html/epl-team-attacking-zonal-1.png" alt="Zonal analysis of total speed by team vs. EPL average while attacking. Teams are ordered by final standings from the 2017-18 season. All units are in m/s." width="1632" />
+<p class="caption">
+Figure 3.7: Zonal analysis of total speed by team vs. EPL average while attacking. Teams are ordered by final standings from the 2017-18 season. All units are in m/s.
+</p>
+</div>
+<p>The overall results verify those found in the polygrid analysis. The top six teams (Manchester City, Manchester United, Tottenham Hotspur, Liverpool, Chelsea and Arsenal) were consistently slower than the league averages in all but 3 instances. As we move down the table, the zonal speeds display more variation, but these teams are generally faster than the league average. While attacking, teams such as Liverpool (4) and AFC Bournemouth (12) are faster than the league average in some zones and slower in other zones. However, the majority of the teams are either faster or slower in all 8 zones. For example, Newcastle United’s (10) speeds are faster in all 8 zones, while those of Manchester City (1) are all slower.</p>
+<div class="figure" style="text-align: center"><span id="fig:epl-team-defending-zonal"></span>
+<img src="thesis_files/figure-html/epl-team-defending-zonal-1.png" alt="Zonal analysis of total speed by team vs. EPL average while defending. Teams are ordered by final standings from the 2017-18 season. All units are in m/s." width="1632" />
+<p class="caption">
+Figure 3.8: Zonal analysis of total speed by team vs. EPL average while defending. Teams are ordered by final standings from the 2017-18 season. All units are in m/s.
+</p>
+</div>
+<p>While defending, only Manchester City consistently gave up more pace, while the other 19 teams displayed variability between different zones. The top 6 teams generally gave up more pace in the offensive zones, with the exception of Manchester United (2).</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="data.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="modeling.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

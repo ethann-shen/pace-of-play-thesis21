@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 1 Introduction | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</title>
+  <meta name="description" content="insert description." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 1 Introduction | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="insert description." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 1 Introduction | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
+  
+  <meta name="twitter:description" content="insert description." />
+  
+
+<meta name="author" content="Ethan Shen" />
+
+
+<meta name="date" content="2021-04-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="data.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Abstract</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#acknowledgements"><i class="fa fa-check"></i>Acknowledgements</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>2</b> Data</a><ul>
+<li class="chapter" data-level="2.1" data-path="data.html"><a href="data.html#processing-the-data"><i class="fa fa-check"></i><b>2.1</b> Processing the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html"><i class="fa fa-check"></i><b>3</b> Pace-of-Play Metrics</a><ul>
+<li class="chapter" data-level="3.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#framework"><i class="fa fa-check"></i><b>3.1</b> Framework</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#possession-sequences"><i class="fa fa-check"></i><b>3.1.1</b> Possession Sequences</a></li>
+<li class="chapter" data-level="3.1.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#metrics-of-pace"><i class="fa fa-check"></i><b>3.1.2</b> Metrics of Pace</a></li>
+<li class="chapter" data-level="3.1.3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#spatial-polygrid-analysis"><i class="fa fa-check"></i><b>3.1.3</b> Spatial Polygrid Analysis</a></li>
+<li class="chapter" data-level="3.1.4" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#zonal-analysis"><i class="fa fa-check"></i><b>3.1.4</b> Zonal Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#results-exploring-pace-which-sounds-better"><i class="fa fa-check"></i><b>3.2</b> Results / Exploring Pace (which sounds better?)</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-pace-polygrid"><i class="fa fa-check"></i><b>3.2.1</b> EPL Pace (Polygrid)</a></li>
+<li class="chapter" data-level="3.2.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-pace-zonal"><i class="fa fa-check"></i><b>3.2.2</b> EPL Pace (Zonal)</a></li>
+<li class="chapter" data-level="3.2.3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#pace-across-leagues"><i class="fa fa-check"></i><b>3.2.3</b> Pace Across Leagues</a></li>
+<li class="chapter" data-level="3.2.4" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-team-level-pace-polygrid"><i class="fa fa-check"></i><b>3.2.4</b> EPL Team-level Pace (Polygrid)</a></li>
+<li class="chapter" data-level="3.2.5" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-team-level-pace-zonal"><i class="fa fa-check"></i><b>3.2.5</b> EPL Team-level Pace (Zonal)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="modeling.html"><a href="modeling.html"><i class="fa fa-check"></i><b>4</b> Modeling</a><ul>
+<li class="chapter" data-level="4.1" data-path="modeling.html"><a href="modeling.html#variable-and-model-selection"><i class="fa fa-check"></i><b>4.1</b> Variable and Model Selection</a></li>
+<li class="chapter" data-level="4.2" data-path="modeling.html"><a href="modeling.html#hierarchical-logistic-model"><i class="fa fa-check"></i><b>4.2</b> Hierarchical Logistic Model</a></li>
+<li class="chapter" data-level="4.3" data-path="modeling.html"><a href="modeling.html#multinomial-logistic-model"><i class="fa fa-check"></i><b>4.3</b> Multinomial Logistic Model</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>5</b> Conclusion</a><ul>
+<li class="chapter" data-level="5.1" data-path="conclusion.html"><a href="conclusion.html#future-steps"><i class="fa fa-check"></i><b>5.1</b> Future Steps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://stat.duke.edu/" target="blank">Duke University<br>Department of Statistical Science</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="intro" class="section level1">
+<h1><span class="header-section-number">Chapter 1</span> Introduction</h1>
+<p>Pace-of-play is an important characteristic in possession-based sports that can heavily influence the style and outcome of a match. In basketball, pace is defined as the number of possessions per 48 minutes <a href="references.html#references">[1]</a>. However, there is no standardized definition of pace in soccer. Pace has been defined as the number of shots taken <a href="references.html#references">[2]</a><a href="references.html#references">[3]</a> and the number of successful passes per game <a href="references.html#references">[4]</a>. Both of these metrics can provide an idea of how fast the ball and players are moving, as more passes generally lead to more scoring chances. The main limitation of event-based pace metrics is their failure to appropriately account for the outcome or the circumstances under which they are performed. For example, evaluating pace as the number of shots taken does not account for the percentage of shots on target, while the total number of successful passes does not differentiate between a pass made between two defenders in their own half of the pitch and a pass from a winger trying to create a goal-scoring opportunity. Pace-of-play has also been measured as the distance covered over time within a team’s possessions <a href="references.html#references">[5]</a>. However, short possessions do not provide an accurate measurement of pace. For example, a possession consisting of a goal kick and a pass may travel at a fast speed, but is not necessarily representative of a team’s overall pace.</p>
+<p>A main aim of this work is to explore possessions via pass velocities. This new perspective of pace-of-play analyzes possessions that consist of three or more pass or free kick events, as these types of events are more definitive of a team’s pace. The use of spatio-temporal event data allows for more granular measurements of pace-of-play, such as measures of speed between consecutive events and between different regions on the pitch<em>, which is partitioned into eight zones.</em> (sounds weird.)</p>
+<p>In addition, we aim to determine whether the pace metrics are useful in predicting the outcome of a match and whether those metrics are significant.</p>
+<p>Our research goals are three-fold:</p>
+<ol style="list-style-type: decimal">
+<li><p>Examine how pace-of-play varies across the pitch, between different teams and across different professional leagues.</p></li>
+<li><p>Quantify variations in pace at the team and league level and provide metrics to assess how well players and teams attack/defend pace.</p></li>
+<li><p>Evaluate effectiveness of pace metrics by incorporating them into models that predict the outcome of a match.</p></li>
+</ol>
+<p>The remainder of this paper is organized as follows. Section 2 describes the datasets. Section 3 introduces the pace-of-play metrics and the modeling methods. Section 4 presents the results of the methodology. Section 5 provides a discussion of our findings and a conclusion.</p>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="data.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

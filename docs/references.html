@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>References | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</title>
+  <meta name="description" content="insert description." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="References | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="insert description." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="References | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
+  
+  <meta name="twitter:description" content="insert description." />
+  
+
+<meta name="author" content="Ethan Shen" />
+
+
+<meta name="date" content="2021-04-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="appendix.html"/>
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Abstract</a><ul>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html#acknowledgements"><i class="fa fa-check"></i>Acknowledgements</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
+<li class="chapter" data-level="2" data-path="data.html"><a href="data.html"><i class="fa fa-check"></i><b>2</b> Data</a><ul>
+<li class="chapter" data-level="2.1" data-path="data.html"><a href="data.html#processing-the-data"><i class="fa fa-check"></i><b>2.1</b> Processing the Data</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html"><i class="fa fa-check"></i><b>3</b> Pace-of-Play Metrics</a><ul>
+<li class="chapter" data-level="3.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#framework"><i class="fa fa-check"></i><b>3.1</b> Framework</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#possession-sequences"><i class="fa fa-check"></i><b>3.1.1</b> Possession Sequences</a></li>
+<li class="chapter" data-level="3.1.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#metrics-of-pace"><i class="fa fa-check"></i><b>3.1.2</b> Metrics of Pace</a></li>
+<li class="chapter" data-level="3.1.3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#spatial-polygrid-analysis"><i class="fa fa-check"></i><b>3.1.3</b> Spatial Polygrid Analysis</a></li>
+<li class="chapter" data-level="3.1.4" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#zonal-analysis"><i class="fa fa-check"></i><b>3.1.4</b> Zonal Analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#results-exploring-pace-which-sounds-better"><i class="fa fa-check"></i><b>3.2</b> Results / Exploring Pace (which sounds better?)</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-pace-polygrid"><i class="fa fa-check"></i><b>3.2.1</b> EPL Pace (Polygrid)</a></li>
+<li class="chapter" data-level="3.2.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-pace-zonal"><i class="fa fa-check"></i><b>3.2.2</b> EPL Pace (Zonal)</a></li>
+<li class="chapter" data-level="3.2.3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#pace-across-leagues"><i class="fa fa-check"></i><b>3.2.3</b> Pace Across Leagues</a></li>
+<li class="chapter" data-level="3.2.4" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-team-level-pace-polygrid"><i class="fa fa-check"></i><b>3.2.4</b> EPL Team-level Pace (Polygrid)</a></li>
+<li class="chapter" data-level="3.2.5" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-team-level-pace-zonal"><i class="fa fa-check"></i><b>3.2.5</b> EPL Team-level Pace (Zonal)</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="modeling.html"><a href="modeling.html"><i class="fa fa-check"></i><b>4</b> Modeling</a><ul>
+<li class="chapter" data-level="4.1" data-path="modeling.html"><a href="modeling.html#variable-and-model-selection"><i class="fa fa-check"></i><b>4.1</b> Variable and Model Selection</a></li>
+<li class="chapter" data-level="4.2" data-path="modeling.html"><a href="modeling.html#hierarchical-logistic-model"><i class="fa fa-check"></i><b>4.2</b> Hierarchical Logistic Model</a></li>
+<li class="chapter" data-level="4.3" data-path="modeling.html"><a href="modeling.html#multinomial-logistic-model"><i class="fa fa-check"></i><b>4.3</b> Multinomial Logistic Model</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>5</b> Conclusion</a><ul>
+<li class="chapter" data-level="5.1" data-path="conclusion.html"><a href="conclusion.html#future-steps"><i class="fa fa-check"></i><b>5.1</b> Future Steps</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
+<li class="divider"></li>
+<li><a href="https://stat.duke.edu/" target="blank">Duke University<br>Department of Statistical Science</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+<p>1). Ferrero, V. (2013). The Effectiveness of Using Pace, eFG%, TOV … - CAE Users. Retrieved from <a href="http://homepages.cae.wisc.edu/~ece539/fall13/project/Ferrero_rpt.pdf" class="uri">http://homepages.cae.wisc.edu/~ece539/fall13/project/Ferrero_rpt.pdf</a></p>
+<p>2). Knutson, T. (2013, January 24). A Look at Pace in Football. Retrieved from <a href="https://bitterandblue.sbnation.com/2013/1/24/3908816/football-soccer-analytics-pace" class="uri">https://bitterandblue.sbnation.com/2013/1/24/3908816/football-soccer-analytics-pace</a></p>
+<p>3). Knutson, T. (2015, January 05). Pace and Margin for Error. Retrieved from <a href="https://statsbomb.com/2013/11/pace-and-margin-for-error/" class="uri">https://statsbomb.com/2013/11/pace-and-margin-for-error/</a></p>
+<p>4). Minkus, K. (2017, March 09). Examining Pace in MLS. Retrieved from <a href="http://www.americansocceranalysis.com/home/2017/3/9/examining-pace-in-mls" class="uri">http://www.americansocceranalysis.com/home/2017/3/9/examining-pace-in-mls</a></p>
+<p>5). Lawrence, T. (2015, November 6). Europe’s Most Direct Teams – Deep xG. Retrieved from <a href="https://deepxg.com/2015/11/06/europes-most-direct-teams/" class="uri">https://deepxg.com/2015/11/06/europes-most-direct-teams/</a></p>
+<p>6). Batorski, E. (2020, April 07). Ball possession in football - how it’s calculated and how it matters: STATSCORE - News Center. Retrieved from <a href="https://blog.statscore.com/ball-possession-in-football-how-its-calculated-and-how-it-matters/" class="uri">https://blog.statscore.com/ball-possession-in-football-how-its-calculated-and-how-it-matters/</a></p>
+<p>7). Yu, D., Boucher, C., Bornn, L., &amp; Javan, M. (2019, February). Playing Fast Not Loose: Evaluating team-level pace of play in ice hockey using spatio-temporal possession data. Retrieved from <a href="https://arxiv.org/pdf/1902.02020.pdf" class="uri">https://arxiv.org/pdf/1902.02020.pdf</a></p>
+<p>8). Gibney, A. (2017, October 02). Ranking Ligue 1 Sides on Their Defensive Strength. Retrieved from <a href="https://bleacherreport.com/articles/2321750-ranking-the-ligue-1-sides-on-their-defensive-strength" class="uri">https://bleacherreport.com/articles/2321750-ranking-the-ligue-1-sides-on-their-defensive-strength</a></p>
+<p>9). Yi, Q., Groom, R., Dai, C., Liu, H., &amp; Gómez Ruano, M. Á. (2019, November 19). Differences in Technical Performance of Players From ‘The Big Five’ European Football Leagues in the UEFA Champions League. Retrieved from <a href="https://www.frontiersin.org/articles/10.3389/fpsyg.2019.02738" class="uri">https://www.frontiersin.org/articles/10.3389/fpsyg.2019.02738</a></p>
+<p>10). Nalton, J. (2019, September 13). Play Up Or Play Out: The Myths And Legends Of Playing Out From The Back. Retrieved from <a href="https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/" class="uri">https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/</a></p>
+<p>11). Spencer, J. (2017, November 22). Stats Reveal Just How Suited New #1 Ederson Is to Pep Guardiola’s Man City System. Retrieved from <a href="https://www.90min.com/posts/5833855-stats-reveal-just-how-suited-new-1-ederson-is-to-pep-guardiola-s-man-city-system" class="uri">https://www.90min.com/posts/5833855-stats-reveal-just-how-suited-new-1-ederson-is-to-pep-guardiola-s-man-city-system</a></p>
+<p>12). <a href="https://www.washingtonpost.com/news/fancy-stats/wp/2014/10/16/two-of-soccers-most-dangerous-passes/" class="uri">https://www.washingtonpost.com/news/fancy-stats/wp/2014/10/16/two-of-soccers-most-dangerous-passes/</a></p>
+<p>13). <a href="https://www.espn.com/soccer/english-premier-league/story/3945761/why-playing-out-from-the-back-has-brought-mixed-results-for-premier-league-clubs" class="uri">https://www.espn.com/soccer/english-premier-league/story/3945761/why-playing-out-from-the-back-has-brought-mixed-results-for-premier-league-clubs</a></p>
+<p>14). <a href="https://www.mirror.co.uk/sport/football/news/pep-guardiola-explains-axing-joe-13445300" class="uri">https://www.mirror.co.uk/sport/football/news/pep-guardiola-explains-axing-joe-13445300</a></p>
+<p>15). <a href="https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/" class="uri">https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/</a></p>
+<p>16). <a href="https://themastermindsite.com/2019/08/20/playing-out-from-the-back-full-session-plan-and-key-coaching-points/" class="uri">https://themastermindsite.com/2019/08/20/playing-out-from-the-back-full-session-plan-and-key-coaching-points/</a></p>
+<p>17). <a href="https://bleacherreport.com/articles/2790722-why-kepa-arrizabalaga-is-the-most-expensive-keeper-in-the-world" class="uri">https://bleacherreport.com/articles/2790722-why-kepa-arrizabalaga-is-the-most-expensive-keeper-in-the-world</a></p>
+<p>18). <a href="https://www.youtube.com/watch?v=1JBDCilBnas" class="uri">https://www.youtube.com/watch?v=1JBDCilBnas</a></p>
+<p>19). <a href="https://www.skysports.com/football/news/11667/11278517/jose-mourinho-under-pressure-to-attack-when-manchester-united-host-liverpool" class="uri">https://www.skysports.com/football/news/11667/11278517/jose-mourinho-under-pressure-to-attack-when-manchester-united-host-liverpool</a></p>
+<p>20). <a href="https://www.coachbetter.com/new-posts/soccer-tactic-why-is-the-4-1-4-1-the-best-formation/" class="uri">https://www.coachbetter.com/new-posts/soccer-tactic-why-is-the-4-1-4-1-the-best-formation/</a></p>
+<p>21).https://spielverlagerung.com/2016/10/19/mourinhos-midfield-pressing-and-6-3-1-halts-klopps-side/</p>
+<p>22). <a href="https://www.nature.com/articles/s41597-019-0247-7" class="uri">https://www.nature.com/articles/s41597-019-0247-7</a></p>
+
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="appendix.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
