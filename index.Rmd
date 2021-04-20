@@ -55,8 +55,3 @@ Pace-of-play is an important characteristic in soccer that can influence the sty
 *Keywords*: Soccer analytics, pace-of-play, pass velocities, classification algorithms
 
 
-## Acknowledgements {-}
-
-insert this later 
-
-
