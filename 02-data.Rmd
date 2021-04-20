@@ -34,8 +34,6 @@ We utilize data collected by [Wyscout](https://wyscout.com){target="blank"}, a l
 
 For each of the five leagues, the *events* data details all the events that occur during the course of each match. The data includes a number of variables that describe the event, including its name, time at which it occurs and its starting and ending coordinates.  All the event and sub-event names can be found in Appendix Table \@ref(tab:event-name-tbl).  It also includes variables that identify the player, team, match, and match period (1st or 2nd half) that the event corresponds to; the player, team and match IDs are unique numerical values assigned by Wyscout. Both the *x* and *y* coordinates are always in the range [0, 100] and indicate the percentage of the pitch from the perspective of the attacking team, which is assumed to always play from the left side to the right side of the pitch (Pappalardo, 2019). The value of the *x* coordinate indicates the event’s nearness (in percentage) to the opponent’s goal, while the value of the *y* coordinate indicates the event’s nearness (in percentage) to the right side of the field. For consecutive events in which the ball stays in play and is possessed by the same team, the ending coordinates of an event will match the subsequent event’s starting coordinates. 
 
-Wyscout’s data collection is performed by expert analysts that tag the events from match videos (Pappalardo, 2019). For each ball touch in the match, the analyst will add the event type, timestamp, and coordinates on the pitch. A series of quality control checks are performed, algorithmically and manually. Though these steps substantially reduce the margin of error, there is still potential for uncatchable mistakes.  
-
 ```{r example-data}
 example <- first_game %>% #head(1000) %>% select(match_id, team_id, sub_event_name, event_sec, poss_id, starts_with("start_"), starts_with("end_")) 
   filter(match_id == "2499719", poss_id == 45) %>% 
@@ -62,6 +60,9 @@ example %>%
 ```
 
 Table \@ref(tab:example-data) shows an example of five events in our data. This play consists of two consecutive passes, a duel on the ball, and ends with a shot taken by Arsenal. 
+
+Wyscout’s data collection is performed by expert analysts that tag the events from match videos (Pappalardo, 2019). For each ball touch in the match, the analyst will add the event type, timestamp, and coordinates on the pitch. A series of quality control checks are performed, algorithmically and manually. Though these steps substantially reduce the margin of error, there is still potential for uncatchable mistakes.  
+
 
 The *teams* data describes the clubs that play in the five leagues during the 2017-2018 season. This dataset contains the name of the club (e.g. Liverpool) and a team ID, which can be matched with the team-identifying variable in the *events* dataset. 
 
