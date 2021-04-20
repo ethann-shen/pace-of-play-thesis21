@@ -55,6 +55,6 @@ modeling
 variable-and-model-selection
 hierarchical-logistic-model
 multinomial-logistic-model
-conclusion
+discussion
 future-steps
 appendix
