@@ -4,10 +4,7 @@ author: "Ethan Shen"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
-bibliography: [book.bib, packages.bib]
-biblio-style: apalike
 link-citations: yes
-description: "insert description."
 knit: "bookdown::render_book"
 space_between_paragraphs: true
 classoption: oneside
@@ -25,6 +22,14 @@ header-includes:
 
 
 ```{r include=FALSE}
+
+# STUFF IN YAML 
+# bibliography: [book.bib, packages.bib]
+# biblio-style: apalike
+#description: "insert description."
+
+
+
 # automatically create a bib database for R packages
 knitr::write_bib(c(
   .packages(), 'bookdown', 'knitr', 'rmarkdown'
@@ -45,7 +50,10 @@ library(knitr)
 
 # Abstract {-}
 
-Pace-of-play is an important characteristic in soccer that can influence the style and outcome of a match. Using event data provided by Wyscout that covers one season of regular-season games from five European soccer leagues, we develop four velocity-based pace metrics and first examine how pace varies across the pitch, between different leagues, and between different teams. Our findings show that although pace varies considerably, it is generally highest in the offensive third, relatively consistent across leagues, and increases with decreasing team quality. We then assess whether the pace metrics are useful in predicting the outcome of a match by constructing models with and without the metrics. After leveraging hierarchical logistic and multinomial logistic models, we find that even though the pace variables are statistically significant when predicting match outcomes, they only slightly improve the models' accuracy.
+Pace-of-play is an important characteristic in soccer that can influence the style and outcome of a match. Using event data provided by Wyscout that covers one season of regular-season games from five European soccer leagues, we develop four velocity-based pace metrics and examine how pace varies across the pitch, between different leagues, and between different teams. Our findings show that although pace varies considerably, it is generally highest in the offensive third of the pitch, relatively consistent across leagues, and increases with decreasing team quality. In addition, we assess whether the pace metrics are useful in predicting the outcome of a match by constructing models with and without the metrics. After implementing hierarchical logistic and multinomial logistic models, we find that the pace variables are statistically significant but only slightly improve the predictive accuracy metrics.
+
+*Keywords*: Soccer analytics, pace-of-play, pass velocities, classification algorithms
+
 
 ## Acknowledgements {-}
 

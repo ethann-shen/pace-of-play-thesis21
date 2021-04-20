@@ -1,3 +1,649 @@
-# Appendix  {-}
+# Appendix 
 
-Tables  + Figures
+## Event Names {-}
+```{r}
+# event_name_df <- readRDS("/Users/ethanshen/Documents/College/Fa20/pace-of-play/data/events/england.Rds") %>%
+# tbl_df() %>% 
+#   select(event_name, sub_event_name) %>% 
+#   group_by(event_name, sub_event_name) %>% 
+#   distinct()
+load("source/data/event_name_df.Rda")
+```
+
+```{r}
+# event_name_df %>% 
+#   arrange(event_name, sub_event_name) %>% 
+#   kableExtra::kbl(escape = FALSE, booktabs = TRUE, align = "c",
+#                   caption = "",
+#                   col.names = c("Event Name", "Sub Event Name")) %>% 
+#   kable_styling(latex_options = c("hold_position"), full_width = FALSE)
+```
+
+```{r event-name-tbl}
+# t1 <- event_name_df %>% 
+#     arrange(event_name, sub_event_name) %>% 
+#     filter(event_name <= "Goalkeeper")
+# t2 <- event_name_df %>% 
+#     arrange(event_name, sub_event_name) %>% 
+#     filter(event_name >"Goalkeeper")
+# 
+# t2[nrow(t2)+1,] <- " "
+# t2[nrow(t2)+1,] <- " "
+
+
+t1 <- event_name_df %>% 
+  arrange(event_name, sub_event_name) %>% 
+  head(18)
+
+t2 <- event_name_df %>% 
+  arrange(event_name, sub_event_name) %>% 
+  tail(18)
+bind_cols(
+  t1,t2
+) %>% 
+  kbl(booktabs = TRUE, col.names = c("Event Name", "Sub Event Name","Event Name", "Sub Event Name"), caption = "Event types with their possible subtypes.") %>% 
+  collapse_rows(columns = c(1,3), latex_hline = "major") %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"), position = "center")
+# %>% 
+#  kable(col.names = c("Event Name", "Sub Event Name")) %>% 
+#  collapse_rows(columns = 1, latex_hline = "major") %>%
+#  kable_styling(full_width = FALSE, position = "left", fixed_thead = T) 
+```
+
+
+<br><br>
+
+## Minimum Number of Events per Possession {-}
+
+(ref:min-num-events) Difference in toal velocity across the five leagues when filtering for possessions with at least two and at least five events compared to that of possessions with at least three events. Note that there is no significant difference in total velocity among these three choices.  
+
+```{r min-num-events, fig.align="center", fig.cap="(ref:min-num-events)", fig.height=5}
+load("source/data/league_sensitivity_analysis.Rda")
+league_sensitivity_analysis %>% ggplot() + 
+  geom_bar(aes(x = as.factor(zone), weight = value, fill = as.factor(zone))) + 
+  facet_grid(league ~  poss, scales = "free_y") + 
+  labs(y = expression(paste(Delta, " Speed (m/s)")), fill = "Zone")  + 
+  theme_bw()  +
+  geom_hline(yintercept = 0, colour = "black") +
+  theme(panel.grid.major = element_blank(), 
+        legend.position = "bottom",
+        axis.title.x =element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        strip.text.x = element_text(size = 10),
+        strip.text.y = element_text(size = 8.5)) + 
+  guides(fill = guide_legend(nrow = 1)) + 
+  scale_fill_manual(values=col.pal)
+```
+
+
+## Average Distance per Pass {-}
+
+(ref:avg-dist-per-pass) Average distance per pass for 5 teams in each league. Note that the average distance generally increases with decreasing team quality, except for in the EPL. 
+
+```{r avg-dist-per-pass, fig.align="center", fig.cap="(ref:avg-dist-per-pass)", fig.height = 12, fig.width=14}
+load("source/data/avg_dist_plots.Rda")
+
+ggpubr::ggarrange(england_dist_plot,
+                  france_dist_plot + labs(y = ""),
+                  germany_dist_plot,
+                  italy_dist_plot + labs(y = ""),
+                  spain_dist_plot, ncol=2, nrow=3, common.legend = TRUE, legend="bottom")
+
+```
+
+
+(ref:epl-attacking-polygrids-appendix) Polygrid analysis of total velocity by team vs. EPL average while attacking. Teams are ordered by final standings from the 2017-18 season. All units are in m/s.
+
+
+(ref:epl-defense-polygrids-appendix) Polygrid analysis of total velocity by team vs. EPL average while defending. Teams are ordered by final standings from the 2017-18 season. All units are in m/s.
+
+## EPL Team-level Pace (Polygrid) {-}
+
+```{r epl-attacking-polygrids-appendix, fig.align = "center", fig.width=20,fig.height=9, fig.cap="(ref:epl-attacking-polygrids-appendix)"}
+epl_attacking_appendix <- epl_grids %>% 
+  mutate(median_liverpool_total_speed = ifelse(median_liverpool_total_speed >= 72, NA,  median_liverpool_total_speed)) %>%
+  mutate_at(vars(-matches("median_england_total_speed")), list( ~ . - median_england_total_speed)) %>% 
+  select(-median_england_total_speed) %>% 
+  rename_all( ~ str_remove_all(.x, "median_|_total_speed") %>% str_replace_all("_", " ")) %>% 
+  select(!c(`man city`,  `Manchester United`, `Tottenham Hotspur`, liverpool, `crystal palace`, `bournemouth`, `Stoke City`, wba)) %>% 
+  #mutate(bournemouth = ifelse(bournemouth >= 2,  0, bournemouth)) %>% 
+  mutate(zone = 1:294) %>% 
+  gather(club, value,  Arsenal:Watford) %>% 
+  mutate(club = str_to_title(club),
+         club = case_when(
+           club == "Man City" ~ "Manchester City", 
+           club == "Bournemouth" ~ "AFC Bournemouth", 
+           club == "Wba"~ "West Bromwich Albion",
+           club == "Brighton Hove Albion" ~ "Brighton & Hove Albion",
+           TRUE ~ as.character(club)
+         )) %>% 
+  left_join(league_tables %>% 
+              slice(1:20) %>% 
+              select(Pos, Team),
+            by = c("club" = "Team")) %>% 
+  mutate(club = paste0(club, " (", Pos, ")"), 
+         club = reorder(club, Pos)) #%>% 
+# left_join(abbreviation_df, by = "club") %>% 
+# mutate(club = paste0(abb, " (", Pos, ")"),
+#        club = reorder(club, Pos))
+
+
+create_facet_heatmap(epl_attacking_appendix %>% 
+                       mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995),
+                                             quantile(value, na.rm=TRUE, 0.995), value)) %>% 
+                       mutate(value = ifelse(value <= quantile(value, na.rm=TRUE, 0.0025),
+                                             quantile(value, na.rm=TRUE, 0.0025), value)), legend_scale = "diverging", nrow = 3) +
+  labs(x = expression(paste(Delta, " Speed (m/s)")), fill = "") + 
+  theme(strip.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        legend.text = element_text(size = 16),
+        legend.key.height = unit(0.75, 'cm'),
+        legend.key.width = unit(2, 'cm'),
+        legend.position = "bottom")
+```
+
+<br>
+
+```{r epl-defense-polygrids-appendix, fig.align = "center", fig.width=20,fig.height=9, fig.cap="(ref:epl-defense-polygrids-appendix)"}
+epl_defending_appendix <- all_grid_england_defense_speed %>% 
+  mutate(club = case_when(
+    club == "Afc Bournemouth" ~ "AFC Bournemouth",
+    club == "Brighton Hove Albion" ~ "Brighton & Hove Albion",
+    TRUE ~ as.character(club)
+  )) %>% 
+  gather(zone, value, -club) %>% 
+  spread(club, value) %>% 
+  mutate(zone = str_remove_all(zone, "zone") %>% as.numeric()) %>% 
+  arrange(zone) %>% 
+  bind_cols(epl_grids %>% select(median_england_total_speed)) %>% 
+  mutate_at(vars(-matches("median_england_total_speed"), -matches("zone")), list( ~ . - median_england_total_speed)) %>% 
+  select(-median_england_total_speed) %>% 
+  gather(club, value,  `AFC Bournemouth`:`West Ham United`, -zone) %>% 
+  left_join(league_tables %>% 
+              slice(1:20) %>% 
+              select(Pos, Team),
+            by = c("club" = "Team")) %>% 
+  filter(club %notin% c("Manchester City", "Manchester United", "Tottenham Hotspur", "Liverpool", "Crystal Palace", "AFC Bournemouth", "Stoke City", "West Bromwich Albion")) %>% 
+  mutate(club = paste0(club, " (", Pos, ")"),
+         club = reorder(club, Pos)) 
+
+create_facet_heatmap(epl_defending_appendix %>% 
+                       mutate(value = ifelse(value >= quantile(value, na.rm=TRUE, 0.995), 
+                                             quantile(value, na.rm=TRUE, 0.995), 
+                                             ifelse(value <= quantile(value, na.rm=TRUE, 0.0025),
+                                                    quantile(value, na.rm=TRUE, 0.0025), value))),
+                     legend_scale = "diverging", nrow=3) +
+  labs(x = expression(paste(Delta, " Speed (m/s)")), fill = "") + 
+  theme(strip.text.x = element_text(size = 20),
+        axis.title.x = element_text(size = 20),
+        legend.text = element_text(size = 16),
+        legend.key.height = unit(0.75, 'cm'),
+        legend.key.width = unit(2, 'cm'),
+        legend.position = "bottom")
+```
+
+<br>
+
+## Hierarchical Logistic Model Diagnostics {-}
+
+```{r hier-log-output-appendix}
+hier_log_output %>% 
+  mutate(model_type = c("Baseline", "$\\Delta_{ij}^{AZ}$", "$\\Delta_{ij}^{OZ}$", "$\\Delta_{ij}^{FZ}$")) %>%
+  select(model_type, everything()) %>% 
+  #slice(c(2,3)) %>% 
+  kbl(booktabs = TRUE, align = "c",
+      caption = "Hierarchical logistic model results with 4-fold cross validation.",
+      col.names = c("Model", "Mean Accuracy",  "Mean AUC", "Accuracy", "AUC"
+      )) %>% 
+  kable_styling(latex_options = c("hold_position")) %>%
+  add_header_above(c(" " = 1, "Train Data" = 2, "Test Data" = 2))
+```
+
+<br>
+
+```{r re-hlm-baseline, fig.align="center", fig.height=9, fig.cap="Random effects for Home from baseline hierarchical logistic model."}
+sjPlot::plot_model(glmer.fit.baseline, type = "re", title = "") + theme_bw() + labs(title = "")
+```
+
+<br>
+
+```{r re-hlm-pace, fig.align="center", fig.height=9, fig.cap="Random effects for Home from pace hierarchical logistic model."}
+sjPlot::plot_model(glmer.fit.pace, type = "re") + theme_bw() + labs(title = "")
+```
+
+<br>
+
+The three assumptions for a hierachical logistic regression are **linearity**, **randomness** and **independence**. 
+
+- **Linearity**: Linearity is mostly satisfied. There are no obvious patterns in the plot of the binned residuals vs. *Unbeaten* or residuals vs. $\Delta_{ij}^{FZ}$. The average residuals vs. *Derby* are also all close to 0. However, the binned residuals vs. the predicted probabilities show a slight linear trend; as the predicted probability of winning increases, the residual also increases. This is one limitation with the hierarchical logistic models. 
+
+- **Randomness**: Our data utilizes all the regular-season games from the 2017-2018 season, and not a sample, so the randomness condition is satisfied. We also do not have reason to believe that this season's games differ systemtically from that of other seasons.  
+
+- **Independence**: Even though the games are not completely independent, we believe that the independence condition is satisfied. Games in other sports, such as basketball, may be more dependent, since teams will often play back to back nights, and so fatigue or momentum may impact the second or third consecutive day of games. In soccer, teams will generally have one week in between consecutive regular-season games, which is plenty of time to rest. In addition, momentum in soccer does not necessarily exist on a game-by-game basis; even though a team may be on a win or unbeaten streak, it is hard to tell if that streak will continue, because soccer match outcomes are much more unpredictable than that of other sports. 
+
+Quadratic terms for *Unbeaten* and the pace variable $\Delta_{ij}^{FZ}$ were also considered. Neither modification significantly improved the models' performance or helped further satisfy the linearity condition. 
+
+```{r eval=FALSE}
+#http://www.sthda.com/english/articles/36-classification-methods-essentials/148-logistic-regression-assumptions-and-diagnostics-in-r/#:~:text=Linearity%20assumption,-Here%2C%20we'll&text=This%20can%20be%20done%20by,predictor%20and%20the%20logit%20values.&text=The%20smoothed%20scatter%20plots%20show,diabetes%20outcome%20in%20logit%20scale.
+glmer.fit.baseline <- glmer(FTR ~ current_unbeaten_streak + derby_game + diff_all_attacking_flank_zone_speeds+ (1 | home), data = glmer_all_data,
+                            family = binomial,
+                            glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+
+
+glmer_all_sq <- glmer_all_data %>% mutate(current_unbeaten_streak = current_unbeaten_streak*current_unbeaten_streak)
+glmer.fit.baseline.sq <- glmer(FTR ~ current_unbeaten_streak + derby_game + diff_all_attacking_flank_zone_speeds+(1 | home), data = glmer_all_sq,
+                               family = binomial,
+                               glmerControl(optimizer = "nloptwrap", calc.derivs = FALSE))
+
+
+performance::binned_residuals(glmer.fit.baseline, term = "current_unbeaten_streak")
+performance::binned_residuals(glmer.fit.baseline.sq, term = "current_unbeaten_streak")
+```
+
+
+```{r hlm-residual-plots-baseline, fig.align = "center", fig.cap="Binned residual plots for the baseline hierarchical logistic model."}
+pred_probs_baseline <- as_tibble(predict(glmer.fit.baseline, type = "response")) %>% 
+  mutate(obs_num = 1:n())
+
+residuals_baseline <- as_tibble(residuals(glmer.fit.baseline, "pearson")) %>%  #calculate residuals
+  setNames(paste('resid.', names(.), sep = "")) %>% #update column names
+  mutate(obs_num = 1:n())
+
+glmer_baseline_aug <- inner_join(glmer_all_data %>% ungroup() %>% mutate(obs_num = 1:n()), pred_probs_baseline) #add probs
+glmer_baseline_aug <- inner_join(glmer_baseline_aug, residuals_baseline)
+
+par(mfrow = c(1,2))
+arm::binnedplot(x = glmer_baseline_aug$value, y = glmer_baseline_aug$resid.value,
+                xlab = "Predicted Probabilities", 
+                main = "Residuals vs. Predicted Probs")
+arm::binnedplot(x = glmer_baseline_aug$current_unbeaten_streak, y = glmer_baseline_aug$resid.value,
+                xlab = "Unbeaten", 
+                main = "Residuals vs. Unbeaten")
+
+```
+
+<br>
+
+```{r}
+glmer_baseline_aug %>% 
+  group_by(derby_game) %>% 
+  summarise(mean_resid = mean(resid.value)) %>% 
+  mutate(derby_game = case_when(
+    derby_game == 0 ~ "Draw/Loss", 
+    TRUE ~ "Win"
+  )) %>% 
+  kbl(caption = "Residuals vs. Derby for the baseline hierarchical logistic model.", escape=F, booktabs = TRUE, digits = 3,
+      col.names = c("Derby", "Mean Residual"), align = "c"
+  ) %>% 
+  kable_styling(latex_options = c("hold_position"))
+```
+<br>
+
+
+```{r hlm-residual-plots-pace, fig.align = "center", fig.cap="Binned residual plots for the pace hierarchical logistic model."}
+pred_probs_pace <- as_tibble(predict(glmer.fit.pace, type = "response")) %>% 
+  mutate(obs_num = 1:n())
+
+residuals_pace <- as_tibble(residuals(glmer.fit.pace)) %>%  #calculate residuals
+  setNames(paste('resid.', names(.), sep = "")) %>% #update column names
+  mutate(obs_num = 1:n())
+
+
+
+glmer_pace_aug <- inner_join(glmer_all_data %>% ungroup() %>% mutate(obs_num = 1:n()), pred_probs_pace) #add probs
+glmer_pace_aug <- inner_join(glmer_pace_aug, residuals_pace)
+
+
+par(mfrow = c(2,2))
+arm::binnedplot(x = glmer_pace_aug$value, y = glmer_pace_aug$resid.value,
+                xlab = "Predicted Probabilities", 
+                main = "Residuals vs. Predicted Probs")
+arm::binnedplot(x = glmer_pace_aug$current_unbeaten_streak, y = glmer_pace_aug$resid.value,
+                xlab = "Unbeaten", 
+                main = "Residuals vs. Unbeaten")
+arm::binnedplot(x = glmer_pace_aug$diff_all_attacking_flank_zone_speeds, y = glmer_pace_aug$resid.value,
+                xlab = expression(paste(Delta[ij], FZ)), 
+                main = expression(paste("Residuals vs. ", Delta[ij], FZ)))
+```
+
+<br>
+
+```{r}
+glmer_pace_aug %>% 
+  group_by(derby_game) %>% 
+  summarise(mean_resid = mean(resid.value)) %>% 
+  mutate(derby_game = case_when(
+    derby_game == 0 ~ "Draw/Loss", 
+    TRUE ~ "Win"
+  )) %>% 
+  kbl(caption = "Residuals vs. Derby for the pace hierarchical logistic model.", escape=F, booktabs = TRUE, digits = 3,
+      col.names = c("Derby", "Mean Residual"), align = "c"
+  ) %>% 
+  kable_styling(latex_options = c("hold_position"))
+```
+
+## Multinomial Logistic Model Diagnostics {-}
+
+```{r multinom-output-appendix}
+multinom_output %>%
+  mutate(model_type = c("Baseline", "$\\Delta_{ij}^{AZ}$", "$\\Delta_{ij}^{OZ}$", "$\\Delta_{ij}^{FZ}$")) %>%
+  select(model_type,acc_mean, ACC_test) %>%
+  kbl(booktabs = T, align = "c",
+      caption = "Multinomial logistic model results with 4-fold cross validation.",
+      col.names = c("Model", "Mean Accuracy", "Accuracy"
+      )) %>%
+  kable_styling(latex_options = c("hold_position")) %>%
+  add_header_above(c(" " = 1, "Train Data" = 1, "Test Data" = 1))
+```
+
+<br>
+
+```{r}
+multinom.fit.data <- bind_rows(train_data_multinom, test_data_multinom)
+multinom.fit.data$home <- fct_relevel(multinom.fit.data$home, "Manchester City")
+
+multinom.fit.baseline.summary <- multinom("FTR ~ current_unbeaten_streak + derby_game + home",
+                                          data = multinom.fit.data,
+                                          trace = FALSE)
+```
+
+```{r mlm-home-coef-baseline}
+multinom.fit.baseline.summary.2 <- multinom.fit.baseline.summary %>% summary()
+z <- multinom.fit.baseline.summary.2$coefficients/multinom.fit.baseline.summary.2$standard.errors
+p <- (1 - pnorm(abs(z), 0, 1))*2
+
+tibble(
+  predictor = multinom.fit.baseline.summary.2$coefnames[4:100],
+  log.estimate0 = multinom.fit.baseline.summary.2$coefficients[1,4:100],
+  log.estimate1 = multinom.fit.baseline.summary.2$coefficients[2,4:100],
+  std.error0 = multinom.fit.baseline.summary.2$standard.errors[1,4:100],
+  std.error1 = multinom.fit.baseline.summary.2$standard.errors[2,4:100],
+  estimate0 = log.estimate0 %>% exp(),
+  estimate1 = log.estimate1 %>% exp(),
+  lower.estimate0 = (log.estimate0 - 1.96*std.error0) %>% exp(),
+  lower.estimate1 = (log.estimate1 - 1.96*std.error1) %>% exp(),
+  upper.estimate0 = (log.estimate0 + 1.96*std.error0) %>% exp(),
+  upper.estimate1 = (log.estimate1 + 1.96*std.error1) %>% exp(),
+  pval0 = p[1,4:100],
+  pval1 = p[2,4:100]
+) %>%
+  mutate_if(is.double, round, 3) %>% 
+  mutate(log.estimate0 = log.estimate0 %>% round(2),
+         log.estimate1 = log.estimate1 %>% round(2),
+         CI0 = paste0("(", lower.estimate0 %>% round(2), ", ", upper.estimate0 %>% round(2), ")"),
+         CI1 = paste0("(", lower.estimate1 %>% round(2), ", ", upper.estimate1 %>% round(2), ")"),
+         estimate_ci0 = paste(estimate0 %>% round(2), CI0),
+         estimate_ci1 = paste(estimate1 %>% round(2), CI1),
+         pval0 = case_when(
+           pval0 < 0.001 ~ "< 0.001",
+           pval0 < 0.01 ~ "< 0.01",
+           TRUE ~ pval0 %>% round(2) %>% as.character()
+         ),
+         pval0 = cell_spec(pval0, bold = ifelse(pval0 <= 0.05, TRUE,  FALSE)),
+         pval1 = case_when(
+           pval1 < 0.001 ~ "< 0.001",
+           pval1 < 0.01 ~ "< 0.01",
+           TRUE ~ pval1 %>% round(2) %>% as.character()
+         ),
+         pval1 = cell_spec(pval1, bold = ifelse(pval1 <= 0.05, TRUE,  FALSE))) %>% 
+  mutate_all(as.character) %>% 
+  select(predictor, log.estimate0, estimate_ci0, pval0, log.estimate1, estimate_ci1,  pval1) %>% 
+  kbl(caption = "Coefficients for Home obtained from baseline multinomial logistic model.", escape=F, booktabs = TRUE,
+      col.names = c("Predictor", "Log Odds", "Odds Ratio",  "p-value","Log Odds", "Odds Ratio", "p-value")
+  ) %>% 
+  kable_styling(latex_options = c("hold_position"), font_size = 13.5) 
+```
+
+<br>
+
+```{r}
+multinom.fit.pace.summary <- multinom("FTR ~ current_unbeaten_streak + derby_game + diff_all_attacking_flank_zone_speeds + home",
+                                      data = multinom.fit.data,
+                                      trace = FALSE)
+```
+
+```{r mlm-home-coef-pace}
+multinom.fit.pace.summary.2 <- multinom.fit.pace.summary %>% summary()
+
+z.pace <- multinom.fit.pace.summary.2$coefficients/multinom.fit.pace.summary.2$standard.errors
+p.pace <- (1 - pnorm(abs(z.pace), 0, 1))*2
+tibble(
+  predictor = multinom.fit.pace.summary.2$coefnames[5:101],
+  log.estimate0 = multinom.fit.pace.summary.2$coefficients[1,5:101],
+  log.estimate1 = multinom.fit.pace.summary.2$coefficients[2,5:101],
+  std.error0 = multinom.fit.pace.summary.2$standard.errors[1,5:101],
+  std.error1 = multinom.fit.pace.summary.2$standard.errors[2,5:101],
+  estimate0 = log.estimate0 %>% exp(),
+  estimate1 = log.estimate1 %>% exp(),
+  lower.estimate0 = (log.estimate0 - 1.96*std.error0) %>% exp(),
+  lower.estimate1 = (log.estimate1 - 1.96*std.error1) %>% exp(),
+  upper.estimate0 = (log.estimate0 + 1.96*std.error0) %>% exp(),
+  upper.estimate1 = (log.estimate1 + 1.96*std.error1) %>% exp(),
+  pval0 = p.pace[1,5:101],
+  pval1 = p.pace[2,5:101]
+) %>%
+  mutate_if(is.double, round, 3) %>% 
+  mutate(log.estimate0 = log.estimate0 %>% round(2),
+         log.estimate1 = log.estimate1 %>% round(2),
+         CI0 = paste0("(", lower.estimate0 %>% round(2), ", ", upper.estimate0 %>% round(2), ")"),
+         CI1 = paste0("(", lower.estimate1 %>% round(2), ", ", upper.estimate1 %>% round(2), ")"),
+         estimate_ci0 = paste(estimate0 %>% round(2), CI0),
+         estimate_ci1 = paste(estimate1 %>% round(2), CI1),
+         pval0 = case_when(
+           pval0 < 0.001 ~ "< 0.001",
+           pval0 < 0.01 ~ "< 0.01",
+           TRUE ~ pval0 %>% round(2) %>% as.character()
+         ),
+         pval0 = cell_spec(pval0, bold = ifelse(pval0 <= 0.05, TRUE,  FALSE)),
+         pval1 = case_when(
+           pval1 < 0.001 ~ "< 0.001",
+           pval1 < 0.01 ~ "< 0.01",
+           TRUE ~ pval1 %>% round(2) %>% as.character()
+         ),
+         pval1 = cell_spec(pval1, bold = ifelse(pval1 <= 0.05, TRUE,  FALSE))) %>% 
+  mutate_all(as.character) %>% 
+  select(predictor, log.estimate0, estimate_ci0, pval0, log.estimate1, estimate_ci1,  pval1) %>% 
+  kbl(caption = "Coefficients for Home obtained from pace multinomial logistic model.", escape=F, booktabs = TRUE,
+      col.names = c("Predictor", "Log Odds", "Odds Ratio",  "p-value","Log Odds", "Odds Ratio", "p-value")
+  ) %>% 
+  kable_styling(latex_options = c("hold_position"), font_size = 13.5) 
+```
+
+<br>
+
+The three assumptions for a multinomial logistic regression are **linearity**, **randomness** and **independence**. Randomness and independence are satisfied, as the conditions for the multinomial logistic model are the same for the hierachical logistic model. 
+
+- **Linearity**: Linearity is satisfied. For all levels of the response variable (win, draw, loss), there are no obvious patterns in the plot of the binned residuals vs. predicted probabilities, binned residuals vs. *Unbeaten* or binned residuals vs. $\Delta_{ij}^{FZ}$. The average residuals vs. *Derby* and average residuals vs. *Home* are also all close to 0 for each level of the response variable. 
+
+```{r mlm-residual-plots-baseline, fig.align = "center", fig.cap="Binned residual plots for the baseline multinomial logistic model."}
+pred_probs_baseline <- as_tibble(predict(multinom.fit.baseline.summary, type = "probs")) %>% 
+  mutate(obs_num = 1:n())
+
+residuals_baseline <- as_tibble(residuals(multinom.fit.baseline.summary)) %>%  #calculate residuals
+  setNames(paste('resid.', names(.), sep = "")) %>% #update column names
+  mutate(obs_num = 1:n())
+
+
+
+multinom_baseline_aug <- inner_join(multinom.fit.data %>% mutate(obs_num = 1:n()), pred_probs_baseline) #add probs
+multinom_baseline_aug <- inner_join(multinom_baseline_aug, residuals_baseline)
+
+par(mfrow=c(2,3))
+
+
+arm::binnedplot(x = multinom_baseline_aug$`-1`, 
+                y = multinom_baseline_aug$`resid.-1`,
+                xlab = "Predicted Probs (Loss)", 
+                main = "Loss: Residuals vs. Pred Probs")
+
+arm::binnedplot(x = multinom_baseline_aug$`0`, 
+                y = multinom_baseline_aug$`resid.0`,
+                xlab = "Predicted Probs (Draw)", 
+                main = "Draw: Residuals vs. Pred Probs")
+
+arm::binnedplot(x = multinom_baseline_aug$`1`, 
+                y = multinom_baseline_aug$`resid.1`,
+                xlab = "Predicted Probs (Win)", 
+                main = "Win: Residuals vs. Pred Probs")
+
+
+arm::binnedplot(x = multinom_baseline_aug$current_unbeaten_streak, 
+                y = multinom_baseline_aug$`resid.-1`,
+                xlab = "Unbeaten (Loss)", 
+                main = "Loss: Residuals vs. Unbeaten")
+
+arm::binnedplot(x = multinom_baseline_aug$current_unbeaten_streak, 
+                y = multinom_baseline_aug$`resid.0`,
+                xlab = "Unbeaten (Draw)", 
+                main = "Draw: Residuals vs. Unbeaten")
+
+arm::binnedplot(x = multinom_baseline_aug$current_unbeaten_streak, 
+                y = multinom_baseline_aug$`resid.1`,
+                xlab = "Unbeaten (Win)", 
+                main = "Win: Residuals vs. Unbeaten")
+```
+
+<br>
+
+```{r mlm-residual-derby-baseline}
+multinom_baseline_aug %>% 
+  group_by(derby_game) %>%
+  summarise(mean.loss = mean(`resid.-1`), 
+            mean.draw = mean(`resid.0`), 
+            mean.win = mean(`resid.-1`)) %>%
+  t() %>% 
+  as_tibble() %>%
+  janitor::row_to_names(row_number = 1) %>% 
+  mutate(response = c("Loss", "Draw", "Win")) %>% 
+  select(response, everything()) %>% 
+  kbl(caption = "Residuals vs. Derby for the baseline multinomial logistic model.", escape=F, booktabs = TRUE, digits = 8,
+      col.names = c("", "0", "1")
+  ) %>% 
+  kable_styling(latex_options = c("hold_position"))
+```
+
+<br>
+
+```{r mlm-residual-home-baseline}
+multinom_baseline_aug %>% 
+  group_by(home) %>%
+  summarise(mean.loss = mean(`resid.-1`), 
+            mean.draw = mean(`resid.0`), 
+            mean.win = mean(`resid.-1`)) %>%
+  t() %>% 
+  as_tibble() %>%
+  janitor::row_to_names(row_number = 1) %>% 
+  mutate_if(is.character, as.numeric) %>% 
+  mutate_if(is.numeric, round, 6) %>% 
+  mutate(` ` = c("Loss", "Draw", "Win")) %>% 
+  select(` `, everything()) %>% 
+  kableExtra::kbl(caption = "Residuals vs. Home  for the baseline multinomial logistic model.", 
+      escape=F, booktabs = TRUE) %>% 
+  kableExtra::kable_styling(latex_options = c("hold_position")) %>% 
+  kableExtra::scroll_box()
+
+
+#%>% 
+# DT::datatable(caption = htmltools::tags$caption(
+#   style = 'caption-side: bottom; text-align: center;',
+#   'Table 6.8: ', htmltools::em('Residuals vs. Home  for the baseline multinomial logistic model.')
+# ), options = list(scrollX = TRUE))
+
+
+```
+<br>
+
+```{r mlm-residual-plots-pace, fig.align = "center", fig.cap="Binned residual plots for the pace multinomial logistic model."}
+pred_probs_pace <- as_tibble(predict(multinom.fit.pace.summary, type = "probs")) %>% 
+  mutate(obs_num = 1:n())
+
+residuals_pace <- as_tibble(residuals(multinom.fit.pace.summary)) %>%  #calculate residuals
+  setNames(paste('resid.', names(.), sep = "")) %>% #update column names
+  mutate(obs_num = 1:n())
+
+
+
+multinom_pace_aug <- inner_join(multinom.fit.data %>% mutate(obs_num = 1:n()), pred_probs_pace) #add probs
+multinom_pace_aug <- inner_join(multinom_pace_aug, residuals_pace)
+
+par(mfrow=c(3,3))
+arm::binnedplot(x = multinom_pace_aug$`-1`, y = multinom_pace_aug$`resid.-1`,
+                xlab = "Predicted Probs (Loss)", 
+                main = "Loss: Residuals vs. Pred Probs")
+arm::binnedplot(x = multinom_pace_aug$`0`, y = multinom_pace_aug$`resid.0`,
+                xlab = "Predicted Probs (Draw)", 
+                main = "Draw: Residuals vs. Pred Probs")
+arm::binnedplot(x = multinom_pace_aug$`1`, y = multinom_pace_aug$`resid.1`,
+                xlab = "Predicted Probs (Win)", 
+                main = "Win: Residuals vs. Pred Probs")
+
+
+arm::binnedplot(x = multinom_pace_aug$current_unbeaten_streak, y = multinom_pace_aug$`resid.-1`,
+                xlab = "Unbeaten (Loss)", 
+                main = "Loss: Residuals vs. Unbeaten")
+arm::binnedplot(x = multinom_pace_aug$current_unbeaten_streak, y = multinom_pace_aug$`resid.0`,
+                xlab = "Unbeaten (Draw)", 
+                main = "Draw: Residuals vs. Unbeaten")
+arm::binnedplot(x = multinom_pace_aug$current_unbeaten_streak, y = multinom_pace_aug$`resid.1`,
+                xlab = "Unbeaten (Win)", 
+                main = "Win: Residuals vs. Unbeaten")
+
+arm::binnedplot(x = multinom_pace_aug$diff_all_attacking_flank_zone_speeds, y = multinom_pace_aug$`resid.-1`,
+                xlab = expression(paste(Delta[ij], FZ, " (Loss)")), 
+                main = expression(paste("Loss: Residuals vs. ", Delta[ij], FZ)))
+arm::binnedplot(x = multinom_pace_aug$diff_all_attacking_flank_zone_speeds, y = multinom_pace_aug$`resid.0`,
+                xlab = expression(paste(Delta[ij], FZ, " (Draw)")), 
+                main = expression(paste("Draw: Residuals vs. ", Delta[ij], FZ)))
+arm::binnedplot(x = multinom_pace_aug$diff_all_attacking_flank_zone_speeds, y = multinom_pace_aug$`resid.1`,
+                xlab = expression(paste(Delta[ij], FZ, " (Win)")), 
+                main = expression(paste("Win: Residuals vs. ", Delta[ij], FZ)))
+```
+<br>
+
+```{r mlm-residual-derby-pace}
+multinom_pace_aug %>% 
+  group_by(derby_game) %>%
+  summarise(mean.loss = mean(`resid.-1`), 
+            mean.draw = mean(`resid.0`), 
+            mean.win = mean(`resid.-1`)) %>%
+  t() %>% 
+  as_tibble() %>%
+  janitor::row_to_names(row_number = 1) %>% 
+  mutate(response = c("Loss", "Draw", "Win")) %>% 
+  select(response, everything()) %>% 
+  kbl(caption = "Residuals vs. Derby for the pace multinomial logistic model.", escape=F, booktabs = TRUE, digits = 8,
+      col.names = c("", "0", "1")
+  ) %>% 
+  kable_styling(latex_options = c("hold_position"))
+```
+
+<br>
+
+```{r mlm-residual-home-pace}
+multinom_pace_aug %>% 
+  group_by(home) %>%
+  summarise(mean.loss = mean(`resid.-1`), 
+            mean.draw = mean(`resid.0`), 
+            mean.win = mean(`resid.-1`)) %>%
+  t() %>% 
+  as_tibble() %>%
+  janitor::row_to_names(row_number = 1) %>% 
+  mutate_if(is.character, as.numeric) %>% 
+  mutate_if(is.numeric, round, 6) %>% 
+  mutate(` ` = c("Loss", "Draw", "Win")) %>% 
+  select(` `, everything()) %>% 
+  kableExtra::kbl(format = "html", caption = "Residuals vs. Home  for the pace multinomial logistic model.", 
+      booktabs = TRUE) %>% 
+  #kableExtra::kable_styling(latex_options = c("hold_position")) %>% 
+  kableExtra::scroll_box()
+
+
+
+# %>% 
+#   DT::datatable(caption = htmltools::tags$caption(
+#     style = 'caption-side: bottom; text-align: center;',
+#     'Table 6.10: ', htmltools::em('Residuals vs. Home for the pace multinomial logistic model.')
+#   ), options = list(scrollX = TRUE))
+```
+

@@ -1,47 +1,48 @@
 
 # References {-}
 
-1). Ferrero, V. (2013). The Effectiveness of Using Pace, eFG%, TOV ... - CAE Users. Retrieved from http://homepages.cae.wisc.edu/~ece539/fall13/project/Ferrero_rpt.pdf
 
-2). Knutson, T. (2013, January 24). A Look at Pace in Football. Retrieved from https://bitterandblue.sbnation.com/2013/1/24/3908816/football-soccer-analytics-pace
+Football stats, form tables and results analysis. *SoccerSTATS.com*. Available at: https://www.soccerstats.com/ [Accessed April 13, 2021]. 
 
-3). Knutson, T. (2015, January 05). Pace and Margin for Error. Retrieved from https://statsbomb.com/2013/11/pace-and-margin-for-error/
+Alexander, D., 2017. Sequencing unmasking true creative forces. *Premier League Football News, Fixtures, Scores & Results*. Available at: https://www.premierleague.com/news/489392 [Accessed April 13, 2021]. 
 
-4). Minkus, K. (2017, March 09). Examining Pace in MLS. Retrieved from http://www.americansocceranalysis.com/home/2017/3/9/examining-pace-in-mls
+Batorski, E., 2020. Ball possession in football - how it's calculated and how it matters: STATSCORE - News Center. *STATSCORE*. Available at: https://blog.statscore.com/ball-possession-in-football-how-its-calculated-and-how-it-matters/ [Accessed April 13, 2021]. 
 
-5). Lawrence, T. (2015, November 6). Europe’s Most Direct Teams – Deep xG. Retrieved from https://deepxg.com/2015/11/06/europes-most-direct-teams/
+Caley, M., 2019. Two of soccer's most dangerous passes. *The Washington Post*. Available at: https://www.washingtonpost.com/news/fancy-stats/wp/2014/10/16/two-of-soccers-most-dangerous-passes/ [Accessed April 13, 2021]. 
 
-6). Batorski, E. (2020, April 07). Ball possession in football - how it's calculated and how it matters: STATSCORE - News Center. Retrieved from https://blog.statscore.com/ball-possession-in-football-how-its-calculated-and-how-it-matters/
+Davies, J., 2016. Mourinho's midfield pressing and 6-3-1 halts Klopp's side. *Spielverlagerung*. Available at: https://spielverlagerung.com/2016/10/19/mourinhos-midfield-pressing-and-6-3-1-halts-klopps-side/ [Accessed April 13, 2021]. 
 
-7). Yu, D., Boucher, C., Bornn, L., & Javan, M. (2019, February). Playing Fast Not Loose: Evaluating team-level pace of play in ice hockey using spatio-temporal possession data. Retrieved from https://arxiv.org/pdf/1902.02020.pdf
+Ferrero, V., 2013. The Effectiveness of Using Pace, eFG%, TOV%, ORB%, FT/FGA, and ORtg to Predict the Outcome of NBA Regular Season Games. 
 
-8). Gibney, A. (2017, October 02). Ranking Ligue 1 Sides on Their Defensive Strength. Retrieved from https://bleacherreport.com/articles/2321750-ranking-the-ligue-1-sides-on-their-defensive-strength
+Gibney, A., 2017. Ranking Ligue 1 Sides on Their Defensive Strength. Bleacher Report. Available at: https://bleacherreport.com/articles/2321750-ranking-the-ligue-1-sides-on-their-defensive-strength [Accessed April 13, 2021]. 
 
-9). Yi, Q., Groom, R., Dai, C., Liu, H., & Gómez Ruano, M. Á. (2019, November 19). Differences in Technical Performance of Players From 'The Big Five' European Football Leagues in the UEFA Champions League. Retrieved from https://www.frontiersin.org/articles/10.3389/fpsyg.2019.02738
+Harkins, J., 2016. Introducing a Possessions Framework. *Stats Perform*. Available at: https://www.statsperform.com/resource/introducing-a-possessions-framework/ [Accessed April 13, 2021]. 
 
-10). Nalton, J. (2019, September 13). Play Up Or Play Out: The Myths And Legends Of Playing Out From The Back. Retrieved from https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/
+Knutson, T., 2013. A look at pace in football. Available at: https://bitterandblue.sbnation.com/2013/1/24/3908816/football-soccer-analytics-pace [Accessed April 13, 2021]. 
 
-11). Spencer, J. (2017, November 22). Stats Reveal Just How Suited New #1 Ederson Is to Pep Guardiola's Man City System. Retrieved from https://www.90min.com/posts/5833855-stats-reveal-just-how-suited-new-1-ederson-is-to-pep-guardiola-s-man-city-system
+Knutson, T., 2015. Pace and Margin for Error. *StatsBomb*. Available at: https://statsbomb.com/2013/11/pace-and-margin-for-error/ [Accessed April 13, 2021]. 
 
-12). https://www.washingtonpost.com/news/fancy-stats/wp/2014/10/16/two-of-soccers-most-dangerous-passes/
+Lawrence, T., 2015. Europe's Most Direct Teams. *Deep xG*. Available at: https://deepxg.com/2015/11/06/europes-most-direct-teams/ [Accessed April 13, 2021]. 
 
-13). https://www.espn.com/soccer/english-premier-league/story/3945761/why-playing-out-from-the-back-has-brought-mixed-results-for-premier-league-clubs
+Minkus, K., 2017. Examining Pace in MLS. *American Soccer Analysis*. Available at: http://www.americansocceranalysis.com/home/2017/3/9/examining-pace-in-mls [Accessed April 13, 2021]. 
 
-14). https://www.mirror.co.uk/sport/football/news/pep-guardiola-explains-axing-joe-13445300
+Nalton, J., 2019. Play Up Or Play Out: The Myths And Legends Of Playing Out From The Back. *World Football Index*. Available at: https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/ [Accessed April 13, 2021]. 
 
-15). https://worldfootballindex.com/2019/09/playing-out-from-the-back-tactics-analysis-guardiola-lillo/
+Pappalardo, L. et al., 2019. A public data set of spatio-temporal match events in soccer competitions. *Nature News*. Available at: https://www.nature.com/articles/s41597-019-0247-7 [Accessed April 13, 2021]. 
 
-16). https://themastermindsite.com/2019/08/20/playing-out-from-the-back-full-session-plan-and-key-coaching-points/
+Patzig, P., 2021. Soccer tactic: Why is the 4-1-4-1 the best formation. Available at: https://www.coachbetter.com/new-posts/soccer-tactic-why-is-the-4-1-4-1-the-best-formation/ [Accessed April 13, 2021]. 
 
-17). https://bleacherreport.com/articles/2790722-why-kepa-arrizabalaga-is-the-most-expensive-keeper-in-the-world
+Robson, S., 2019. Why playing out from the back has brought mixed results for Premier League clubs. *ESPN*. Available at: https://www.espn.com/soccer/english-premier-league/story/3945761/why-playing-out-from-the-back-has-brought-mixed-results-for-premier-league-clubs [Accessed April 13, 2021]. 
 
-18). https://www.youtube.com/watch?v=1JBDCilBnas
+Silva, R.M., Davis, J. & Swartz, T.B., 2018. The evaluation of pace of play in hockey. *Journal of Sports Analytics*, 4(2), pp.145–151. 
 
-19). https://www.skysports.com/football/news/11667/11278517/jose-mourinho-under-pressure-to-attack-when-manchester-united-host-liverpool
+Spencer, J., 2017. Stats Reveal Just How Suited New #1 Ederson Is to Pep Guardiola's Man City System. *90min.com*. Available at: https://www.90min.com/posts/5833855-stats-reveal-just-how-suited-new-1-ederson-is-to-pep-guardiola-s-man-city-system [Accessed April 13, 2021]. 
 
-20). https://www.coachbetter.com/new-posts/soccer-tactic-why-is-the-4-1-4-1-the-best-formation/
+Tanner, R., 2018. Guardiola reveals the 'hardest decision' of his career. *Mirror*. Available at: https://www.mirror.co.uk/sport/football/news/pep-guardiola-explains-axing-joe-13445300 [Accessed April 13, 2021]. 
 
-21).https://spielverlagerung.com/2016/10/19/mourinhos-midfield-pressing-and-6-3-1-halts-klopps-side/
+Wright, N., 2018. Jose Mourinho under pressure to attack when Manchester United host Liverpool. *Sky Sports*. Available at: https://www.skysports.com/football/news/11667/11278517/jose-mourinho-under-pressure-to-attack-when-manchester-united-host-liverpool [Accessed April 13, 2021]. 
 
-22). https://www.nature.com/articles/s41597-019-0247-7
+Yi, Q. et al., 2019. Differences in Technical Performance of Players From 'The Big Five' European Football Leagues in the UEFA Champions League. *Frontiers*. Available at: https://www.frontiersin.org/articles/10.3389/fpsyg.2019.02738 [Accessed April 13, 2021]. 
+
+Yu, D. et al., 2019. Playing Fast Not Loose: Evaluating team-level pace of play in ice hockey using spatio-temporal possession data. *Proceedings of the 2019 MIT Sloan Sports Analytics Conference.* Available at: https://arxiv.org/pdf/1902.02020.pdf [Accessed April 13, 2021]. 
 

@@ -5,26 +5,26 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 4 Modeling | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</title>
-  <meta name="description" content="insert description." />
+  <meta name="description" content="Chapter 4 Modeling | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
   <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 4 Modeling | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
   <meta property="og:type" content="book" />
   
   
-  <meta property="og:description" content="insert description." />
+  
   
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Chapter 4 Modeling | Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data" />
   
-  <meta name="twitter:description" content="insert description." />
+  
   
 
 <meta name="author" content="Ethan Shen" />
 
 
-<meta name="date" content="2021-04-04" />
+<meta name="date" content="2021-04-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -85,7 +85,7 @@
 <li class="chapter" data-level="3.1.3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#spatial-polygrid-analysis"><i class="fa fa-check"></i><b>3.1.3</b> Spatial Polygrid Analysis</a></li>
 <li class="chapter" data-level="3.1.4" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#zonal-analysis"><i class="fa fa-check"></i><b>3.1.4</b> Zonal Analysis</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#results-exploring-pace-which-sounds-better"><i class="fa fa-check"></i><b>3.2</b> Results / Exploring Pace (which sounds better?)</a><ul>
+<li class="chapter" data-level="3.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#results"><i class="fa fa-check"></i><b>3.2</b> Results</a><ul>
 <li class="chapter" data-level="3.2.1" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-pace-polygrid"><i class="fa fa-check"></i><b>3.2.1</b> EPL Pace (Polygrid)</a></li>
 <li class="chapter" data-level="3.2.2" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#epl-pace-zonal"><i class="fa fa-check"></i><b>3.2.2</b> EPL Pace (Zonal)</a></li>
 <li class="chapter" data-level="3.2.3" data-path="pace-of-play-metrics.html"><a href="pace-of-play-metrics.html#pace-across-leagues"><i class="fa fa-check"></i><b>3.2.3</b> Pace Across Leagues</a></li>
@@ -101,7 +101,14 @@
 <li class="chapter" data-level="5" data-path="conclusion.html"><a href="conclusion.html"><i class="fa fa-check"></i><b>5</b> Conclusion</a><ul>
 <li class="chapter" data-level="5.1" data-path="conclusion.html"><a href="conclusion.html#future-steps"><i class="fa fa-check"></i><b>5.1</b> Future Steps</a></li>
 </ul></li>
-<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i>Appendix</a></li>
+<li class="chapter" data-level="6" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>6</b> Appendix</a><ul>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#event-names"><i class="fa fa-check"></i>Event Names</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#minimum-number-of-events-per-possession"><i class="fa fa-check"></i>Minimum Number of Events per Possession</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#average-distance-per-pass"><i class="fa fa-check"></i>Average Distance per Pass</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#epl-team-level-pace-polygrid-1"><i class="fa fa-check"></i>EPL Team-level Pace (Polygrid)</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#hierarchical-logistic-model-diagnostics"><i class="fa fa-check"></i>Hierarchical Logistic Model Diagnostics</a></li>
+<li class="chapter" data-level="" data-path="appendix.html"><a href="appendix.html#multinomial-logistic-model-diagnostics"><i class="fa fa-check"></i>Multinomial Logistic Model Diagnostics</a></li>
+</ul></li>
 <li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a></li>
 <li class="divider"></li>
 <li><a href="https://stat.duke.edu/" target="blank">Duke University<br>Department of Statistical Science</a></li>
@@ -127,8 +134,7 @@
 <h1><span class="header-section-number">Chapter 4</span> Modeling</h1>
 <div id="variable-and-model-selection" class="section level2">
 <h2><span class="header-section-number">4.1</span> Variable and Model Selection</h2>
-<p>After creating the pace-of-play metrics, we wanted to evaluate their effectiveness when used as variables in models that predict the outcome of a game. We implemented models with and without the pace metrics to determine if the models with the pace metrics achieve a higher accuracy. Our main goal is to create a predictive model that teams can use to predict the outcome of the game before the actual game. Therefore, we only considered pre-game variables that can be gathered before each game is played. Thus, when selecting variables, we did not include traditional post-game performance-based features, such as number of shots or corners taken.</p>
-<p>When selecting variables, we did not include traditional post-game performance-based features, such as number of shots or corners taken. We only considered pre-game, historical variables that can be gathered before each game is played. Even though we incorporate a pace metric from the same game as a variable, we anticipate that teams can also make these pre-game variables by substituting our pace metrics with historical measurements of pace.</p>
+<p>After creating the pace-of-play metrics, we wanted to evaluate their effectiveness when used as variables in models that predict the outcome of a game. We implemented models with and without the pace metrics to determine if the models with the pace metrics achieve a higher accuracy. We only considered pre-game, historical variables that can be gathered before each game is played and did not include traditional post-game performance-based features, such as the number of shots or corners taken. Even though we incorporate a pace metric from the same game as a variable, we anticipate that they can be made into pre-game variables by substituting our pace metrics with historical measurements of pace.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:vars-table">Table 4.1: </span>Description of modeling variables.
@@ -214,7 +220,7 @@ Liverpool, Barcelona, etc.
 </tr>
 </tbody>
 </table>
-<p>For each of the 1826 games, the response variable, <em>FTR</em>, describes the outcome with respect to the home team. A <em>FTR</em> of 1 indicates that the home team won while -1 indicates the away team won. <em>Unbeaten</em> is the home team’s current unbeaten streak leading up to a game. The streak resets to 0 when a team loses at home. For the first home game of the season, a team’s unbeaten streak from the 2016-17 season is used. For example, Manchester City went unbeaten in their last 12 home games in the 2016-17 season, so their <em>Unbeaten</em> for their first home game is 12. For the 14 newly promoted teams, their <em>Unbeaten</em> for their first home game is 0. This is because they played in a lower division, so their home unbeaten streak is not comparable to that of a team who played in the first division. <em>Derby</em> is an indicator variable, where 1 indicates whether or not a game is a derby game. A game is marked as a derby game if the two teams are located in the same city (Manchester City vs. Manchester United) or if there is a historical rivalry (El Clásico). <em>League</em> specifies which of the five leagues the game takes place in and <em>Team</em> is the name of the home team.</p>
+<p>For each of the 1826 games, the response variable, <em>FTR</em>, describes the outcome with respect to the home team. A <em>FTR</em> of 1 indicates that the home team won while -1 indicates the away team won. <em>Unbeaten</em> is the home team’s current unbeaten streak leading up to a game. The streak resets to 0 when a team loses at home. For the first home game of the season, a team’s unbeaten streak from the 2016-17 season is used. For example, Manchester City went unbeaten in their last 12 home games in the 2016-17 season, so their <em>Unbeaten</em> for their first home game is 12. For the 14 newly promoted teams, their <em>Unbeaten</em> for their first home game is 0. This is because they played in a lower division, so their home unbeaten streak is not comparable to that of a team that played in the first division. <em>Derby</em> is an indicator variable, where 1 indicates whether or not a game is a derby game. A game is marked as a derby game if the two teams are located in the same city (Manchester City vs. Manchester United) or if there is a historical rivalry (El Clásico). <em>League</em> specifies which of the five leagues the game takes place in and <em>Team</em> provides the name of the home team.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:pace-vars-table">Table 4.2: </span>Description of pace variables.
@@ -268,8 +274,9 @@ Sum of the differences in total velocity for zones 5,7,8 for home team <span cla
 </tr>
 </tbody>
 </table>
-<p>For each game, we conducted a <a href="pace-of-play-metrics.html#zonal-analysis">zonal analysis</a> of the total velocities for the home and away teams. However, we took the median of the median velocities of the 5x5 polygrids to determine the aggregate speeds for each zone instead of the mean of the medians. Bottom-tier teams have a smaller number of recorded events per game and are more susceptible to outliers in both the polygrid and zonal analyses. Thus, using the median of the median velocities makes these zonal speeds more resistant to outliers. Then we calculated the difference (home - away) in velocity for each of the 8 zones. Let <span class="math inline">\(i \in (1, 2, \dots, 98)\)</span> represent the home team and <span class="math inline">\(j \in (1, 2, \dots, 38)\)</span> (<span class="math inline">\((1, 2, \dots, 34)\)</span> for teams in the Bundesliga) be the <span class="math inline">\(j^{th}\)</span> game they play during the season. Then <span class="math inline">\(\Delta_{ij}^{AZ}\)</span> is the sum of the differences for all 8 zones, <span class="math inline">\(\Delta_{ij}^{OZ}\)</span> is the sum of the differences for the four zones in the offensive half (zones 5-8) and <span class="math inline">\(\Delta_{ij}^{FZ}\)</span> is the sum of the differences for zones 5, 7, 8.</p>
-<p>To evaluate the models, we first split the data into a train and test set. The test data, which is 21.5% of the full data, includes 2 home and 2 away games for each of the 98 teams, for a total of 392 games. We perform 4-fold cross validation on the training data and lastly assess model performance by predicting on the testing data. We propose two different types of models - the first is a hierarchical logistic regression model that predicts between wins and non-wins (draws and losses) while second is a multinomial logistic regression model that predicts on all three potential outcomes. Draws and losses are the baseline category in the hierarchical logistic models and losses are the baseline in the multinomial logistic models. These models were preferred over other classification algorithms since we are concerned with both predictive power and interpretability. For both sets of models, we first constructed a baseline model that only uses the predictors mentioned in Table <a href="modeling.html#tab:vars-table">4.1</a>. We then added one of the pace variables from Table <a href="modeling.html#tab:pace-vars-table">4.2</a> to determine if the addition of a pace metric improves the model’s accuracy. Only one pace metric can be added to the model since they are all highly correlated. Interaction effects between the baseline predictors were also considered, but they did not improve the predictive power of any model. We used accuracy and AUC as evaluation metrics for the hierarchical logistic regression and accuracy and True Positive Rate (TPR) for the multinomial logistic regression.</p>
+<p>For each game, we conducted a <a href="pace-of-play-metrics.html#zonal-analysis">zonal analysis</a> of the <span class="math inline">\(V_{T}\)</span> for the home and away teams. We took the median of the median velocities of the 5x5 polygrids to determine the aggregate speeds for each zone instead of the mean of the medians. Lower tier teams have a smaller number of recorded events per game and are more susceptible to outliers in both the polygrid and zonal analyses. Thus, using the median of the median velocities makes these zonal speeds more resistant to outliers. Then we calculated the difference (home - away) in <span class="math inline">\(V_{T}\)</span> for each of the 8 zones. Let <span class="math inline">\(i \in (1, 2, \dots, 98)\)</span> represent the home team and <span class="math inline">\(j \in (1, 2, \dots, 38)\)</span> (<span class="math inline">\((1, 2, \dots, 34)\)</span> for teams in the Bundesliga) be the <span class="math inline">\(j^{th}\)</span> game team <span class="math inline">\(i\)</span> plays during the season. Then <span class="math inline">\(\Delta_{ij}^{AZ}\)</span> is the sum of the differences for all 8 zones, <span class="math inline">\(\Delta_{ij}^{OZ}\)</span> is the sum of the differences for the four zones in the offensive half (5-8) and <span class="math inline">\(\Delta_{ij}^{FZ}\)</span> is the sum of the differences in the flank zones (5, 7, 8).</p>
+<p>To evaluate the models, we first split the data into a train and test set. The test data, which is 21.5% of the full data, includes 2 home and 2 away games for each of the 98 teams, for a total of 392 games. We perform 4-fold cross validation on the training data and lastly assess model performance by predicting on the testing data. We propose two different types of models - the first is a hierarchical logistic regression model that predicts between wins and non-wins (draws and losses) while the second is a multinomial logistic regression model that predicts on all three potential match outcomes. Draws and losses are the baseline category of the response variable in the hierarchical logistic models and losses are the baseline in the multinomial logistic models. These models were preferred over other classification algorithms since we are concerned with both predictive power and interpretability.</p>
+<p>For both sets of models, we first constructed a baseline model that only uses the predictors mentioned in Table <a href="modeling.html#tab:vars-table">4.1</a>. We then added one of the pace variables from Table <a href="modeling.html#tab:pace-vars-table">4.2</a> to determine if the addition of a pace variable improves the model’s accuracy. Only one pace variable can be added to the model since they are all highly correlated. Interaction effects between the baseline predictors and quadratic terms for <em>Unbeaten</em> and the pace variables were also considered, but none of these modifications significantly improved the predictive power of any model. We used accuracy and AUC as evaluation metrics for the hierarchical logistic regression and accuracy and True Positive Rate (TPR) for the multinomial logistic regression. Model assumptions and diagnostics, such as binned residual plots, are discussed in the <a href="appendix.html#hierarchical-logistic-model-diagnostics">Appendix</a>.</p>
 </div>
 <div id="hierarchical-logistic-model" class="section level2">
 <h2><span class="header-section-number">4.2</span> Hierarchical Logistic Model</h2>
@@ -290,11 +297,11 @@ log(\frac{\pi_{ij}}{1-\pi_{ij}}) = \beta_{0} + \beta_{1} * Unbeaten_i \ +
 \beta_{2} *  I(Der&amp;by_{ij}=Yes) +\beta_3 * \Delta_{ij}^{FZ} + \alpha_{i} &amp; (1.2)\\ 
 \alpha_i \sim N(0,\tau^2) 
 \end{aligned}
-\]</span></p>
-<p>Let <span class="math inline">\(i \in (1, 2, \dots, 98)\)</span> represent the home team and <span class="math inline">\(j \in (1, 2, \dots, 38)\)</span> (<span class="math inline">\((1, 2, \dots, 34)\)</span> for teams in the Bundesliga) be the <span class="math inline">\(j^{th}\)</span> game they play during the season. Then <span class="math inline">\(Y_{ij}\)</span> is the outcome (win vs. draw/loss) of the game and <span class="math inline">\(\pi_{ij}\)</span> is the probability that home team <span class="math inline">\(i\)</span> wins the game. <span class="math inline">\(\alpha_i\)</span> represents the random intercept term for team <span class="math inline">\(i\)</span>. We do not include a random intercept for <em>League</em>, as most of the variability between leagues is already explained by the variability between teams. The only difference between models 1.1 and 1.2 is the addition of the variable <span class="math inline">\(\Delta_{ij}^{FZ}\)</span> in 1.2.</p>
+\]</span>
+Recall that the baseline of the response variable is draws and losses. <span class="math inline">\(Y_{ij}\)</span> is the outcome (win vs. draw/loss) of the game and <span class="math inline">\(\pi_{ij}\)</span> is the probability that home team <span class="math inline">\(i\)</span> wins the game. <span class="math inline">\(\alpha_i\)</span> represents the random intercept term for team <span class="math inline">\(i\)</span>. We do not include a random intercept for <em>League</em>, as most of the variability between leagues is already explained by the variability between teams. The only difference between models 1.1 and 1.2 is the addition of the variable <span class="math inline">\(\Delta_{ij}^{FZ}\)</span> in 1.2.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-8">Table 4.3: </span>Hierarchical logistic model results with 4-fold cross validation.
+<span id="tab:unnamed-chunk-7">Table 4.3: </span>Hierarchical logistic model results with 4-fold cross validation.
 </caption>
 <thead>
 <tr>
@@ -349,7 +356,7 @@ Baseline
 </tr>
 <tr>
 <td style="text-align:center;">
-<span class="math inline">\(\Delta_{ij}^{FK}\)</span>
+<span class="math inline">\(\Delta_{ij}^{FZ}\)</span>
 </td>
 <td style="text-align:center;">
 59.91%
@@ -366,7 +373,7 @@ Baseline
 </tr>
 </tbody>
 </table>
-<p>The baseline hierarchical logistic model reports an accuracy of 63.52% and AUC of 60.57 on the test data while the best performing pace model, the one with <span class="math inline">\(\Delta_{ij}^{FZ}\)</span>, reports a slightly higher accuracy of 64.29% and AUC of 61.68. This suggests that the addition of pace metrics do not significantly improve the predictive power of the model on the test set. The results for the other two pace models can be found in Appendix Table XXXX.</p>
+<p>The baseline hierarchical logistic model reports an accuracy of 63.52% and AUC of 60.57 on the test data while the best performing pace model, the one with <span class="math inline">\(\Delta_{ij}^{FZ}\)</span>, reports a slightly higher accuracy of 64.29% and AUC of 61.68. This suggests that the addition of a pace variable does not significantly improve the predictive power of the model on the test set. The results for the other two pace models can be found in Appendix Table <a href="appendix.html#tab:hier-log-output-appendix">6.2</a>.</p>
 <p>We expect the pace model with <span class="math inline">\(\Delta_{ij}^{AZ}\)</span> to have the lowest performance out of the three pace models. These pace variables assume that pace across the pitch is weighted evenly. Even though pace varies in the defensive half of the pitch, these differences are not necessarily indicative of a team’s scoring capabilities. Variation in pace in the offensive half is more indicative of a team’s attacking strength, which is more directly related to the outcome of a match.</p>
 <table class="table" style="font-size: 13.5px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
@@ -483,7 +490,7 @@ Derby
 </tr>
 <tr>
 <td style="text-align:center;">
-<span class="math inline">\(\Delta_{ij}^{FK}\)</span>
+<span class="math inline">\(\Delta_{ij}^{FZ}\)</span>
 </td>
 <td style="text-align:center;">
 </td>
@@ -503,32 +510,32 @@ Derby
 </tr>
 </tbody>
 </table>
-<p>Table <a href="modeling.html#tab:hier-log-model-coef">4.4</a> displays the exponentiated coefficient values for all the variables that used in the baseline and pace metric models, respectively. All the coefficients, except for <em>Unbeaten</em> in the baseline model, are statistically significant. We note that the log odds for <span class="math inline">\(\Delta_{ij}^{FK}\)</span> is negative and statistically significant. This indicates that as the home team’s <span class="math inline">\(V_T\)</span> in the flank zones increases, the home team has approximately a 5% smaller chance of winning the game <strong>is this interpretation correct?</strong>. This reflects the results from Figure <a href="pace-of-play-metrics.html#fig:epl-attacking-polygrids">3.5</a>, which showed that lower ranked teams, and thus teams that have a lower chance of winning a match, generally have a higher <span class="math inline">\(V_T\)</span>.</p>
+<p>Table <a href="modeling.html#tab:hier-log-model-coef">4.4</a> displays the log odds and odds ratios for all the variables used in the baseline and pace models, respectively. All the coefficients, except for <em>Unbeaten</em> in the baseline model, are statistically significant. We note that the log odds for <span class="math inline">\(\Delta_{ij}^{FZ}\)</span> is negative and statistically significant. This indicates that as the home team’s <span class="math inline">\(V_T\)</span> in the flank zones increases by one meter per second, the odds of the home team winning the match is expected to multiply by 0.95, holding all else constant. This reflects the results from Figures <a href="pace-of-play-metrics.html#fig:epl-attacking-polygrids">3.5</a> and <a href="appendix.html#fig:epl-attacking-polygrids-appendix">6.3</a>, which showed that lower ranked teams, and thus teams that are expected to have a lower chance of winning a match, generally have a higher <span class="math inline">\(V_T\)</span>.</p>
 </div>
 <div id="multinomial-logistic-model" class="section level2">
 <h2><span class="header-section-number">4.3</span> Multinomial Logistic Model</h2>
 <p>The baseline multinomial logistic model (without any pace variables) is as follows:</p>
 <p><span class="math display">\[
 \begin{aligned}
-P(Y_{ijk} = k) =&amp; \pi_{ijk}  \\
+P(Y_{ijk} = k) = \ &amp;\pi_{ijk}  \\
 log(\frac{\pi_{ijk}}{\pi_{ij1}}) = \beta_{0k} + \beta_{1k} * Unbeaten + \ \beta_{2k}* I&amp;(Derby_{ij}=Yes)  + \ &amp; (2.1)\\
-\sum_{T = 2}^{98}\beta_{3kT}*I(Tea&amp;m_{i}=t) &amp; \\ 
+\sum_{T = 2}^{98}\beta_{3kt}*I(Tea&amp;m_{i}=t) &amp; \\ 
 k \in  (2, 3)
 \end{aligned}
 \]</span></p>
 <p>The modified multinomial logistic model (with the pace variable) is as follows:</p>
 <p><span class="math display">\[
 \begin{aligned}
-P(Y_{ijk} = k) =&amp; \pi_{ijk}  \\
+P(Y_{ijk} = k) =&amp; \ \pi_{ijk}  \\
 log(\frac{\pi_{ijk}}{\pi_{ij1}}) = \beta_{0k} + \beta_{1k} * Unbeaten + \ \beta_{2k}* I&amp;(Derby_{ij}=Yes)  + \ &amp; (2.2)\\
-\sum_{T = 2}^{98}\beta_{3kT}*I(Team_{i}=t&amp;) + \beta_{4k} * \Delta_{ij}^{FZ}&amp; \\ 
+\sum_{T = 2}^{98}\beta_{3kt}*I(Team_{i}=t&amp;) + \beta_{4k} * \Delta_{ij}^{FZ}&amp; \\ 
 k \in  (2, 3)
 \end{aligned}
 \]</span></p>
-<p>Recall that the baseline of the response variable <span class="math inline">\(FTR\)</span>, <span class="math inline">\(k=1\)</span>, is a loss. Let <span class="math inline">\(i \in (1, 2, \dots, 98)\)</span> represent the home team and <span class="math inline">\(j \in (1, 2, \dots, 38)\)</span> (<span class="math inline">\((1, 2, \dots, 34)\)</span> for teams in the Bundesliga) be the <span class="math inline">\(j^{th}\)</span> game they play during the season. <span class="math inline">\(k \in (2,3)\)</span> represents a draw and a win, respectively. Thus <span class="math inline">\(\pi_{ijk}\)</span> is the probability that the game ends in a draw when <span class="math inline">\(k=2\)</span> and a win when <span class="math inline">\(k=3\)</span>. For the term <span class="math inline">\(Team\)</span>, <span class="math inline">\(t=1\)</span> is the baseline, which is Manchester City. The only difference between models 2.1 and 2.2 is the addition of the variable <span class="math inline">\(\Delta_{ij}^{FZ}\)</span> in 2.2.</p>
+<p>Recall that the baseline of the response variable, <span class="math inline">\(k=1\)</span>, is a loss. <span class="math inline">\(\pi_{ijk}\)</span> is the probability that the game ends in a draw when <span class="math inline">\(k=2\)</span> and a win when <span class="math inline">\(k=3\)</span>. For the term <em>Team</em>, <span class="math inline">\(t=1\)</span> is the baseline, which is Manchester City. The only difference between models 2.1 and 2.2 is the addition of the variable <span class="math inline">\(\Delta_{ij}^{FZ}\)</span> in 2.2.</p>
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:unnamed-chunk-9">Table 4.5: </span>Multinomial logistic model results with 4-fold cross validation.
+<span id="tab:unnamed-chunk-8">Table 4.5: </span>Multinomial logistic model results with 4-fold cross validation.
 </caption>
 <thead>
 <tr>
@@ -536,7 +543,7 @@ k \in  (2, 3)
 </th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
 <div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; ">
-Cross Validation Data
+Train Data
 </div>
 </th>
 <th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="1">
@@ -571,7 +578,7 @@ Baseline
 </tr>
 <tr>
 <td style="text-align:center;">
-<span class="math inline">\(\Delta_{ij}^{FK}\)</span>
+<span class="math inline">\(\Delta_{ij}^{FZ}\)</span>
 </td>
 <td style="text-align:center;">
 45.23%
@@ -582,7 +589,7 @@ Baseline
 </tr>
 </tbody>
 </table>
-<p>The baseline multinomial model reports an accuracy of 45.15% on the test data while the best performing pace model, the one with <span class="math inline">\(\Delta_{ij}^{FZ}\)</span>, reports a slightly higher accuracy of 46.68%. This modified model, which is the best of the three pace models, actually performs slightly worse on the train set than the baseline model. Once again, we see that the addition of a pace variable in the model does not significantly improve the predictive power of the model on the test set. The results for the other two pace models can be found in Appendix Table XXXX.</p>
+<p>The baseline multinomial model reports an accuracy of 45.15% on the test data while the best performing pace model, the one with <span class="math inline">\(\Delta_{ij}^{FZ}\)</span>, reports a slightly higher accuracy of 46.68%. This modified model, which is the best of the three pace models, actually performs slightly worse on the train set than the baseline model. Once again, we see that the addition of a pace variable in the model does not significantly improve the predictive power of the model. The results for the other two pace models can be found in Appendix Table <a href="appendix.html#tab:multinom-output-appendix">6.5</a>.</p>
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 <span id="tab:multinom-tprs">Table 4.6: </span>True Positive Rates from the baseline and modified multinomial models for each match outcome.
@@ -652,7 +659,7 @@ Baseline
 </tr>
 <tr>
 <td style="text-align:center;">
-<span class="math inline">\(\Delta_{ij}^{FK}\)</span>
+<span class="math inline">\(\Delta_{ij}^{FZ}\)</span>
 </td>
 <td style="text-align:center;">
 64.61%
@@ -675,7 +682,7 @@ Baseline
 </tr>
 </tbody>
 </table>
-<p>Table <a href="modeling.html#tab:multinom-tprs">4.6</a> indicates that the models predict wins decently well but struggle to predict draws and losses. On paper, one team is typically stronger than the other and thus more likely to win. Predicting a draw or loss requires one team to either perform better or worse than they normally do, which can be unexpected and therefore more unpredictable. Draws are considerably harder to predict than losses because this entails that both teams score the same number of goals.</p>
+<p>Table <a href="modeling.html#tab:multinom-tprs">4.6</a> indicates that the models predict wins decently well but struggle to predict draws and losses. On paper, one team is typically stronger than the other and thus more likely to win. Predicting a draw or loss requires one team to either perform better or worse than they normally do, which can be unexpected and therefore more unpredictable. Draws are considerably harder to predict than losses because this requires that both teams also score the same number of goals.</p>
 <table class="table" style="font-size: 13.5px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
 <span id="tab:multinom-log-model-coef">Table 4.7: </span>Coefficients obtained from models 2.1 and 2.2.
@@ -803,7 +810,7 @@ FTR = draw
 </tr>
 <tr>
 <td style="text-align:left;">
-<span class="math inline">\(\Delta_{ij}^{FK}\)</span>
+<span class="math inline">\(\Delta_{ij}^{FZ}\)</span>
 </td>
 <td style="text-align:left;">
 FTR = draw
@@ -904,7 +911,7 @@ FTR = win
 </tr>
 <tr>
 <td style="text-align:left;">
-<span class="math inline">\(\Delta_{ij}^{FK}\)</span>
+<span class="math inline">\(\Delta_{ij}^{FZ}\)</span>
 </td>
 <td style="text-align:left;">
 FTR = win
@@ -927,7 +934,7 @@ FTR = win
 </tr>
 </tbody>
 </table>
-<p>Table <a href="modeling.html#tab:multinom-log-model-coef">4.7</a> displays the exponentiated coefficient values for all the variables that used in the baseline and pace variable models, respectively. Once again, we note that both the log odds for <span class="math inline">\(\Delta_{ij}^{FK}\)</span> are negative and statistically significant. This indicates that as <span class="math inline">\(V_T\)</span> in the flank zones increases by one meter per second, the odds of the home team drawing a match versus losing are expected to multiply by 0.95 and the odds of the home team winning a match versus losing are expected to multiply by 0.94 <strong>is this interpretation correct/necessary?</strong>. Both draws and wins are better outcomes than a loss, so this matches the results from Figure <a href="pace-of-play-metrics.html#fig:epl-attacking-polygrids">3.5</a> and Table <a href="modeling.html#tab:hier-log-model-coef">4.4</a>. Teams with higher <span class="math inline">\(V_T\)</span> are generally weaker and thus more likely to lose a match rather than draw or win a match.</p>
+<p>Table <a href="modeling.html#tab:multinom-log-model-coef">4.7</a> displays the the log odds and odds ratios for all the variables used in the baseline and pace variable models, respectively. The log odds and odds ratios for the <em>Team</em> variable for both models can be found in Appendix Tables <a href="appendix.html#tab:mlm-home-coef-baseline">6.6</a> and <a href="appendix.html#tab:mlm-home-coef-pace">6.7</a>. Once again, we note that both the log odds for <span class="math inline">\(\Delta_{ij}^{FZ}\)</span> are negative and statistically significant. This indicates that as <span class="math inline">\(V_T\)</span> in the flank zones increases by one meter per second, the odds of the home team drawing a match versus losing are expected to multiply by 0.95 and the odds of the home team winning a match versus losing are expected to multiply by 0.94, holding all else constant. Both draws and wins are better outcomes than a loss, so this matches the results from Figures <a href="pace-of-play-metrics.html#fig:epl-attacking-polygrids">3.5</a>, <a href="appendix.html#fig:epl-attacking-polygrids-appendix">6.3</a> and Table <a href="modeling.html#tab:hier-log-model-coef">4.4</a>. Teams with higher <span class="math inline">\(V_T\)</span> are generally weaker and thus more likely to lose a match rather than draw or win a match.</p>
 
 </div>
 </div>
@@ -982,7 +989,8 @@ gitbook.start({
 "download": [["thesis.pdf", "PDF"], ["thesis.epub", "EPUB"], ["thesis.docx", "Word"]],
 "toc": {
 "collapse": "subsection"
-}
+},
+"toc_depth": 2
 });
 });
 </script>

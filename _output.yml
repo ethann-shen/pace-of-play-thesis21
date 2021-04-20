@@ -1,7 +1,9 @@
 bookdown::gitbook:
   css: style.css
   config:
+    toc_depth: 2
     toc:
+      collapse: subsection
       before: |
         <li><a href="./">Analyzing Pace-of-Play in Soccer using Spatio-Temporal Event Data</a></li>
       after: |
