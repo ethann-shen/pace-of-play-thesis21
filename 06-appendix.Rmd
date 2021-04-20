@@ -273,7 +273,7 @@ glmer_baseline_aug %>%
     derby_game == 0 ~ "Draw/Loss", 
     TRUE ~ "Win"
   )) %>% 
-  kbl(caption = "Residuals vs. Derby for the baseline hierarchical logistic model.", escape=F, booktabs = TRUE, digits = 3,
+  kbl(caption = "Average residuals vs. Derby for the baseline hierarchical logistic model.", escape=F, booktabs = TRUE, digits = 3,
       col.names = c("Derby", "Mean Residual"), align = "c"
   ) %>% 
   kable_styling(latex_options = c("hold_position"))
@@ -317,7 +317,7 @@ glmer_pace_aug %>%
     derby_game == 0 ~ "Draw/Loss", 
     TRUE ~ "Win"
   )) %>% 
-  kbl(caption = "Residuals vs. Derby for the pace hierarchical logistic model.", escape=F, booktabs = TRUE, digits = 3,
+  kbl(caption = "Average residuals vs. Derby for the pace hierarchical logistic model.", escape=F, booktabs = TRUE, digits = 3,
       col.names = c("Derby", "Mean Residual"), align = "c"
   ) %>% 
   kable_styling(latex_options = c("hold_position"))
@@ -517,13 +517,15 @@ multinom_baseline_aug %>%
   janitor::row_to_names(row_number = 1) %>% 
   mutate(response = c("Loss", "Draw", "Win")) %>% 
   select(response, everything()) %>% 
-  kbl(caption = "Residuals vs. Derby for the baseline multinomial logistic model.", escape=F, booktabs = TRUE, digits = 8,
+  kbl(caption = "Average residuals vs. Derby for the baseline multinomial logistic model.", escape=F, booktabs = TRUE, digits = 8,
       col.names = c("", "0", "1")
   ) %>% 
   kable_styling(latex_options = c("hold_position"))
 ```
 
 <br>
+
+Scroll to see the average residuals vs. home for the baseline multinomial logistic model.
 
 ```{r mlm-residual-home-baseline}
 multinom_baseline_aug %>% 
@@ -538,10 +540,10 @@ multinom_baseline_aug %>%
   mutate_if(is.numeric, round, 6) %>% 
   mutate(` ` = c("Loss", "Draw", "Win")) %>% 
   select(` `, everything()) %>% 
-  kableExtra::kbl(caption = "Residuals vs. Home  for the baseline multinomial logistic model.", 
+  kableExtra::kbl(caption = "Average residuals vs. Home  for the baseline multinomial logistic model.", 
       escape=F, booktabs = TRUE) %>% 
   kableExtra::kable_styling(latex_options = c("hold_position")) %>% 
-  kableExtra::scroll_box()
+  kableExtra::scroll_box(width = "100%")
 
 
 #%>% 
@@ -612,13 +614,15 @@ multinom_pace_aug %>%
   janitor::row_to_names(row_number = 1) %>% 
   mutate(response = c("Loss", "Draw", "Win")) %>% 
   select(response, everything()) %>% 
-  kbl(caption = "Residuals vs. Derby for the pace multinomial logistic model.", escape=F, booktabs = TRUE, digits = 8,
+  kbl(caption = "Average residuals vs. Derby for the pace multinomial logistic model.", escape=F, booktabs = TRUE, digits = 8,
       col.names = c("", "0", "1")
   ) %>% 
   kable_styling(latex_options = c("hold_position"))
 ```
 
 <br>
+
+Scroll to see the average residuals vs. home for the pace multinomial logistic model.
 
 ```{r mlm-residual-home-pace}
 multinom_pace_aug %>% 
@@ -633,17 +637,17 @@ multinom_pace_aug %>%
   mutate_if(is.numeric, round, 6) %>% 
   mutate(` ` = c("Loss", "Draw", "Win")) %>% 
   select(` `, everything()) %>% 
-  kableExtra::kbl(format = "html", caption = "Residuals vs. Home  for the pace multinomial logistic model.", 
+  kableExtra::kbl(format = "html", caption = "Average residuals vs. Home  for the pace multinomial logistic model.", 
       booktabs = TRUE) %>% 
-  #kableExtra::kable_styling(latex_options = c("hold_position")) %>% 
-  kableExtra::scroll_box()
+  kableExtra::kable_styling(latex_options = c("hold_position")) %>% 
+  kableExtra::scroll_box(width = "100%")
 
 
 
 # %>% 
 #   DT::datatable(caption = htmltools::tags$caption(
 #     style = 'caption-side: bottom; text-align: center;',
-#     'Table 6.10: ', htmltools::em('Residuals vs. Home for the pace multinomial logistic model.')
+#     'Table 6.10: ', htmltools::em('Average residuals vs. Home for the pace multinomial logistic model.')
 #   ), options = list(scrollX = TRUE))
 ```
 
