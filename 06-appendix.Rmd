@@ -84,11 +84,11 @@ league_sensitivity_analysis %>% ggplot() +
 ```{r avg-dist-per-pass, fig.align="center", fig.cap="(ref:avg-dist-per-pass)", fig.height = 12, fig.width=14}
 load("source/data/avg_dist_plots.Rda")
 
-ggpubr::ggarrange(england_dist_plot,
-                  france_dist_plot + labs(y = ""),
-                  germany_dist_plot,
-                  italy_dist_plot + labs(y = ""),
-                  spain_dist_plot, ncol=2, nrow=3, common.legend = TRUE, legend="bottom")
+ggpubr::ggarrange(england_dist_plot + labs(title = "EPL"),
+                  france_dist_plot + labs(title = "Ligue 1", y = ""),
+                  germany_dist_plot + labs(title = "Bundesliga"),
+                  italy_dist_plot + labs(title = "Serie A", y = ""),
+                  spain_dist_plot + labs(title = "La Liga"), ncol=2, nrow=3, common.legend = TRUE, legend="bottom")
 
 ```
 
@@ -202,7 +202,7 @@ hier_log_output %>%
 
 <br>
 
-```{r re-hlm-baseline, fig.align="center", fig.height=9, fig.cap="Random effects for Home from baseline hierarchical logistic model."}
+```{r re-hlm-baseline, fig.align="center", fig.height=9, fig.cap="Random effects for Home from baseline hierarchical logistic model. Note that the teams with random effects greater than 1 are generally stronger teams."}
 sjPlot::plot_model(glmer.fit.baseline, type = "re", title = "") + theme_bw() + labs(title = "")
 ```
 
