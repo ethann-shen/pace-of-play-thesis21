@@ -14,4 +14,4 @@ Our research goals are three-fold:
 
 3. Evaluate the effectiveness of the pace metrics by incorporating them into models that predict the outcome of a match.  
 
-The remainder of this paper is organized as follows. Section [2][Data] describes the data and data pre-processing steps. Section [3][Pace-of-Play Metrics] provides the framework and evaluation of our pace-of-play metrics. Section [4][Modeling] discusses the modeling methodology and results. Section [5][Conclusion] includes a discussion of our findings and future work.
+The remainder of this paper is organized as follows. Section [2][Data] describes the data and data pre-processing steps. Section [3][Pace-of-Play Metrics] provides the framework and evaluation of our pace-of-play metrics. Section [4][Modeling] discusses the modeling methodology and results. Section [5][Discussion] includes a discussion of our findings and future work.
