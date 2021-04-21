@@ -364,7 +364,7 @@ all_total_avg_speeds %>% slice(1:20) %>%
   scale_fill_manual(values=col.pal) 
 ```
 
-The overall results in Figures \@ref(fig:epl-team-attacking-zonal) and \@ref(fig:epl-team-defending-zonal) verify those found in the polygrid analysis. The top six teams were consistently slower than the league average in all but 3 instances. As we move down the table, the zonal velocities display more variation, but these teams are generally faster than the league average. While attacking, teams such as Liverpool (4) and AFC Bournemouth (12) are faster than the league average in some zones and slower in other zones. However, the majority of teams are either faster or slower in all 8 zones. For example, Newcastle United’s (10) velocities are faster in all 8 zones, while those of Manchester City (1) are all slower. 
+The overall results in Figures \@ref(fig:epl-team-attacking-zonal) and \@ref(fig:epl-team-defending-zonal) verify those found in the polygrid analysis. While attacking, the top six teams were consistently slower than the league average in all but 3 instances. As we move down the table, the zonal velocities display more variation, but these teams are generally faster than the league average. Teams such as Liverpool (4) and AFC Bournemouth (12) are faster than the league average in some zones and slower in other zones. However, the majority of teams are either faster or slower in all 8 zones. For example, Newcastle United’s (10) velocities are faster in all 8 zones, while those of Manchester City (1) are all slower. 
 
 ```{r epl-team-defending-zonal, fig.align = "center", fig.cap="(ref:epl-team-defending-zonal)", fig.width=17, fig.height=8}
 #theme_update(text = element_text(size=16))
