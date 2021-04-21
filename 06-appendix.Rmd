@@ -216,7 +216,7 @@ sjPlot::plot_model(glmer.fit.pace, type = "re") + theme_bw() + labs(title = "")
 
 The three assumptions for a hierachical logistic regression are **linearity**, **randomness** and **independence**. 
 
-- **Linearity**: Linearity is mostly satisfied. There are no obvious patterns in the plot of the binned residuals vs. *Unbeaten* or residuals vs. $\Delta_{ij}^{FZ}$. The average residuals vs. *Derby* are also all close to 0. However, the binned residuals vs. the predicted probabilities show a slight linear trend; as the predicted probability of winning increases, the residual also increases. This is one limitation with the hierarchical logistic models. 
+- **Linearity**: Linearity is mostly satisfied. There are no obvious patterns in the plots of the binned residuals vs. *Unbeaten* or residuals vs. $\Delta_{ij}^{FZ}$. The average residuals vs. *Derby* are also all close to 0. However, the binned residuals vs. the predicted probabilities show a slight linear trend; as the predicted probability of winning increases, the residuals also increases. This is one limitation with the hierarchical logistic models. 
 
 - **Randomness**: Our data utilizes all the regular-season games from the 2017-2018 season, and not a sample, so the randomness condition is satisfied. We also do not have reason to believe that this season's games differ systemtically from that of other seasons.  
 
