@@ -454,7 +454,7 @@ tibble(
 
 The three assumptions for a multinomial logistic regression are **linearity**, **randomness** and **independence**. Randomness and independence are satisfied, as the conditions for the multinomial logistic model are the same for the hierachical logistic model. 
 
-- **Linearity**: Linearity is satisfied. For all levels of the response variable (win, draw, loss), there are no obvious patterns in the plot of the binned residuals vs. predicted probabilities, binned residuals vs. *Unbeaten* or binned residuals vs. $\Delta_{ij}^{FZ}$. The average residuals vs. *Derby* and average residuals vs. *Home* are also all close to 0 for each level of the response variable. 
+- **Linearity**: Linearity is satisfied. For all levels of the response variable (win, draw, loss), there are no obvious patterns in the plots of the binned residuals vs. predicted probabilities, binned residuals vs. *Unbeaten* or binned residuals vs. $\Delta_{ij}^{FZ}$. The average residuals vs. *Derby* and average residuals vs. *Home* are also all close to 0 for each level of the response variable. 
 
 ```{r mlm-residual-plots-baseline, fig.align = "center", fig.cap="Binned residual plots for the baseline multinomial logistic model."}
 pred_probs_baseline <- as_tibble(predict(multinom.fit.baseline.summary, type = "probs")) %>% 
